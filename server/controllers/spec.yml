@@ -1,0 +1,195 @@
+openapi: 3.0.0
+info:
+  title: TrackBite API
+  description: API for counting calories and nutrients in food items
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/v1
+
+
+components:
+  schemas:
+  User:
+      type: object
+      required:
+        - nickname
+        - mail
+      properties:
+        id:
+          type: integer
+          example: 42
+        nickname:
+          type: string
+          example: "fit_guru"
+        mail:
+          type: string
+          format: email
+          example: "fit.guru@example.com"
+  Nutrient:
+      type: object
+      required:
+        - name
+        - unit
+      properties:
+        id:
+          type: integer
+          example: 12
+        name:
+          type: string
+          example: "Iron"
+        unit:
+          type: string
+          example: "g"
+        totalAmount:
+          type: number
+          example: 12.5
+        amount100g: 
+          type: number
+          example: 5.0
+        isAllergene: 
+          type: boolean
+          example: false
+  Recipe:
+      type: object
+      required:
+        - name
+        - ingredients
+      properties:
+        id:
+          type: integer
+          example: 7
+        name:
+          type: string
+          example: "Pasta al Pesto"
+        ingredients:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodItem'
+  Diet:
+      type: object
+      required:
+        - name
+        - caloriesAmount
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: "Dieta Mediterranea"
+        caloriesAmount:
+          type: number
+          format: float
+          example: 2200
+  ScannedItem:
+      type: object
+      required:
+        - id
+        - name
+        - nutrients
+        - ingredients
+      properties:
+        id:
+          type: integer
+          example: 1018425894
+        name:
+          type: string
+          example: "Yogurt alla fragola"
+        allergenes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nutrient'
+          example:
+            - id: 5
+              name: "Lactose"
+              unit: "g"
+        nutrients:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nutrient'
+          example:
+            - name: "Energy"
+              value: 125
+              unit: "kcal"
+            - name: "Protein"
+              value: 4.3
+              unit: "g"
+        ingredients:
+          type: array
+          items:
+            type: string
+          example: ["Latte", "Zucchero", "Fragole"]
+        score:
+          type: number
+          example: 4
+        grade:
+          type: string
+          example: "B"
+        nutrientLevels:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            fat: "low"
+            sugar: "high"
+            salt: "moderate"
+  FoodItem:
+      type: object
+      required:
+        - scannedItem
+        - percentage
+      properties:
+        scannedItem:
+          $ref: '#/components/schemas/ScannedItem'
+        percentage:
+          type: number
+          format: float
+          example: 0.5
+  DailyIntake:
+      type: object
+      required:
+        - totalCalories
+        - totalMacros
+        - foodItems
+      properties:
+        totalCalories:
+          type: number
+          format: float
+          example: 2150.5
+        totalMacros:
+          type: object
+          additionalProperties:
+            type: number
+          example:
+            protein: 120
+            carbohydrates: 250
+            fat: 70
+        foodItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodItem'
+  DailyIntake:
+      type: object
+      required:
+        - totalCalories
+        - totalMacros
+        - foodItems
+        - date
+      properties:
+        totalCalories:
+          type: number
+          format: float
+          example: 2150.5
+        totalMacros:
+          type: array
+          items:
+            $ref: '#/components/schemas/Nutrient'
+        foodItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/FoodItem'
+        date:
+          type: string
+          format: date
+          example: "2025-10-18"

@@ -1,0 +1,53 @@
+import { Nutrient } from '../models/Nutrient';
+import { ScannedItem } from '../models/ScannedItem';
+import { NutrientImpl } from '../models/NutrientImpl';  
+import { ScannedItemImpl } from '../models/ScannedItemImpl';
+export class ScanParser {
+  constructor () {
+
+  }
+
+  parse(scanData: string): ScannedItem {
+    let parsedData: any;
+    try {
+      parsedData = JSON.parse(scanData);
+    } catch (error) {
+      throw new Error('Invalid scan data format');
+    }
+    let id = parsedData.product._id || -1;
+    let name = parsedData.product.generic_name || 'unknown';
+    let score = parsedData.product.nutriscore_score || -1;
+    let grade = parsedData.product.nutriscore_grade || 'unknown';
+    let nutrientLevels = new Map<string, string>(Object.entries(parsedData.product.nutrient_levels || {}));
+    let ingredients = parsedData.product.ingredients_text ? [parsedData.product.ingredients_text] : [];
+    // let scannedItem: ScannedItem = new ScannedItem();
+    let nutrients = this.parseNutrients(parsedData.product.nutriments || {});
+    let allergenes = nutrients.filter(nutrient => nutrient.isAllergen);
+    return new ScannedItemImpl(id, name, allergenes, nutrients, ingredients, score, grade, nutrientLevels);
+  }
+
+
+
+  parseNutrients(nutrientData: any): Array<Nutrient> {
+    let nutrients: Array<Nutrient> = [];
+    let seenNutrients = new Set<string>();
+    let allergenes = nutrientData.allergenes || [];
+
+    for (let [key, value] of Object.entries(nutrientData)) {
+      const name = key.split('_')[0];
+      if (seenNutrients.has(name)) {
+        continue; // Skip duplicate nutrient
+      }
+      const totalAmount =  nutrientData[name + "_value"];
+      const unit = nutrientData[name + "_unit"];
+      const amount100g = nutrientData[name + "_100g"];
+      const id = -1; // Placeholder, replace with actual ID logic
+      const isAllergen = allergenes.includes(name);
+      nutrients.push(new NutrientImpl(id, name, totalAmount, unit, amount100g, isAllergen));
+      seenNutrients.add(name);
+    }
+
+    return nutrients;
+  }
+
+}

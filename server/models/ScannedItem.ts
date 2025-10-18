@@ -1,6 +1,12 @@
-interface ScannedItem {
+import { Nutrient } from "./Nutrient";
+
+export interface ScannedItem {
   id: number, 
   nome: string, 
-  allergenes: Map<string, number>,
-  macros: Map<string, number>
+  allergenes: Array<Nutrient>,
+  nutrients: Array<Nutrient>,
+  ingredients: string[],
+  score: number,
+  grade: string,
+  nutrientLevels: Map<string, string>
 }

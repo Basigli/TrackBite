@@ -1,0 +1,52 @@
+ScannedItem:
+      type: object
+      required:
+        - id
+        - name
+        - nutrients
+        - ingredients
+      properties:
+        id:
+          type: integer
+          example: 1018425894
+        name:
+          type: string
+          example: "Yogurt alla fragola"
+        allergenes:
+          type: array
+          items:
+            $ref: './nutrient.yml'
+          example:
+            - id: 5
+              name: "Lactose"
+              unit: "g"
+        nutrients:
+          type: array
+          items:
+            $ref: './nutrient.yml'
+          example:
+            - name: "Energy"
+              value: 125
+              unit: "kcal"
+            - name: "Protein"
+              value: 4.3
+              unit: "g"
+        ingredients:
+          type: array
+          items:
+            type: string
+          example: ["Latte", "Zucchero", "Fragole"]
+        score:
+          type: number
+          example: 4
+        grade:
+          type: string
+          example: "B"
+        nutrientLevels:
+          type: object
+          additionalProperties:
+            type: string
+          example:
+            fat: "low"
+            sugar: "high"
+            salt: "moderate"

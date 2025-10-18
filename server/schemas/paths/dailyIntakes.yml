@@ -1,0 +1,115 @@
+/daily-intakes:
+  get:
+    summary: List all daily intakes
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DailyIntake'
+  post:
+    summary: Create a new daily intake
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DailyIntake'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyIntake'
+
+/daily-intakes/{id}:
+  get:
+    summary: Get daily intake by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyIntake'
+  put:
+    summary: Update daily intake
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DailyIntake'
+    responses:
+      '200':
+        description: Updated daily intake
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DailyIntake'
+  delete:
+    summary: Delete daily intake
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '204':
+        description: No Content
+/daily-intakes/{dailyIntakeId}/food-items:
+  get:
+    summary: List food items in a daily intake
+    parameters:
+      - name: dailyIntakeId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/FoodItem'
+  post:
+    summary: Add a food item to a daily intake
+    parameters:
+      - name: dailyIntakeId
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FoodItem'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodItem'

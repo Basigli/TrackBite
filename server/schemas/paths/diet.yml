@@ -1,0 +1,76 @@
+/diets:
+  get:
+    summary: List all diets
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Diet'
+  post:
+    summary: Create a new diet
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Diet'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Diet'
+
+/diets/{id}:
+  get:
+    summary: Get diet by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Diet'
+  put:
+    summary: Update a diet
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Diet'
+    responses:
+      '200':
+        description: Updated diet
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Diet'
+  delete:
+    summary: Delete a diet
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '204':
+        description: No Content

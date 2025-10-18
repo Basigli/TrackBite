@@ -1,0 +1,16 @@
+User:
+    type: object
+    required:
+      - nickname
+      - mail
+    properties:
+      id:
+        type: integer
+        example: 42
+      nickname:
+        type: string
+        example: "fit_guru"
+      mail:
+        type: string
+        format: email
+        example: "fit.guru@example.com"

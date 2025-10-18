@@ -1,0 +1,16 @@
+Recipe:
+    type: object
+    required:
+      - name
+      - ingredients
+    properties:
+      id:
+        type: integer
+        example: 7
+      name:
+        type: string
+        example: "Pasta al Pesto"
+      ingredients:
+        type: array
+        items:
+          $ref: './foodItem.yml'

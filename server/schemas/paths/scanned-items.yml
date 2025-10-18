@@ -1,0 +1,76 @@
+/scanned-items:
+  get:
+    summary: List all scanned items
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/ScannedItem'
+  post:
+    summary: Add a new scanned item
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScannedItem'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScannedItem'
+
+/scanned-items/{id}:
+  get:
+    summary: Get scanned item by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScannedItem'
+  put:
+    summary: Update scanned item
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ScannedItem'
+    responses:
+      '200':
+        description: Updated scanned item
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScannedItem'
+  delete:
+    summary: Delete scanned item
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '204':
+        description: No Content

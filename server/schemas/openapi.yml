@@ -1,0 +1,37 @@
+openapi: 3.0.0
+info:
+  title: TrackBite API
+  description: API for counting calories and nutrients in food items
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/v1
+
+paths:
+  /users:
+    $ref: './paths/users.yaml'
+  /scanned-items:
+    $ref: './paths/scannedItems.yaml'
+  /recipes:
+    $ref: './paths/recipes.yaml'
+  /diets:
+    $ref: './paths/diets.yaml'
+  /daily-intakes:
+    $ref: './paths/dailyIntakes.yaml'
+
+components:
+    schemas:
+      User:
+        $ref: './components/schemas/user.yaml'
+      ScannedItem:
+        $ref: './components/schemas/scannedItem.yaml'
+      DailyIntake:
+        $ref: './components/schemas/dailyIntake.yaml'
+      FoodItem:
+        $ref: './components/schemas/foodItem.yaml'
+      Nutrient:
+        $ref: './components/schemas/nutrient.yaml'
+      Recipe:
+        $ref: './components/schemas/recipe.yaml'
+      Diet:
+        $ref: './components/schemas/diet.yaml'

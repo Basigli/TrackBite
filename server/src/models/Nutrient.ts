@@ -4,5 +4,4 @@ export interface Nutrient {
     unit: string,
     totalAmount: number
     amount100g: number
-    isAllergen: boolean
 }

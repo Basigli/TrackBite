@@ -19,7 +19,7 @@ export class ScanParser {
     let score = parsedData.product.nutriscore_score || -1;
     let grade = parsedData.product.nutriscore_grade || 'unknown';
     let nutrientLevels = new Map<string, string>(Object.entries(parsedData.product.nutrient_levels || {}));
-    let ingredients = parsedData.product.ingredients_text ? [parsedData.product.ingredients_text] : [];
+    let ingredients = parsedData.product.ingredients_without_ecobalyse_ids.map((ingredient: string) => ingredient.split(':')[1])  || [];
     // let allergeneNames = parsedData.product.allergens || [];
     let allergens = this.parseAllergenNames(parsedData.product.allergens_from_ingredients);
     // let allergeneNames = parsedData.product.allergens.map((allergen: string) => allergen.split(':')[1]) || [];

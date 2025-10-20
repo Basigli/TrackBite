@@ -1,6 +1,6 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { DailyIntake } from "../models/DailyIntake";
-import { NutrientSchema } from "./nutrientSchema";
+import { NutrientSchema } from "./NutrientSchema";
 import { FoodItemSchema } from "./FoodItemSchema";
 
 const DailyIntakeSchema: Schema<DailyIntake> = new Schema({

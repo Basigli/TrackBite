@@ -1,7 +1,6 @@
 import { Nutrient } from "./Nutrient";
-import Document from 'mongoose';
 
-export interface ScannedItem extends Document {
+export interface ScannedItem {
   id: number, 
   name: string, 
   allergens: Array<string>,

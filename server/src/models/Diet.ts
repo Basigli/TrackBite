@@ -1,6 +1,4 @@
-import Document from 'mongoose';
-
-export interface Diet extends Document {
+export interface Diet {
   id?: number, 
   name: string,
   caloriesAmount: number, 

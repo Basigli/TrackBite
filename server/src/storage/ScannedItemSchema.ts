@@ -1,10 +1,10 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { ScannedItem } from "../models/ScannedItem";
-import { NutrientSchema } from "./nutrientSchema";
+import { NutrientSchema } from "./NutrientSchema";
 
 export const ScannedItemSchema: Schema<ScannedItem> = new Schema({
   name: { type: String, required: true },
-  allergens: { type: [NutrientSchema], default: [] },
+  allergens: { type: [String], default: [] },
   nutrients: { type: [NutrientSchema], default: [] },
   ingredients: { type: [String], default: [] },
   score: { type: Number },

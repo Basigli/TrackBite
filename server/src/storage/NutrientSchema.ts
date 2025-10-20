@@ -2,7 +2,7 @@ import mongoose, { Schema, Model } from "mongoose";
 import { Nutrient } from "../models/Nutrient";
 
 export const NutrientSchema = new Schema<Nutrient>({
-  id: { type: Number }, // optional field
+  id: { type: Number },
   name: { type: String, required: true },
   unit: { type: String, required: true },
   totalAmount: { type: Number, required: true },

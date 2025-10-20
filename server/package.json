@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:parser": "node -r ts-node/register src/TestParser.ts"
+    "test:parser": "node -r ts-node/register test/TestParser.ts",
+    "test:schemas": "node -r ts-node/register test/TestSchemas.ts"
   },
   "keywords": [],
   "author": "",

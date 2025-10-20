@@ -1,6 +1,4 @@
-import Document from 'mongoose';
-
-export interface Nutrient extends Document {
+export interface Nutrient {
     id?: number,
     name: string,
     unit: string,

@@ -1,9 +1,9 @@
 import { FoodItem } from "./FoodItem";
-import Document from 'mongoose';
+import { Nutrient } from "./Nutrient";
 
-export interface DailyIntake extends Document{
+export interface DailyIntake {
   totalCalories: number, 
-  totalMacros: Map<string, number>
+  totalMacros: Array<Nutrient>,
   foodItems: Array<FoodItem>
   date: Date
 }

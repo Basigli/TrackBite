@@ -1,7 +1,6 @@
 import { ScannedItem } from "./ScannedItem";
-import Document from 'mongoose';
 
-export interface FoodItem extends Document {
+export interface FoodItem {
   scannedItem: ScannedItem, 
   percentage: number
 }

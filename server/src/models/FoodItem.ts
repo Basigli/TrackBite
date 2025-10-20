@@ -1,6 +1,7 @@
-import { ScannedItem } from "./ScannedItem.ts";
+import { ScannedItem } from "./ScannedItem";
+import Document from 'mongoose';
 
-export interface FoodItem {
+export interface FoodItem extends Document {
   scannedItem: ScannedItem, 
   percentage: number
 }

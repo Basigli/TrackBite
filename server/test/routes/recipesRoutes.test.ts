@@ -114,10 +114,12 @@ describe("Recipe Routes", () => {
     });
 
     it("should return 404 if recipe not found", async () => {
+      const created = await RecipeModel.create(sampleRecipe);
+      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients };
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
         .put(`/recipes/${fakeId}`)
-        .send({ name: "Non-existent" })
+        .send(update)
         .expect(404);
     });
   });

@@ -43,7 +43,7 @@ describe("User Routes", () => {
     });
 
     it("should return 400 when mail is duplicate", async () => {
-      const user = { nickname: "u1", mail: "dup@example.com" };
+      const user = {  nickname: "u1", mail: "dup@example.com" };
       await UserModel.create(user);
 
       const res = await request(app)
@@ -79,7 +79,7 @@ describe("User Routes", () => {
   describe("PUT /users/:id", () => {
     it("should update the user and return 200", async () => {
       const created = await UserModel.create({ nickname: "old", mail: "old@example.com" });
-      const update = { nickname: "newnick", mail: "old@example.com" };
+      const update = {  _id: created._id, nickname: "newnick", mail: "old@example.com" };
       const res = await request(app)
         .put(`/users/${created._id}`)
         .send(update)

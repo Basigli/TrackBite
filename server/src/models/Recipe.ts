@@ -8,7 +8,7 @@ export interface Recipe {
 }
 
 export const RecipeSchemaZ = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   name: z.string(),
   ingredients: z.array(FoodItemSchemaZ),
 });

@@ -7,7 +7,7 @@ export interface Diet {
 }
 
 export const DietSchemaZ = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   name: z.string(),
   caloriesAmount: z.number(),
 });

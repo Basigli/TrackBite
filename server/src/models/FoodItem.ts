@@ -9,7 +9,7 @@ export interface FoodItem {
 }
 
 export const FoodItemSchemaZ = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   scannedItem: ScannedItemSchemaZ,
   percentage: z.number(),
 });

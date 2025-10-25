@@ -11,7 +11,7 @@ export interface DailyIntake {
 }
 
 export const DailyIntakeSchema = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   totalCalories: z.number(),
   totalMacros: z.array(NutrientSchemaZ),
   foodItems: z.array(FoodItemSchemaZ),

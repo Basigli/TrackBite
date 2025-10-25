@@ -9,7 +9,7 @@ export interface Nutrient {
 }
 
 export const NutrientSchemaZ = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   name: z.string(),
   unit: z.string(),
   totalAmount: z.number(),

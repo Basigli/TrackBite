@@ -7,14 +7,14 @@ export interface ScannedItem {
   name: string, 
   allergens: Array<string>,
   nutrients: Array<Nutrient>,
-  ingredients: string[],
+  ingredients: Array<string>,
   score: number,
   grade: string,
   nutrientLevels: Map<string, string>
 }
 
 export const ScannedItemSchemaZ = z.object({
-  _id: z.string(),
+  _id: z.string().optional(),
   name: z.string(),
   allergens: z.array(z.string()),
   nutrients: z.array(NutrientSchemaZ),

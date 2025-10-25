@@ -2,7 +2,7 @@ import { Nutrient } from "./Nutrient";
 
 export class NutrientImpl implements Nutrient {
   constructor(
-    public id: number,
+    public _id: number,
     public name: string,
     public totalAmount: number,
     public unit: string,

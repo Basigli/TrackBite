@@ -3,6 +3,8 @@ import { NutrientModel } from "../src/storage/NutrientSchema";
 import { RecipeModel } from "../src/storage/RecipeSchema";
 import { DailyIntakeModel } from "../src/storage/DailyIntakeSchema";
 import { DietModel } from "../src/storage/DietSchema";
+import { Recipe } from "../src/models/Recipe";
+import { FoodItem } from "../src/models/FoodItem";
 
 async function runTests() {
   try {
@@ -18,7 +20,7 @@ async function runTests() {
       amount100g: 25
     });
 
-    const recipe = await RecipeModel.create({
+    const recipe: Recipe = await RecipeModel.create({
       name: "Grilled Chicken Salad",
       ingredients: [
         {
@@ -31,6 +33,8 @@ async function runTests() {
         }
       ]
     });
+
+    console.log("\n\n\n ID:", recipe._id);
 
     const dailyIntake = await DailyIntakeModel.create({
       totalCalories: 2000,

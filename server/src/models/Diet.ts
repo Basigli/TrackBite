@@ -1,5 +1,5 @@
 export interface Diet {
-  id?: number, 
+  _id: number, 
   name: string,
   caloriesAmount: number, 
 }

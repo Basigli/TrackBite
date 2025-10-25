@@ -3,7 +3,6 @@ import { FoodItemSchema } from "./FoodItemSchema";
 import { Recipe } from "../models/Recipe";
 
 const RecipeSchema = new Schema<Recipe>({
-  id: { type: Number },
   name: { type: String, required: true },
   ingredients: {
     type: [FoodItemSchema],

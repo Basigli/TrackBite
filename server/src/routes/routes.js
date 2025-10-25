@@ -1,0 +1,33 @@
+const express = require("express");
+
+const dailyIntakeController = require("../controllers/dailyIntake-controller");
+const dietController = require("../controllers/diet-controller");
+const recipesController = require("../controllers/recipes-controller");
+const scannedItemsController = require("../controllers/scannedItems-controller");
+const userController = require("../controllers/user-controller");
+const healthCheck = require("../controllers/healthCheck");
+const stats = require("../controllers/stats");
+
+const router = express.Router();
+
+// GET /health
+router.get("/", healthCheck);
+
+// GET /stats
+router.get("/stats", stats);
+
+// DailyIntake Routes
+router.route("/daily-intakes")
+  .get(dailyIntakeController.getAllDailyIntakes)
+  .post(dailyIntakeController.createDailyIntake);
+
+router.route("/daily-intakes/:id")
+  .get(dailyIntakeController.getDailyIntakeById)
+  .put(dailyIntakeController.updateDailyIntake)
+  .delete(dailyIntakeController.deleteDailyIntake);
+
+router.route("/daily-intakes/:dailyIntakeId/food-items")
+  .get(dailyIntakeController.getFoodItemsByDailyIntake)
+  .post(dailyIntakeController.addFoodItemToDailyIntake);
+
+module.exports = router;

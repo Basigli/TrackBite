@@ -1,7 +1,7 @@
 import { FoodItem } from "./FoodItem";
 
 export interface Recipe {
-  _id: number, 
+  _id: string, 
   name: string,
   ingredients: Array<FoodItem>
 }

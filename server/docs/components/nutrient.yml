@@ -1,12 +1,13 @@
 Nutrient:
       type: object
       required:
+        - _id
         - name
         - unit
       properties:
-        id:
-          type: integer
-          example: 12
+        _id:
+          type: string
+          example: "123456abcdef1234567890ab"
         name:
           type: string
           example: "Iron"

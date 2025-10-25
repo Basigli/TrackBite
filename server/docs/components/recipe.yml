@@ -1,12 +1,13 @@
 Recipe:
     type: object
     required:
+      - _id
       - name
       - ingredients
     properties:
-      id:
-        type: integer
-        example: 7
+      _id:
+        type: string
+        example: "abcdef1234567890abcdef12"
       name:
         type: string
         example: "Pasta al Pesto"

@@ -1,7 +1,7 @@
 import { Nutrient } from "./Nutrient";
 
 export interface ScannedItem {
-  _id: number, 
+  _id: string, 
   name: string, 
   allergens: Array<string>,
   nutrients: Array<Nutrient>,

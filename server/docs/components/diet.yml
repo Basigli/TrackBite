@@ -1,12 +1,13 @@
 Diet:
     type: object
     required:
+      - _id
       - name
       - caloriesAmount
     properties:
-      id:
-        type: integer
-        example: 3
+      _id:
+        type: string
+        example: "abcdef1234567890abcdef12"
       name:
         type: string
         example: "Dieta Mediterranea"

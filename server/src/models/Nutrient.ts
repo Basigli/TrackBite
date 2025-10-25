@@ -1,5 +1,5 @@
 export interface Nutrient {
-    _id: number,
+    _id: string,
     name: string,
     unit: string,
     totalAmount: number

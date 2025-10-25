@@ -1,12 +1,13 @@
 User:
     type: object
     required:
+      - _id
       - nickname
       - mail
     properties:
-      id:
-        type: integer
-        example: 42
+      _id:
+        type: string
+        example: "abcdef1234567890abcdef12"
       nickname:
         type: string
         example: "fit_guru"

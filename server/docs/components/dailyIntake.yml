@@ -1,11 +1,15 @@
 DailyIntake:
     type: object
     required:
+      - _id
       - totalCalories
       - totalMacros
       - foodItems
       - date
     properties:
+      _id:
+        type: string
+        example: "654321abcdef1234567890ab"
       totalCalories:
         type: number
         format: float

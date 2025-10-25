@@ -3,7 +3,7 @@ import { Nutrient } from "./Nutrient";
 
 export class ScannedItemImpl implements ScannedItem {
   constructor(
-    public _id: number,
+    public _id: string,
     public name: string,
     public allergens: Array<string>,
     public nutrients: Array<Nutrient>,

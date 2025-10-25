@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx jest",
     "test:parser": "node -r ts-node/register test/TestParser.ts",
-    "test:schemas": "node -r ts-node/register test/TestSchemas.ts"
+    "test:schemas": "node -r ts-node/register test/TestSchemas.ts",
+    "test:usersRoutes": "npx jest test/userRoutes.test.ts",
+    "test:scannedItemsRoutes": "npx jest test/scannedItemsRoutes.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +23,13 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.8.1",
+    "@types/supertest": "^6.0.3",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^10.2.3",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2"
   }
 }

@@ -22,6 +22,10 @@ export const getAllDailyIntakes = async (req: Request, res: Response) => {
 export const createDailyIntake = async (req: Request, res: Response) => {
   try {
     const newDailyIntake = new DailyIntakeModel(req.body);
+    const validationError = newDailyIntake.validateSync();
+    if (validationError) {
+      return res.status(400).json({ message: "Validation error", error: validationError });
+    }
     const saved = await newDailyIntake.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -106,6 +110,8 @@ export const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
   try {
     const { dailyIntakeId } = req.params;
     const foodItem: FoodItem = req.body;
+
+    // ! add validation of the body
 
     const dailyIntake = await DailyIntakeModel.findById(dailyIntakeId);
     if (!dailyIntake) {

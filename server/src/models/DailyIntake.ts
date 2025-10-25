@@ -1,5 +1,6 @@
-import { FoodItem } from "./FoodItem";
-import { Nutrient } from "./Nutrient";
+import { FoodItem, FoodItemSchemaZ } from "./FoodItem";
+import { Nutrient, NutrientSchemaZ } from "./Nutrient";
+import { z } from "zod";
 
 export interface DailyIntake {
   _id: string
@@ -8,3 +9,11 @@ export interface DailyIntake {
   foodItems: Array<FoodItem>
   date: Date
 }
+
+export const DailyIntakeSchema = z.object({
+  _id: z.string(),
+  totalCalories: z.number(),
+  totalMacros: z.array(NutrientSchemaZ),
+  foodItems: z.array(FoodItemSchemaZ),
+  date: z.date(),
+});

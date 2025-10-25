@@ -30,4 +30,14 @@ router.route("/daily-intakes/:dailyIntakeId/food-items")
   .get(dailyIntakeController.getFoodItemsByDailyIntake)
   .post(dailyIntakeController.addFoodItemToDailyIntake);
 
+// Diet Routes
+router.route("/diets")
+  .get(dietController.getAllDiets)
+  .post(dietController.createDiet);
+
+router.route("/diets/:id")
+  .get(dietController.getDietById)
+  .put(dietController.updateDiet)
+  .delete(dietController.deleteDiet);
+
 module.exports = router;

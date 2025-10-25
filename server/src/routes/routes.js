@@ -50,4 +50,14 @@ router.route("/recipes/:id")
   .put(recipesController.updateRecipe)
   .delete(recipesController.deleteRecipe);
 
+// Scanned Items Routes
+router.route("/scanned-items")
+  .get(scannedItemsController.getAllScannedItems)
+  .post(scannedItemsController.createScannedItem);
+  
+router.route("/scanned-items/:id")
+  .get(scannedItemsController.getScannedItemById)
+  .put(scannedItemsController.updateScannedItem)
+  .delete(scannedItemsController.deleteScannedItem);
+
 module.exports = router;

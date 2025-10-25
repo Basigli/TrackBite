@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { DietModel } from "../storage/DietSchema";
-import { Diet } from "../models/Diet";
+import { Diet, DietSchemaZ } from "../models/Diet";
 
 // GET /diets - List all diets
 export const getAllDiets = async (req: Request, res: Response) => {
@@ -15,7 +15,11 @@ export const getAllDiets = async (req: Request, res: Response) => {
 // POST /diets - Create a new diet
 export const createDiet = async (req: Request, res: Response) => {
   try {
-    const { name, caloriesAmount } = req.body as Diet;
+    const parsed = DietSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid diet data", error: parsed.error });
+    }
+    const { name, caloriesAmount } = parsed.data;
     const newDiet = new DietModel({ name, caloriesAmount });
     await newDiet.save();
     res.status(201).json(newDiet);
@@ -40,7 +44,11 @@ export const getDietById = async (req: Request, res: Response) => {
 export const updateDiet = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, caloriesAmount } = req.body as Diet;
+    const parsed = DietSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid diet data", error: parsed.error });
+    }
+    const { name, caloriesAmount } = parsed.data;
     const updatedDiet = await DietModel.findByIdAndUpdate(
       id,
       { name, caloriesAmount },

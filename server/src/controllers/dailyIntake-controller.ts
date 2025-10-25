@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { DailyIntakeModel } from "../storage/DailyIntakeSchema";
-import { FoodItem } from "../models/FoodItem";
+import { FoodItem, FoodItemSchemaZ } from "../models/FoodItem";
 
 /**
  * GET /daily-intakes
@@ -109,9 +109,11 @@ export const getFoodItemsByDailyIntake = async (req: Request, res: Response) => 
 export const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
   try {
     const { dailyIntakeId } = req.params;
-    const foodItem: FoodItem = req.body;
+    const foodItem: FoodItem = FoodItemSchemaZ.safeParse(req.body).success ? req.body : null;
 
-    // ! add validation of the body
+    if (!foodItem) {
+      return res.status(400).json({ message: "Invalid food item", error: FoodItemSchemaZ.safeParse(req.body).error });
+    }
 
     const dailyIntake = await DailyIntakeModel.findById(dailyIntakeId);
     if (!dailyIntake) {

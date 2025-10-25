@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { RecipeModel } from "../storage/RecipeSchema";
-import { Recipe } from "../models/Recipe";
+import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 
 // GET /recipes - List all recipes
 export const getAllRecipes = async (_req: Request, res: Response) => {
@@ -15,7 +15,11 @@ export const getAllRecipes = async (_req: Request, res: Response) => {
 // POST /recipes - Create a new recipe
 export const createRecipe = async (req: Request, res: Response) => {
   try {
-    const recipeData: Recipe = req.body;
+    const parsed = RecipeSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid recipe data", error: parsed.error });
+    }
+    const recipeData= parsed.data;
     const newRecipe = new RecipeModel(recipeData);
     await newRecipe.save();
     res.status(201).json(newRecipe);
@@ -40,7 +44,11 @@ export const getRecipeById = async (req: Request, res: Response) => {
 export const updateRecipe = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updatedData: Recipe = req.body;
+    const parsed = RecipeSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid recipe data", error: parsed.error });
+    }
+    const updatedData = parsed.data;
 
     const updatedRecipe = await RecipeModel.findByIdAndUpdate(id, updatedData, {
       new: true,

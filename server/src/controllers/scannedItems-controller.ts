@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ScannedItemModel } from "../storage/ScannedItemSchema";
+import { ScannedItemSchemaZ } from "../models/ScannedItem";
 
 // GET /scanned-items
 export const getAllScannedItems = async (req: Request, res: Response) => {
@@ -14,7 +15,11 @@ export const getAllScannedItems = async (req: Request, res: Response) => {
 // POST /scanned-items
 export const createScannedItem = async (req: Request, res: Response) => {
   try {
-    const newItem = new ScannedItemModel(req.body);
+    const parsed = ScannedItemSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid scanned item data", details: parsed.error });
+    }
+    const newItem = new ScannedItemModel(parsed.data);
     const savedItem = await newItem.save();
     res.status(201).json(savedItem);
   } catch (err) {
@@ -38,7 +43,12 @@ export const getScannedItemById = async (req: Request, res: Response) => {
 export const updateScannedItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const updatedItem = await ScannedItemModel.findByIdAndUpdate(id, req.body, { new: true });
+    const parsed = ScannedItemSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      console.error("Validation failed:", parsed.error);
+      return res.status(400).json({ error: "Invalid scanned item data", details: parsed.error });
+    }
+    const updatedItem = await ScannedItemModel.findByIdAndUpdate(id, parsed.data, { new: true });
     if (!updatedItem) return res.status(404).json({ error: "Item not found" });
     res.status(200).json(updatedItem);
   } catch (err) {

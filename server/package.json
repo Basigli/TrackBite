@@ -10,7 +10,8 @@
     "test:usersRoutes": "npx jest test/routes/userRoutes.test.ts",
     "test:scannedItemsRoutes": "npx jest test/routes/scannedItemsRoutes.test.ts",
     "test:recipesRoutes": "npx jest test/routes/recipesRoutes.test.ts",
-    "test:dietsRoutes": "npx jest test/routes/dietsRoutes.test.ts"
+    "test:dietsRoutes": "npx jest test/routes/dietsRoutes.test.ts",
+    "test:dailyIntakeRoutes": "npx jest test/routes/dailyIntakeRoutes.test.ts"
   },
   "keywords": [],
   "author": "",

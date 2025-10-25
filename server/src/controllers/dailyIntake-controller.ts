@@ -120,13 +120,3 @@ export const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Error adding food item", error });
   }
 };
-
-module.exports = {
-  getAllDailyIntakes,
-  createDailyIntake,
-  getDailyIntakeById,
-  updateDailyIntake,
-  deleteDailyIntake,
-  getFoodItemsByDailyIntake,
-  addFoodItemToDailyIntake
-};

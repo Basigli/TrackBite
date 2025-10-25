@@ -40,4 +40,14 @@ router.route("/diets/:id")
   .put(dietController.updateDiet)
   .delete(dietController.deleteDiet);
 
+// Recipes Routes
+router.route("/recipes")
+  .get(recipesController.getAllRecipes)
+  .post(recipesController.createRecipe);
+
+router.route("/recipes/:id")
+  .get(recipesController.getRecipeById)
+  .put(recipesController.updateRecipe)
+  .delete(recipesController.deleteRecipe);
+
 module.exports = router;

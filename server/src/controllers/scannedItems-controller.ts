@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { ScannedItemModel } from "../storage/ScannedItemSchema";
 
 // GET /scanned-items
-export const listScannedItems = async (req: Request, res: Response) => {
+export const getAllScannedItems = async (req: Request, res: Response) => {
   try {
     const items = await ScannedItemModel.find();
     res.status(200).json(items);
@@ -12,7 +12,7 @@ export const listScannedItems = async (req: Request, res: Response) => {
 };
 
 // POST /scanned-items
-export const addScannedItem = async (req: Request, res: Response) => {
+export const createScannedItem = async (req: Request, res: Response) => {
   try {
     const newItem = new ScannedItemModel(req.body);
     const savedItem = await newItem.save();

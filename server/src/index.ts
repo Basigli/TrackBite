@@ -1,15 +1,11 @@
-const express = require("express");
+import {app} from "./app";
 
-const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(express.json());
-
-const routes = require("./routes/routes");
-app.use("/", routes);
 
 app.listen(PORT, () => {
   console.log(
     `TrackBite API server listening at http://localhost:${PORT}`
   );
 });
+
+export default app;

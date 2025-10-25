@@ -3,7 +3,7 @@ import { RecipeModel } from "../storage/RecipeSchema";
 import { Recipe } from "../models/Recipe";
 
 // GET /recipes - List all recipes
-export const listRecipes = async (_req: Request, res: Response) => {
+export const getAllRecipes = async (_req: Request, res: Response) => {
   try {
     const recipes: Recipe[] = await RecipeModel.find();
     res.status(200).json(recipes);

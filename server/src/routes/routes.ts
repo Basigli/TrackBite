@@ -11,10 +11,10 @@ const stats = require("../controllers/stats");
 const router = express.Router();
 
 // GET /health
-router.get("/", healthCheck);
+// router.get("/", healthCheck);
 
 // GET /stats
-router.get("/stats", stats);
+// router.get("/stats", stats);
 
 // DailyIntake Routes
 router.route("/daily-intakes")

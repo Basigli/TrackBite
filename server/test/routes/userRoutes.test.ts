@@ -2,8 +2,8 @@ import request from "supertest";
 import { beforeAll, afterAll, beforeEach, describe, it, expect } from '@jest/globals';
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
-import { app } from "../src/app";
-import { UserModel } from "../src/storage/UserSchema";
+import { app } from "../../src/app";
+import { UserModel } from "../../src/storage/UserSchema";
 
 let mongoServer: MongoMemoryServer;
 

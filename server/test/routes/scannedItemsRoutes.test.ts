@@ -2,8 +2,8 @@ import request from "supertest";
 import mongoose from "mongoose";
 import { beforeAll, afterAll, afterEach, describe, it, expect } from '@jest/globals';
 import { MongoMemoryServer } from "mongodb-memory-server";
-import {app} from "../src/app";
-import { ScannedItemModel } from "../src/storage/ScannedItemSchema";
+import {app} from "../../src/app";
+import { ScannedItemModel } from "../../src/storage/ScannedItemSchema";
 
 let mongoServer: MongoMemoryServer;
 

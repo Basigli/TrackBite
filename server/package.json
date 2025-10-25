@@ -7,8 +7,9 @@
     "test": "npx jest",
     "test:parser": "node -r ts-node/register test/TestParser.ts",
     "test:schemas": "node -r ts-node/register test/TestSchemas.ts",
-    "test:usersRoutes": "npx jest test/userRoutes.test.ts",
-    "test:scannedItemsRoutes": "npx jest test/scannedItemsRoutes.test.ts"
+    "test:usersRoutes": "npx jest test/routes/userRoutes.test.ts",
+    "test:scannedItemsRoutes": "npx jest test/routes/scannedItemsRoutes.test.ts",
+    "test:recipesRoutes": "npx jest test/routes/recipesRoutes.test.ts"
   },
   "keywords": [],
   "author": "",

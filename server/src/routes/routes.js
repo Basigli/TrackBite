@@ -60,4 +60,13 @@ router.route("/scanned-items/:id")
   .put(scannedItemsController.updateScannedItem)
   .delete(scannedItemsController.deleteScannedItem);
 
+// User Routes
+router.route("/users")
+  .post(userController.createUser);
+
+router.route("/users/:id")
+  .get(userController.getUserById)
+  .put(userController.updateUser)
+  .delete(userController.deleteUser);
+
 module.exports = router;

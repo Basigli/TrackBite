@@ -1,3 +1,6 @@
+import { get } from "http";
+import { getMetrics } from "../controllers/metrics";
+
 const express = require("express");
 
 const dailyIntakeController = require("../controllers/dailyIntake-controller");
@@ -7,14 +10,20 @@ const scannedItemsController = require("../controllers/scannedItems-controller")
 const userController = require("../controllers/user-controller");
 const healthCheck = require("../controllers/healthCheck");
 const stats = require("../controllers/stats");
+const metrics = require("../controllers/metrics");
 
 const router = express.Router();
 
 // GET /health
-// router.get("/", healthCheck);
+router.get("/health/liveness", healthCheck.liveness);
+router.get("/health/readiness", healthCheck.readiness);
+
+// GET /metrics
+console.log(metrics);
+router.use(metrics.metricsMiddleware);
+router.get("/metrics", metrics.getMetrics);
 
 // GET /stats
-// router.get("/stats", stats);
 
 // DailyIntake Routes
 router.route("/daily-intakes")

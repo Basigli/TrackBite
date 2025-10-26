@@ -11,7 +11,8 @@
     "test:scannedItemsRoutes": "npx jest test/routes/scannedItemsRoutes.test.ts",
     "test:recipesRoutes": "npx jest test/routes/recipesRoutes.test.ts",
     "test:dietsRoutes": "npx jest test/routes/dietsRoutes.test.ts",
-    "test:dailyIntakeRoutes": "npx jest test/routes/dailyIntakeRoutes.test.ts"
+    "test:dailyIntakeRoutes": "npx jest test/routes/dailyIntakeRoutes.test.ts",
+    "test:metrics": "npx jest test/MetricsAndHealth.test.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongoose": "^8.19.1",
+    "prom-client": "^15.1.3",
     "typescript": "^5.9.3",
     "zod": "^4.1.12"
   },

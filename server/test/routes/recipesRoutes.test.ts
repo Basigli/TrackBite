@@ -43,7 +43,8 @@ describe("Recipe Routes", () => {
         },
         percentage: 50
       }
-    ]
+    ],
+    userId: "test-user-id"
   };
 
   describe("POST /recipes", () => {
@@ -100,7 +101,7 @@ describe("Recipe Routes", () => {
   describe("PUT /recipes/:id", () => {
     it("should update the recipe and return 200", async () => {
       const created = await RecipeModel.create(sampleRecipe);
-      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients };
+      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients, userId: sampleRecipe.userId };
 
       const res = await request(app)
         .put(`/recipes/${created._id}`)
@@ -115,7 +116,7 @@ describe("Recipe Routes", () => {
 
     it("should return 404 if recipe not found", async () => {
       const created = await RecipeModel.create(sampleRecipe);
-      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients };
+      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients, userId: sampleRecipe.userId };
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
         .put(`/recipes/${fakeId}`)

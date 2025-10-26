@@ -19,11 +19,12 @@ router.get("/health/liveness", healthCheck.liveness);
 router.get("/health/readiness", healthCheck.readiness);
 
 // GET /metrics
-console.log(metrics);
 router.use(metrics.metricsMiddleware);
 router.get("/metrics", metrics.getMetrics);
 
 // GET /stats
+router.get("/stats", stats.getStats);
+router.get("/stats/db", stats.getDbStats);
 
 // DailyIntake Routes
 router.route("/daily-intakes")

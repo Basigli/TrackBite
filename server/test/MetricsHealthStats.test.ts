@@ -16,4 +16,19 @@ describe("Metrics API", () => {
     expect(res.body).toEqual({ status: "ok" });
   });
 
+  it("should return stasts with uptime and memory usage", async () => {
+    const res = await request(app).get("/stats");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("uptime");
+    expect(res.body).toHaveProperty("memoryUsage");
+  });
+
+  it("should return database stats", async () => {
+    const res = await request(app).get("/stats/db");
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty("users");
+    expect(res.body).toHaveProperty("diets");
+    expect(res.body).toHaveProperty("dailyIntakes");
+    expect(res.body).toHaveProperty("recipes");
+  }, 10000);
 });

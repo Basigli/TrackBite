@@ -12,17 +12,6 @@ export const getAllRecipes = async (_req: Request, res: Response) => {
   }
 };
 
-// GET /recipes/:userId - List all recipes owned by a user
-export const getOwnedRecipes = async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    const recipes: Recipe[] = await RecipeModel.find({ userId });
-    res.status(200).json(recipes);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching user's recipes", error: err });
-  }
-}
-
 // POST /recipes - Create a new recipe
 export const createRecipe = async (req: Request, res: Response) => {
   try {

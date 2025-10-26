@@ -42,6 +42,25 @@
           application/json:
             schema:
               $ref: '#/components/schemas/Recipe'
+/recipes/user/{userId}:
+  get:
+    summary: Get recipes by user ID
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Recipe'
+/recipes/{id}/user/{userId}:
   put:
     summary: Update a recipe
     parameters:
@@ -74,3 +93,21 @@
     responses:
       '204':
         description: No Content
+/recipes/search/ingredient/{ingredient}:
+  get:
+    summary: Search recipes by ingredient
+    parameters:
+      - name: ingredient
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Recipe'

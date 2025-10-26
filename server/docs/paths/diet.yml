@@ -63,6 +63,7 @@
           application/json:
             schema:
               $ref: '#/components/schemas/Diet'
+/diets/{id}/user/{userId}:
   delete:
     summary: Delete a diet
     parameters:
@@ -74,3 +75,22 @@
     responses:
       '204':
         description: No Content
+
+/diets/user/{userId}:
+  get:
+    summary: Get diets by User ID
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema: 
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:            
+                $ref: '#/components/schemas/Diet'

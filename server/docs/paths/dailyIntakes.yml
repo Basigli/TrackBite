@@ -63,10 +63,16 @@
           application/json:
             schema:
               $ref: '#/components/schemas/DailyIntake'
+/daily-intakes/{id}/user/{userId}:
   delete:
     summary: Delete daily intake
     parameters:
       - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: userId
         in: path
         required: true
         schema:
@@ -113,3 +119,22 @@
           application/json:
             schema:
               $ref: '#/components/schemas/FoodItem'
+
+/daily-intakes/history/user/{userId}:
+  get:
+    summary: Get daily intake history for a user
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DailyIntake'

@@ -4,6 +4,7 @@ User:
       - _id
       - nickname
       - mail
+      - savedRecipes
     properties:
       _id:
         type: string
@@ -15,3 +16,8 @@ User:
         type: string
         format: email
         example: "fit.guru@example.com"
+      savedRecipes:
+        type: array
+        items:
+          type: string
+        example: ["recipeId1", "recipeId2", "recipeId3"]

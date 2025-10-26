@@ -21,9 +21,6 @@ router.route("/daily-intakes")
   .get(dailyIntakeController.getAllDailyIntakes)
   .post(dailyIntakeController.createDailyIntake);
 
-// router.route("/daily-intakes/user/:userId/date/:date")
-//   .get(dailyIntakeController.getDailyIntakeByUserIdAndDate);
-
 router.route("/daily-intakes/history/user/:userId")
   .get(dailyIntakeController.getDailyIntakeHistoryByUserId);
 
@@ -66,9 +63,6 @@ router.route("/recipes/search/ingredient/:ingredient")
 
 router.route("/recipes/:id")
   .get(recipesController.getRecipeById)
-
-router.route("/recipes/:userId")
-  .get(recipesController.getOwnedRecipes);
 
 router.route("/recipes/:id/user/:userId")
   .put(recipesController.updateRecipe)

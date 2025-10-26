@@ -8,6 +8,7 @@ export interface DailyIntake {
   totalMacros: Array<Nutrient>,
   foodItems: Array<FoodItem>
   date: Date
+  userId: string
 }
 
 export const DailyIntakeSchema = z.object({
@@ -16,4 +17,5 @@ export const DailyIntakeSchema = z.object({
   totalMacros: z.array(NutrientSchemaZ),
   foodItems: z.array(FoodItemSchemaZ),
   date: z.date(),
+  userId: z.string()
 });

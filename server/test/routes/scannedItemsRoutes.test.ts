@@ -63,7 +63,7 @@ describe("Scanned Items Routes", () => {
   });
 
   it("PUT /scanned-items/:id - should update a scanned item", async () => {
-    const item = new ScannedItemModel({ name: "Pear Updated", allergens: ["none"], nutrients: [ {name: "Iron", unit: "mg", totalAmount: 5, amount100g: 0.5 } ], ingredients: ["pear"], score: 7, grade: "B", nutrientLevels: {"iron": "high"} });
+    const item = new ScannedItemModel({ name: "Pear Updated", allergens: ["none"], nutrients: [ {name: "Iron", unit: "mg", totalAmount: 5, amount100g: 0.5} ], ingredients: ["pear"], score: 7, grade: "B", nutrientLevels: {"iron": "high"} });
     await item.save();
 
     const res = await request(app).put(`/scanned-items/${item._id}`).send(item.toJSON());

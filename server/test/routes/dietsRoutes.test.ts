@@ -27,7 +27,8 @@ describe("Diet Routes", () => {
 
   const sampleDiet = {
     name: "Low Carb",
-    caloriesAmount: 1500
+    caloriesAmount: 1500,
+    userId: "test-user-id"
   };
 
   describe("POST /diets", () => {
@@ -84,7 +85,7 @@ describe("Diet Routes", () => {
   describe("PUT /diets/:id", () => {
     it("should update the diet and return 200", async () => {
       const created = await DietModel.create(sampleDiet);
-      const update = { name: "High Protein", caloriesAmount: 2000 };
+      const update = { name: "High Protein", caloriesAmount: 2000, userId: "test-user-id-2"};
 
       const res = await request(app)
         .put(`/diets/${created._id}`)
@@ -104,7 +105,7 @@ describe("Diet Routes", () => {
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
         .put(`/diets/${fakeId}`)
-        .send({ name: "Non-existent", caloriesAmount: 0 })
+        .send({ name: "Non-existent", caloriesAmount: 0, userId: "none" })
         .expect(404);
     });
   });

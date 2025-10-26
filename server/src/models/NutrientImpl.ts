@@ -7,5 +7,6 @@ export class NutrientImpl implements Nutrient {
     public totalAmount: number,
     public unit: string,
     public amount100g: number,
+    // public scannedItemId: string
   ) {}
 }

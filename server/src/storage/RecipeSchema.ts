@@ -7,7 +7,8 @@ const RecipeSchema = new Schema<Recipe>({
   ingredients: {
     type: [FoodItemSchema],
     required: true
-  }
+  },
+  userId: { type: String, required: true }
 });
 
 export const RecipeModel: Model<Recipe> = mongoose.model<Recipe>("Recipe", RecipeSchema);

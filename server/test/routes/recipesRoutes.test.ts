@@ -98,13 +98,13 @@ describe("Recipe Routes", () => {
     });
   });
 
-  describe("PUT /recipes/:id", () => {
+  describe("PUT /recipes/:id/user/:userId", () => {
     it("should update the recipe and return 200", async () => {
       const created = await RecipeModel.create(sampleRecipe);
       const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients, userId: sampleRecipe.userId };
 
       const res = await request(app)
-        .put(`/recipes/${created._id}`)
+        .put(`/recipes/${created._id}/user/${sampleRecipe.userId}`)
         .send(update)
         .expect("Content-Type", /json/)
         .expect(200);
@@ -125,12 +125,12 @@ describe("Recipe Routes", () => {
     });
   });
 
-  describe("DELETE /recipes/:id", () => {
+  describe("DELETE /recipes/:id/user/:userId", () => {
     it("should delete the recipe and return 204", async () => {
       const created = await RecipeModel.create(sampleRecipe);
 
       await request(app)
-        .delete(`/recipes/${created._id}`)
+        .delete(`/recipes/${created._id}/user/${sampleRecipe.userId}`)
         .expect(204);
 
       const recipeInDb = await RecipeModel.findById(created._id);

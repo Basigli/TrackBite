@@ -1,0 +1,16 @@
+FoodItem:
+    type: object
+    required:
+      - _id
+      - scannedItem
+      - percentage
+    properties:
+      _id:
+        type: string
+        example: "123456abcdef1234567890ab"
+      scannedItem:
+        $ref: './scannedItem.yml'
+      percentage:
+        type: number
+        format: float
+        example: 0.5

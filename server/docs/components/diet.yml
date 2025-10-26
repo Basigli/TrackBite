@@ -1,0 +1,17 @@
+Diet:
+    type: object
+    required:
+      - _id
+      - name
+      - caloriesAmount
+    properties:
+      _id:
+        type: string
+        example: "abcdef1234567890abcdef12"
+      name:
+        type: string
+        example: "Dieta Mediterranea"
+      caloriesAmount:
+        type: number
+        format: float
+        example: 2200

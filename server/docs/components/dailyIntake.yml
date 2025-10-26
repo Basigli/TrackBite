@@ -1,0 +1,28 @@
+DailyIntake:
+    type: object
+    required:
+      - _id
+      - totalCalories
+      - totalMacros
+      - foodItems
+      - date
+    properties:
+      _id:
+        type: string
+        example: "654321abcdef1234567890ab"
+      totalCalories:
+        type: number
+        format: float
+        example: 2150.5
+      totalMacros:
+        type: array
+        items:
+          $ref: './nutrient.yml' 
+      foodItems:
+        type: array
+        items:
+          $ref: './foodItem.yml'
+      date:
+        type: string
+        format: date
+        example: "2025-10-18"

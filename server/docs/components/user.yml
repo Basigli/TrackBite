@@ -1,0 +1,17 @@
+User:
+    type: object
+    required:
+      - _id
+      - nickname
+      - mail
+    properties:
+      _id:
+        type: string
+        example: "abcdef1234567890abcdef12"
+      nickname:
+        type: string
+        example: "fit_guru"
+      mail:
+        type: string
+        format: email
+        example: "fit.guru@example.com"

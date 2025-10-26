@@ -1,0 +1,76 @@
+/recipes:
+  get:
+    summary: List all recipes
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Recipe'
+  post:
+    summary: Create a new recipe
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Recipe'
+    responses:
+      '201':
+        description: Created
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+
+/recipes/{id}:
+  get:
+    summary: Get a recipe by ID
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+  put:
+    summary: Update a recipe
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Recipe'
+    responses:
+      '200':
+        description: Updated recipe
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Recipe'
+  delete:
+    summary: Delete a recipe
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    responses:
+      '204':
+        description: No Content

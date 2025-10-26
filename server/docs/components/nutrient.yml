@@ -1,0 +1,25 @@
+Nutrient:
+      type: object
+      required:
+        - _id
+        - name
+        - unit
+      properties:
+        _id:
+          type: string
+          example: "123456abcdef1234567890ab"
+        name:
+          type: string
+          example: "Iron"
+        unit:
+          type: string
+          example: "g"
+        totalAmount:
+          type: number
+          example: 12.5
+        amount100g: 
+          type: number
+          example: 5.0
+        isAllergene: 
+          type: boolean
+          example: false

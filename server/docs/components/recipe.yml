@@ -1,0 +1,17 @@
+Recipe:
+    type: object
+    required:
+      - _id
+      - name
+      - ingredients
+    properties:
+      _id:
+        type: string
+        example: "abcdef1234567890abcdef12"
+      name:
+        type: string
+        example: "Pasta al Pesto"
+      ingredients:
+        type: array
+        items:
+          $ref: './foodItem.yml'

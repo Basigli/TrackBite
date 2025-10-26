@@ -129,4 +129,27 @@ describe("Diet Routes", () => {
     });
   });
 
+  describe("GET /diets/user/:userId", () => {
+    it("should return diets for the specified user", async () => {
+      const userId = "user-123";
+      const otherUserId = "user-456";
+
+      await DietModel.create([
+        { name: "Diet A", caloriesAmount: 1200, userId },
+        { name: "Diet B", caloriesAmount: 1500, userId },
+        { name: "Diet C", caloriesAmount: 1800, userId: otherUserId }
+      ]);
+
+      const res = await request(app)
+        .get(`/diets/user/${userId}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.length).toBe(2);
+      res.body.forEach((diet: any) => {
+        expect(diet.userId).toBe(userId);
+      });
+    });
+  });
+
 });

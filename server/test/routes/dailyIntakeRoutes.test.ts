@@ -177,4 +177,25 @@ describe("DailyIntake Routes", () => {
         .expect(404);
     });
   });
+
+  describe("GET /daily-intakes/history/user/:userId", () => {
+    it("should return the daily intake history for a user", async () => {
+      const created = await DailyIntakeModel.create({ ...sampleDailyIntake, userId: "test-user-1" });
+
+      const res = await request(app)
+        .get(`/daily-intakes/history/user/${created.userId}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.length).toBe(1);
+      expect(res.body[0]._id).toBe(created._id.toString());
+    });
+
+    it("should return 404 if user has no daily intake history", async () => {
+      const fakeId = new mongoose.Types.ObjectId();
+      await request(app)
+        .get(`/daily-intakes/history/user/${fakeId}`)
+        .expect(404);
+    });
+  });
 });

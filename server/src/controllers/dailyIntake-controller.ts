@@ -160,3 +160,14 @@ export const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Error adding food item", error });
   }
 };
+
+// GET /daily-intakes/history/user/:userId
+export const getDailyIntakeHistoryByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const dailyIntakes = await DailyIntakeModel.find({ userId }).sort({ date: -1 });
+    res.status(200).json(dailyIntakes);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching daily intake history", error });
+  }
+};

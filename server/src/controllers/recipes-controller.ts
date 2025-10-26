@@ -108,3 +108,26 @@ export const deleteRecipe = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error deleting recipe", error: err });
   }
 };
+
+// GET /recipes/user/:userId - Get recipes by User ID
+export const getRecipesByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const recipes = await RecipeModel.find({ userId });
+    res.status(200).json(recipes);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching recipes for user", error: err });
+  }
+};
+
+// GET /recipes/search/ingredient/:ingredient - Get recipes by Ingredient
+export const getRecipesByIngredient = async (req: Request, res: Response) => {
+  try {
+    const ingredientName: string = req.params.ingredient;
+    const recipes = await RecipeModel.find({ "ingredients.scannedItem.name": { $regex: ingredientName, $options: 'i' } });
+    res.status(200).json(recipes);
+  } catch (err) {
+    console.log("Error in getRecipesByIngredient:", err);
+    res.status(500).json({ message: "Error fetching recipes by ingredient", error: err });
+  }
+};

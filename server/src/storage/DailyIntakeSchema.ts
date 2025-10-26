@@ -11,4 +11,6 @@ const DailyIntakeSchema: Schema<DailyIntake> = new Schema({
   userId: { type: String, required: true }
 });
 
+DailyIntakeSchema.index({ userId: 1 });
+
 export const DailyIntakeModel = mongoose.model<DailyIntake>('DailyIntake', DailyIntakeSchema);

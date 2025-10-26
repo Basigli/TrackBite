@@ -15,7 +15,6 @@ export const getAllDiets = async (req: Request, res: Response) => {
 // POST /diets - Create a new diet
 export const createDiet = async (req: Request, res: Response) => {
   try {
-    console.log("Request Body:", req.body);
     const parsed = DietSchemaZ.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Invalid diet data", error: parsed.error });
@@ -24,7 +23,6 @@ export const createDiet = async (req: Request, res: Response) => {
     await newDiet.save();
     res.status(201).json(newDiet);
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Error creating diet", error });
   }
 };
@@ -88,5 +86,17 @@ export const deleteDiet = async (req: Request, res: Response) => {
     res.sendStatus(204);
   } catch (error) {
     res.status(500).json({ message: "Error deleting diet", error });
+  }
+};
+
+// GET /diets/user/:userId - Get diets by User ID
+export const getDietsByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const diets = await DietModel.find({ userId });
+    res.status(200).json(diets);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Error fetching diets for user", error });
   }
 };

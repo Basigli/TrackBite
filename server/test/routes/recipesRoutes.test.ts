@@ -1,5 +1,12 @@
 import request from "supertest";
-import { beforeAll, afterAll, beforeEach, describe, it, expect } from '@jest/globals';
+import {
+  beforeAll,
+  afterAll,
+  beforeEach,
+  describe,
+  it,
+  expect,
+} from "@jest/globals";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
@@ -25,7 +32,6 @@ beforeEach(async () => {
 });
 
 describe("Recipe Routes", () => {
-
   const sampleRecipe = {
     name: "Test Recipe",
     ingredients: [
@@ -39,12 +45,54 @@ describe("Recipe Routes", () => {
           ingredients: ["Tomato"],
           score: 5,
           grade: "A",
-          nutrientLevels: {} // se in schema usi Map, può diventare oggetto
+          nutrientLevels: {},
         },
-        percentage: 50
-      }
+        percentage: 50,
+      },
     ],
-    userId: "test-user-id"
+    userId: "test-user-id",
+  };
+
+  const foodItemIngredient = {
+    _id: new mongoose.Types.ObjectId().toString(),
+    scannedItem: {
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Tomato",
+      allergens: [],
+      nutrients: [],
+      ingredients: ["Tomato"],
+      score: 5,
+      grade: "A",
+      nutrientLevels: {"iron": "low"},
+    },
+    percentage: 50,
+  };
+
+  const anotherRecipe = {
+    ...sampleRecipe,
+    name: "Another Recipe",
+    ingredients: [
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        scannedItem: sampleRecipe.ingredients[0].scannedItem,
+        percentage: 30,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        scannedItem: {
+          _id: new mongoose.Types.ObjectId().toString(),
+          name: "Cheese",
+          allergens: [],
+          nutrients: [],
+          ingredients: ["Cheese"],
+          score: 4,
+          grade: "B",
+          nutrientLevels: {},
+        },
+        percentage: 70,
+      },
+    ],
+    userId: "another-user-id",
   };
 
   describe("POST /recipes", () => {
@@ -92,16 +140,18 @@ describe("Recipe Routes", () => {
 
     it("should return 404 if recipe not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
-      await request(app)
-        .get(`/recipes/${fakeId}`)
-        .expect(404);
+      await request(app).get(`/recipes/${fakeId}`).expect(404);
     });
   });
 
   describe("PUT /recipes/:id/user/:userId", () => {
     it("should update the recipe and return 200", async () => {
       const created = await RecipeModel.create(sampleRecipe);
-      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients, userId: sampleRecipe.userId };
+      const update = {
+        name: "Updated Recipe",
+        ingredients: sampleRecipe.ingredients,
+        userId: sampleRecipe.userId,
+      };
 
       const res = await request(app)
         .put(`/recipes/${created._id}/user/${sampleRecipe.userId}`)
@@ -116,12 +166,13 @@ describe("Recipe Routes", () => {
 
     it("should return 404 if recipe not found", async () => {
       const created = await RecipeModel.create(sampleRecipe);
-      const update = { name: "Updated Recipe", ingredients: sampleRecipe.ingredients, userId: sampleRecipe.userId };
+      const update = {
+        name: "Updated Recipe",
+        ingredients: sampleRecipe.ingredients,
+        userId: sampleRecipe.userId,
+      };
       const fakeId = new mongoose.Types.ObjectId();
-      await request(app)
-        .put(`/recipes/${fakeId}`)
-        .send(update)
-        .expect(404);
+      await request(app).put(`/recipes/${fakeId}`).send(update).expect(404);
     });
   });
 
@@ -139,10 +190,41 @@ describe("Recipe Routes", () => {
 
     it("should return 404 if recipe not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
-      await request(app)
-        .delete(`/recipes/${fakeId}`)
-        .expect(404);
+      await request(app).delete(`/recipes/${fakeId}`).expect(404);
     });
   });
 
+  describe("GET /recipes/user/:userId", () => {
+    it("should return recipes for the given userId", async () => {
+      await RecipeModel.create(sampleRecipe);
+      const anotherRecipe = {
+        ...sampleRecipe,
+        name: "Another Recipe",
+        userId: "another-user-id",
+      };
+      await RecipeModel.create(anotherRecipe);
+
+      const res = await request(app)
+        .get(`/recipes/user/${sampleRecipe.userId}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.length).toBe(1);
+      expect(res.body[0].name).toBe(sampleRecipe.name);
+    });
+  });
+
+  describe("GET /recipes/search/ingredient/:ingredient", () => {
+    it("should return recipes containing the specified ingredient", async () => {
+      await RecipeModel.create(sampleRecipe);
+      await RecipeModel.create(anotherRecipe);
+
+      const res = await request(app)
+        .get(`/recipes/search/ingredient/tomato`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.length).toBe(2);
+    });
+  });
 });

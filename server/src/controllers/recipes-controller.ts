@@ -51,10 +51,10 @@ export const getRecipeById = async (req: Request, res: Response) => {
   }
 };
 
-// PUT /recipes/:id/user/:userId - Update a recipe
+// PUT /recipes/:id - Update a recipe
 export const updateRecipe = async (req: Request, res: Response) => {
   try {
-    const { id, userId } = req.params;
+    const id = req.params.id;
 
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -70,7 +70,7 @@ export const updateRecipe = async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Recipe not found" });
     }
 
-    if (recipe.userId.toString() !== userId) {
+    if (recipe.userId.toString() !== updatedData.userId) {
       return res.status(403).json({ message: "Forbidden: not your recipe" });
     }
 

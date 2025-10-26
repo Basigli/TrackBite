@@ -7,7 +7,8 @@ const DailyIntakeSchema: Schema<DailyIntake> = new Schema({
   totalCalories: { type: Number, required: true },
   totalMacros: { type: [NutrientSchema], default: [] },
   foodItems: { type: [FoodItemSchema], default: [] },
-  date: { type: Date, required: true },
+  date: { type: String, required: true },
+  userId: { type: String, required: true }
 });
 
 export const DailyIntakeModel = mongoose.model<DailyIntake>('DailyIntake', DailyIntakeSchema);

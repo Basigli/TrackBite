@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { DailyIntakeModel } from "../storage/DailyIntakeSchema";
 import { FoodItem, FoodItemSchemaZ } from "../models/FoodItem";
+import { DailyIntake, DailyIntakeSchemaZ } from "../models/DailyIntake";
 
 /**
  * GET /daily-intakes
@@ -51,16 +52,41 @@ export const getDailyIntakeById = async (req: Request, res: Response) => {
 };
 
 /**
- * PUT /daily-intakes/:id
+ * PUT /daily-intakes/:id/
  * Update daily intake by ID
  */
 export const updateDailyIntake = async (req: Request, res: Response) => {
   try {
+    // console.log("Update request body:", req.body);
+    // const validationError = DailyIntakeSchemaZ.safeParse(req.body);
+    // if (!validationError.success) {
+    //   return res.status(400).json({ message: "Validation error", error: validationError.error });
+    // }
+
+    // mongoose validation
+    const newDailyIntake = new DailyIntakeModel(req.body);
+    const validationError = newDailyIntake.validateSync();
+    if (validationError) {
+      return res.status(400).json({ message: "Validation error", error: validationError });
+    }
+    
+    // retrieve user id from db to compare
+    const dailyIntake = await DailyIntakeModel.findById(req.params.id);
+    if (!dailyIntake) {
+      return res.status(404).json({ message: "Daily intake not found" });
+    }
+
+    const userId = dailyIntake.userId;
+    if (req.body.userId && req.body.userId !== userId) {
+      return res.status(403).json({ message: "Forbidden: User ID mismatch" });
+    }
+
     const updated = await DailyIntakeModel.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true }
     );
+
     if (!updated) {
       return res.status(404).json({ message: "Daily intake not found" });
     }
@@ -71,17 +97,29 @@ export const updateDailyIntake = async (req: Request, res: Response) => {
 };
 
 /**
- * DELETE /daily-intakes/:id
+ * DELETE /daily-intakes/:id/user/:userId
  * Delete daily intake
  */
 export const deleteDailyIntake = async (req: Request, res: Response) => {
   try {
-    const deleted = await DailyIntakeModel.findByIdAndDelete(req.params.id);
+    const { id, userId } = req.params;
+
+    const dailyIntake = await DailyIntakeModel.findById(id);
+    if (!dailyIntake) {
+      return res.status(404).json({ message: "Daily intake not found" });
+    }
+
+    if (dailyIntake.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Forbidden: User ID mismatch" });
+    }
+
+    const deleted = await DailyIntakeModel.findByIdAndDelete(id);
     if (!deleted) {
       return res.status(404).json({ message: "Daily intake not found" });
     }
     res.status(204).send();
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Error deleting daily intake", error });
   }
 };

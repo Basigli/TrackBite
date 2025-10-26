@@ -24,6 +24,8 @@ router.route("/daily-intakes")
 router.route("/daily-intakes/:id")
   .get(dailyIntakeController.getDailyIntakeById)
   .put(dailyIntakeController.updateDailyIntake)
+
+router.route("/daily-intakes/:id/user/:userId")
   .delete(dailyIntakeController.deleteDailyIntake);
 
 router.route("/daily-intakes/:dailyIntakeId/food-items")
@@ -38,6 +40,8 @@ router.route("/diets")
 router.route("/diets/:id")
   .get(dietController.getDietById)
   .put(dietController.updateDiet)
+
+router.route("/diets/:id/user/:userId")
   .delete(dietController.deleteDiet);
 
 // Recipes Routes
@@ -47,6 +51,11 @@ router.route("/recipes")
 
 router.route("/recipes/:id")
   .get(recipesController.getRecipeById)
+
+router.route("/recipes/:userId")
+  .get(recipesController.getOwnedRecipes);
+
+router.route("/recipes/:id/user/:userId")
   .put(recipesController.updateRecipe)
   .delete(recipesController.deleteRecipe);
 

@@ -24,7 +24,6 @@ beforeEach(async () => {
 });
 
 describe("Diet Routes", () => {
-
   const sampleDiet = {
     name: "Low Carb",
     caloriesAmount: 1500,
@@ -85,7 +84,7 @@ describe("Diet Routes", () => {
   describe("PUT /diets/:id", () => {
     it("should update the diet and return 200", async () => {
       const created = await DietModel.create(sampleDiet);
-      const update = { name: "High Protein", caloriesAmount: 2000, userId: "test-user-id-2"};
+      const update = { name: "High Protein", caloriesAmount: 2000, userId: "test-user-id"};
 
       const res = await request(app)
         .put(`/diets/${created._id}`)
@@ -110,12 +109,12 @@ describe("Diet Routes", () => {
     });
   });
 
-  describe("DELETE /diets/:id", () => {
+  describe("DELETE /diets/:id/user/:userId", () => {
     it("should delete the diet and return 204", async () => {
       const created = await DietModel.create(sampleDiet);
 
       await request(app)
-        .delete(`/diets/${created._id}`)
+        .delete(`/diets/${created._id}/user/${created.userId}`)
         .expect(204);
 
       const dietInDb = await DietModel.findById(created._id);

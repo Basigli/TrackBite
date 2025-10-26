@@ -5,6 +5,7 @@ import { UserSchemaZ } from "../models/User";
 // POST /users - Create a new user
 export const createUser = async (req: Request, res: Response) => {
   try {
+
     const parsed = UserSchemaZ.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid user data", details: parsed.error });

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { DailyIntakeModel } from "../storage/DailyIntakeSchema";
 import { FoodItem, FoodItemSchemaZ } from "../models/FoodItem";
-import { DailyIntake, DailyIntakeSchemaZ } from "../models/DailyIntake";
+import { DailyIntakeSchemaZ } from "../models/DailyIntake";
 
 /**
  * GET /daily-intakes
@@ -22,11 +22,12 @@ export const getAllDailyIntakes = async (req: Request, res: Response) => {
  */
 export const createDailyIntake = async (req: Request, res: Response) => {
   try {
-    const newDailyIntake = new DailyIntakeModel(req.body);
-    const validationError = newDailyIntake.validateSync();
-    if (validationError) {
-      return res.status(400).json({ message: "Validation error", error: validationError });
+
+    const parsed = DailyIntakeSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Validation error", error: parsed.error });
     }
+    const newDailyIntake = new DailyIntakeModel(parsed.data);
     const saved = await newDailyIntake.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -57,17 +58,10 @@ export const getDailyIntakeById = async (req: Request, res: Response) => {
  */
 export const updateDailyIntake = async (req: Request, res: Response) => {
   try {
-    // console.log("Update request body:", req.body);
-    // const validationError = DailyIntakeSchemaZ.safeParse(req.body);
-    // if (!validationError.success) {
-    //   return res.status(400).json({ message: "Validation error", error: validationError.error });
-    // }
-
     // mongoose validation
-    const newDailyIntake = new DailyIntakeModel(req.body);
-    const validationError = newDailyIntake.validateSync();
-    if (validationError) {
-      return res.status(400).json({ message: "Validation error", error: validationError });
+    const parsed = DailyIntakeSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Validation error", error: parsed.error });
     }
     
     // retrieve user id from db to compare

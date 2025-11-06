@@ -12,7 +12,8 @@
     "test:recipesRoutes": "npx jest test/routes/recipesRoutes.test.ts",
     "test:dietsRoutes": "npx jest test/routes/dietsRoutes.test.ts",
     "test:dailyIntakeRoutes": "npx jest test/routes/dailyIntakeRoutes.test.ts",
-    "test:metrics": "npx jest test/MetricsHealthStats.test.ts"
+    "test:metrics": "npx jest test/MetricsHealthStats.test.ts",
+    "test:credentials": "node -r ts-node/register test/TestCredentials.ts"
   },
   "keywords": [],
   "author": "",

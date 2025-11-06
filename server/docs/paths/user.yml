@@ -15,6 +15,28 @@
             schema:
               $ref: '#/components/schemas/User'
 
+/users/login:
+  post:
+    summary: Log in a user
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserCredentials'
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                  format: jwt
+
 /users/{id}:
   get:
     summary: Get a user by ID

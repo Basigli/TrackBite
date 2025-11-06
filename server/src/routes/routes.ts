@@ -11,8 +11,18 @@ const userController = require("../controllers/user-controller");
 const healthCheck = require("../controllers/healthCheck");
 const stats = require("../controllers/stats");
 const metrics = require("../controllers/metrics");
+const authMiddleware = require("../utils/AuthMiddleware");
 
 const router = express.Router();
+
+
+router.route("/users")
+  .post(userController.createUser);
+
+router.route("/users/login")
+  .post(userController.loginUser);
+
+router.use(authMiddleware); // Apply authentication middleware to all routes below
 
 // GET /health
 router.get("/health/liveness", healthCheck.liveness);
@@ -87,10 +97,6 @@ router.route("/scanned-items/:id")
   .get(scannedItemsController.getScannedItemById)
   .put(scannedItemsController.updateScannedItem)
   .delete(scannedItemsController.deleteScannedItem);
-
-// User Routes
-router.route("/users")
-  .post(userController.createUser);
 
 router.route("/users/:id")
   .get(userController.getUserById)

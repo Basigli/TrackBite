@@ -5,6 +5,7 @@ User:
       - nickname
       - mail
       - savedRecipes
+      - password
     properties:
       _id:
         type: string
@@ -20,4 +21,7 @@ User:
         type: array
         items:
           type: string
-        example: ["recipeId1", "recipeId2", "recipeId3"]
+          example: ["recipeId1", "recipeId2", "recipeId3"]
+      password:
+        type: string
+        example: "securepassword123"

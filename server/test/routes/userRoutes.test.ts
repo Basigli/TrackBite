@@ -26,7 +26,7 @@ beforeEach(async () => {
 describe("User Routes", () => {
   describe("POST /users", () => {
     it("should create a new user and return 201", async () => {
-      const newUser = { nickname: "testuser", mail: "test@example.com", savedRecipesIds: [] };
+      const newUser = { nickname: "testuser", mail: "test@example.com", savedRecipesIds: [], password: "securepassword123" };
       const res = await request(app)
         .post("/users")
         .send(newUser)
@@ -36,7 +36,7 @@ describe("User Routes", () => {
       expect(res.body).toHaveProperty("_id");
       expect(res.body.nickname).toBe(newUser.nickname);
       expect(res.body.mail).toBe(newUser.mail);
-
+      
       // verify in DB
       const userInDb = await UserModel.findOne({ mail: newUser.mail });
       expect(userInDb).not.toBeNull();

@@ -28,7 +28,8 @@ describe("DailyIntake Routes", () => {
     totalCalories: 2000,
     totalMacros: [],
     foodItems: [],
-    date: new Date().toISOString()
+    date: new Date().toISOString(),
+    userId: "test-user-1"
   };
 
   const sampleFoodItem = {
@@ -96,7 +97,7 @@ describe("DailyIntake Routes", () => {
   describe("PUT /daily-intakes/:id", () => {
     it("should update the daily intake and return 200", async () => {
       const created = await DailyIntakeModel.create(sampleDailyIntake);
-      const update = { totalCalories: 1800, totalMacros: [], foodItems: [], date: new Date().toISOString() };
+      const update = { totalCalories: 1800, totalMacros: [], foodItems: [], date: new Date().toISOString(), userId: created.userId };
 
       const res = await request(app)
         .put(`/daily-intakes/${created._id}`)
@@ -111,19 +112,20 @@ describe("DailyIntake Routes", () => {
 
     it("should return 404 if daily intake not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
+      const update = { totalCalories: 1800, totalMacros: [], foodItems: [], date: new Date().toISOString(), userId: fakeId };
       await request(app)
         .put(`/daily-intakes/${fakeId}`)
-        .send({ totalCalories: 1000 })
+        .send(update)
         .expect(404);
     });
   });
 
-  describe("DELETE /daily-intakes/:id", () => {
+  describe("DELETE /daily-intakes/:id/user/:userId", () => {
     it("should delete the daily intake and return 204", async () => {
       const created = await DailyIntakeModel.create(sampleDailyIntake);
 
       await request(app)
-        .delete(`/daily-intakes/${created._id}`)
+        .delete(`/daily-intakes/${created._id}/user/${created.userId}`)
         .expect(204);
 
       const intakeInDb = await DailyIntakeModel.findById(created._id);
@@ -133,7 +135,7 @@ describe("DailyIntake Routes", () => {
     it("should return 404 if daily intake not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
-        .delete(`/daily-intakes/${fakeId}`)
+        .delete(`/daily-intakes/${fakeId}/user/test-user-1`)
         .expect(404);
     });
   });
@@ -172,6 +174,27 @@ describe("DailyIntake Routes", () => {
       await request(app)
         .post(`/daily-intakes/${fakeId}/food-items`)
         .send(sampleFoodItem)
+        .expect(404);
+    });
+  });
+
+  describe("GET /daily-intakes/history/user/:userId", () => {
+    it("should return the daily intake history for a user", async () => {
+      const created = await DailyIntakeModel.create({ ...sampleDailyIntake, userId: "test-user-1" });
+
+      const res = await request(app)
+        .get(`/daily-intakes/history/user/${created.userId}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.length).toBe(1);
+      expect(res.body[0]._id).toBe(created._id.toString());
+    });
+
+    it("should return 404 if user has no daily intake history", async () => {
+      const fakeId = new mongoose.Types.ObjectId();
+      await request(app)
+        .get(`/daily-intakes/history/user/${fakeId}`)
         .expect(404);
     });
   });

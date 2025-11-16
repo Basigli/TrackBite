@@ -43,33 +43,80 @@ export const getRecipeById = async (req: Request, res: Response) => {
 // PUT /recipes/:id - Update a recipe
 export const updateRecipe = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const id = req.params.id;
+
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ message: "Invalid recipe data", error: parsed.error });
+      return res.status(400).json({
+        message: "Invalid recipe data",
+        error: parsed.error,
+      });
     }
     const updatedData = parsed.data;
+
+    const recipe = await RecipeModel.findById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+
+    if (recipe.userId.toString() !== updatedData.userId) {
+      return res.status(403).json({ message: "Forbidden: not your recipe" });
+    }
 
     const updatedRecipe = await RecipeModel.findByIdAndUpdate(id, updatedData, {
       new: true,
       runValidators: true,
     });
 
-    if (!updatedRecipe) return res.status(404).json({ message: "Recipe not found" });
     res.status(200).json(updatedRecipe);
   } catch (err) {
+    console.error("Error in updateRecipe:", err);
     res.status(500).json({ message: "Error updating recipe", error: err });
   }
 };
 
-// DELETE /recipes/:id - Delete a recipe
+// DELETE /recipes/:id/user/:userId - Delete a recipe
 export const deleteRecipe = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id, userId } = req.params;
+
+    const recipe = await RecipeModel.findById(id);
+    if (!recipe) {
+      return res.status(404).json({ message: "Recipe not found" });
+    }
+
+    if (recipe.userId.toString() !== userId) {
+      return res.status(403).json({ message: "Forbidden: not your recipe" });
+    }
+
     const deleted = await RecipeModel.findByIdAndDelete(id);
     if (!deleted) return res.status(404).json({ message: "Recipe not found" });
     res.status(204).send();
   } catch (err) {
+      console.error("Error in deleting the recipe:", err);
     res.status(500).json({ message: "Error deleting recipe", error: err });
+  }
+};
+
+// GET /recipes/user/:userId - Get recipes by User ID
+export const getRecipesByUserId = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const recipes = await RecipeModel.find({ userId });
+    res.status(200).json(recipes);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching recipes for user", error: err });
+  }
+};
+
+// GET /recipes/search/ingredient/:ingredient - Get recipes by Ingredient
+export const getRecipesByIngredient = async (req: Request, res: Response) => {
+  try {
+    const ingredientName: string = req.params.ingredient;
+    const recipes = await RecipeModel.find({ "ingredients.scannedItem.name": { $regex: ingredientName, $options: 'i' } });
+    res.status(200).json(recipes);
+  } catch (err) {
+    console.log("Error in getRecipesByIngredient:", err);
+    res.status(500).json({ message: "Error fetching recipes by ingredient", error: err });
   }
 };

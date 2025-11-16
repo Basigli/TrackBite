@@ -4,6 +4,7 @@ Recipe:
       - _id
       - name
       - ingredients
+      - userId
     properties:
       _id:
         type: string
@@ -15,3 +16,6 @@ Recipe:
         type: array
         items:
           $ref: './foodItem.yml'
+      userId:
+        type: string
+        example: "1234567890abcdef12"

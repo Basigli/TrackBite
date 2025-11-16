@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { UserModel } from "../storage/UserSchema";
 import { UserSchemaZ } from "../models/User";
+import UserCredentialsModel from "../storage/UserCredentialsSchema";
+import { UserCredentialsSchemaZ } from "../models/UserCredentials";
 
 // POST /users - Create a new user
 export const createUser = async (req: Request, res: Response) => {
@@ -11,6 +13,12 @@ export const createUser = async (req: Request, res: Response) => {
     }
     const newUser = new UserModel(parsed.data);
     const savedUser = await newUser.save();
+    const userCredentials = new UserCredentialsModel({
+      _id: savedUser._id,
+      nickname: savedUser.nickname,
+      passwordHash: savedUser,
+    });
+    await userCredentials.save();
     res.status(201).json(savedUser);
   } catch (err: any) {
     if (err.code === 11000) {
@@ -19,6 +27,28 @@ export const createUser = async (req: Request, res: Response) => {
     }
     res.status(500).json({ error: "Failed to create user" });
   }
+};
+
+export const logInUser = async (req: Request, res: Response) => {
+  try {
+    const parsed = UserCredentialsSchemaZ.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid user credentials", details: parsed.error });
+    }
+    const { nickname, passwordHash } = parsed.data;
+    const user = await UserCredentialsModel.findOne({ nickname });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    // Compare passwordHash with user's stored passwordHash
+    if (user.passwordHash !== passwordHash) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+    // Generate JWT token
+    const token = generateToken(user._id);
+    res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to log in user" });
+  }
+
 };
 
 // GET /users/:id - Get user by ID

@@ -6,6 +6,7 @@ DailyIntake:
       - totalMacros
       - foodItems
       - date
+      - userId
     properties:
       _id:
         type: string
@@ -26,3 +27,6 @@ DailyIntake:
         type: string
         format: date
         example: "2025-10-18"
+      userId:
+        type: string
+        example: "123456abcdef1234567890ab"

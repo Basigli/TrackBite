@@ -24,7 +24,6 @@ beforeEach(async () => {
 });
 
 describe("Diet Routes", () => {
-
   const sampleDiet = {
     name: "Low Carb",
     caloriesAmount: 1500,
@@ -85,7 +84,7 @@ describe("Diet Routes", () => {
   describe("PUT /diets/:id", () => {
     it("should update the diet and return 200", async () => {
       const created = await DietModel.create(sampleDiet);
-      const update = { name: "High Protein", caloriesAmount: 2000, userId: "test-user-id-2"};
+      const update = { name: "High Protein", caloriesAmount: 2000, userId: "test-user-id"};
 
       const res = await request(app)
         .put(`/diets/${created._id}`)
@@ -110,12 +109,12 @@ describe("Diet Routes", () => {
     });
   });
 
-  describe("DELETE /diets/:id", () => {
+  describe("DELETE /diets/:id/user/:userId", () => {
     it("should delete the diet and return 204", async () => {
       const created = await DietModel.create(sampleDiet);
 
       await request(app)
-        .delete(`/diets/${created._id}`)
+        .delete(`/diets/${created._id}/user/${created.userId}`)
         .expect(204);
 
       const dietInDb = await DietModel.findById(created._id);
@@ -127,6 +126,29 @@ describe("Diet Routes", () => {
       await request(app)
         .delete(`/diets/${fakeId}`)
         .expect(404);
+    });
+  });
+
+  describe("GET /diets/user/:userId", () => {
+    it("should return diets for the specified user", async () => {
+      const userId = "user-123";
+      const otherUserId = "user-456";
+
+      await DietModel.create([
+        { name: "Diet A", caloriesAmount: 1200, userId },
+        { name: "Diet B", caloriesAmount: 1500, userId },
+        { name: "Diet C", caloriesAmount: 1800, userId: otherUserId }
+      ]);
+
+      const res = await request(app)
+        .get(`/diets/user/${userId}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.length).toBe(2);
+      res.body.forEach((diet: any) => {
+        expect(diet.userId).toBe(userId);
+      });
     });
   });
 

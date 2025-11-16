@@ -26,7 +26,7 @@ beforeEach(async () => {
 describe("User Routes", () => {
   describe("POST /users", () => {
     it("should create a new user and return 201", async () => {
-      const newUser = { nickname: "testuser", mail: "test@example.com" };
+      const newUser = { nickname: "testuser", mail: "test@example.com", savedRecipesIds: [], password: "securepassword123" };
       const res = await request(app)
         .post("/users")
         .send(newUser)
@@ -36,7 +36,7 @@ describe("User Routes", () => {
       expect(res.body).toHaveProperty("_id");
       expect(res.body.nickname).toBe(newUser.nickname);
       expect(res.body.mail).toBe(newUser.mail);
-
+      
       // verify in DB
       const userInDb = await UserModel.findOne({ mail: newUser.mail });
       expect(userInDb).not.toBeNull();
@@ -78,8 +78,8 @@ describe("User Routes", () => {
 
   describe("PUT /users/:id", () => {
     it("should update the user and return 200", async () => {
-      const created = await UserModel.create({ nickname: "old", mail: "old@example.com" });
-      const update = {  _id: created._id, nickname: "newnick", mail: "old@example.com" };
+      const created = await UserModel.create({ nickname: "old", mail: "old@example.com", savedRecipesIds: [] });
+      const update = {  _id: created._id, nickname: "newnick", mail: "old@example.com", savedRecipesIds: [] };
       const res = await request(app)
         .put(`/users/${created._id}`)
         .send(update)

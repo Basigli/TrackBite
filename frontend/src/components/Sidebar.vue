@@ -10,8 +10,7 @@
       </div>
     </button>
     <!-- Overlay (visible when sidebar is open on mobile) -->
-    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
-    
+    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 z-30 lg:hidden" style="background-color: rgba(0, 0, 0, 0.5);"></div>
 
     <!-- Sidebar -->
     <aside

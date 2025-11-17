@@ -3,15 +3,15 @@
     <!-- Hamburger Button (visible on mobile) -->
     <button @click="toggleSidebar" class="hamburger-btn fixed top-4 left-4 z-50 lg:hidden bg-gray-800 p-2 rounded-md"
       :class="{ active: isOpen }">
-      <div class="hamburger">
-        <span class="line"></span>
-        <span class="line"></span>
-        <span class="line"></span>
+      <div class="hamburger lg:hidden">
+        <span class="line lg:hidden"></span>
+        <span class="line lg:hidden"></span>
+        <span class="line lg:hidden"></span>
       </div>
     </button>
-
     <!-- Overlay (visible when sidebar is open on mobile) -->
     <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
+    
 
     <!-- Sidebar -->
     <aside
@@ -140,5 +140,10 @@ export default {
 
 .hamburger-btn.active .line:nth-child(3) {
   transform: translateY(-8px) rotate(-45deg);
+}
+@media (min-width: 1024px) {
+  .hamburger-btn {
+    display: none !important;
+  }
 }
 </style>

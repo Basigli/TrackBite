@@ -3,6 +3,7 @@ import { UserModel } from "../storage/UserSchema";
 import { UserSchemaZ } from "../models/User";
 import UserCredentialsModel from "../storage/UserCredentialsSchema";
 import { UserCredentialsSchemaZ } from "../models/UserCredentials";
+const jwt = require("jsonwebtoken");
 
 // POST /users - Create a new user
 export const createUser = async (req: Request, res: Response) => {
@@ -93,3 +94,12 @@ export const deleteUser = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete user" });
   }
 };
+
+function generateToken(_id: string): string {
+  // Lazy-require to avoid adding top-level imports if not already present
+  // Uses JWT_SECRET from env, fallback to a dev secret (replace in production)
+  // Token payload uses "sub" (subject) for the user id and expires in 1 hour
+  const secret = process.env.JWT_SECRET || "replace_this_with_a_secure_secret";
+  return jwt.sign({ sub: _id }, secret, { expiresIn: "1h" });
+}
+

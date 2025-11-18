@@ -1,6 +1,6 @@
 <template>
   <header class="app-header flex items-center justify-between p-4 bg-green-500 text-white">
-    <div class="logo text-xl font-bold">CalorieTracker</div>
+    <div class="logo text-xl font-bold lg:hidden">CalorieTracker</div>
 
     <div class="header-actions flex items-center gap-4">
       <!-- Date picker -->

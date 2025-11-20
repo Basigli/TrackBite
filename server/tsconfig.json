@@ -11,6 +11,6 @@
     "rootDir": "src",
     "types": ["jest","node"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "test/initDb.ts"],
   "exclude": ["node_modules", "dist"]
 }

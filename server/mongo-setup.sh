@@ -1,7 +1,7 @@
-docker run -d -p 27017:27017 --name test-mongo mongo:latest
+docker run -d -p 27017:27017 mongo:latest
 
 # to inspect the db: 
-docker exec -it test-mongo mongosh
+# docker exec -it test-mongo mongosh
 
 ### mongosh:  
 # use food_test

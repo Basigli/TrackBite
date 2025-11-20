@@ -1,7 +1,8 @@
 import { get } from "http";
 import { getMetrics } from "../controllers/metrics";
+import { Router } from 'express';
 
-const express = require("express");
+// const express = require("express");
 
 const dailyIntakeController = require("../controllers/dailyIntake-controller");
 const dietController = require("../controllers/diet-controller");
@@ -13,14 +14,14 @@ const stats = require("../controllers/stats");
 const metrics = require("../controllers/metrics");
 const authMiddleware = require("../utils/AuthMiddleware");
 
-const router = express.Router();
-
+// const router = express.Router();
+const router = Router();
 
 router.route("/users")
   .post(userController.createUser);
 
 router.route("/users/login")
-  .post(userController.loginUser);
+  .post(userController.logInUser);
 
 router.use(authMiddleware); // Apply authentication middleware to all routes below
 

@@ -16,7 +16,7 @@ export default {
   components: { Meal, Recipe },
   props: { meals: Array },
   setup(props) {
-    const recipes = ref([]); // optionally fetch recipes from API
+    const recipes = ref([]); // fetch recipes from API
 
     // Watch meals to reactively handle changes if needed
     watch(() => props.meals, (newMeals) => {

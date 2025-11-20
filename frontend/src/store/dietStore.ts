@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import axios from 'axios';
+import api from '../api';
 
 export const useDietStore = defineStore('diet', () => {
   const diets = ref([]);
@@ -8,7 +9,7 @@ export const useDietStore = defineStore('diet', () => {
 
   const fetchDiets = async (userId) => {
     try {
-      const res = await axios.get(`/diets/user/${userId}`);
+      const res = await api.get(`/diets/user/${userId}`);
       diets.value = res.data;
       if (res.data.length > 0 && !selectedDiet.value) selectedDiet.value = res.data[0];
     } catch (err) {
@@ -18,7 +19,7 @@ export const useDietStore = defineStore('diet', () => {
 
   const createDiet = async (diet) => {
     try {
-      const res = await axios.post('/diets', diet);
+      const res = await api.post('/diets', diet);
       diets.value.push(res.data);
     } catch (err) {
       console.error('Error creating diet:', err);
@@ -27,7 +28,7 @@ export const useDietStore = defineStore('diet', () => {
 
   const updateDiet = async (dietId, userId, data) => {
     try {
-      const res = await axios.put(`/diets/${dietId}/user/${userId}`, data);
+      const res = await api.put(`/diets/${dietId}/user/${userId}`, data);
       const index = diets.value.findIndex(d => d.id === dietId);
       if (index !== -1) diets.value[index] = res.data;
     } catch (err) {
@@ -37,7 +38,7 @@ export const useDietStore = defineStore('diet', () => {
 
   const deleteDiet = async (dietId, userId) => {
     try {
-      await axios.delete(`/diets/${dietId}/user/${userId}`);
+      await api.delete(`/diets/${dietId}/user/${userId}`);
       diets.value = diets.value.filter(d => d.id !== dietId);
       if (selectedDiet.value?.id === dietId) selectedDiet.value = diets.value[0] || null;
     } catch (err) {

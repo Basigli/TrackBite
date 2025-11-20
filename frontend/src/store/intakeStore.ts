@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
 import axios from 'axios';
+import api from '../api';
 
 export const useIntakeStore = defineStore('intake', () => {
   const dailyIntake = reactive({ meals: [], totalCalories: 0, macros: { protein: 0, fat: 0, carbs: 0 } });
@@ -8,7 +9,7 @@ export const useIntakeStore = defineStore('intake', () => {
 
   const fetchDailyIntake = async (userId) => {
     try {
-      const res = await axios.get(`/daily-intakes/history/user/${userId}`);
+      const res = await api.get(`/daily-intakes/history/user/${userId}`);
       const today = res.data.find(d => new Date(d.date).toDateString() === new Date().toDateString());
       if (today) Object.assign(dailyIntake, today);
     } catch (err) {
@@ -18,7 +19,7 @@ export const useIntakeStore = defineStore('intake', () => {
 
   const fetchDailyIntakeHistory = async (userId) => {
     try {
-      const res = await axios.get(`/daily-intakes/history/user/${userId}`);
+      const res = await api.get(`/daily-intakes/history/user/${userId}`);
       history.value = res.data;
     } catch (err) {
       console.error('Error fetching daily intake history:', err);

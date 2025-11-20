@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
 import axios from 'axios';
+import api from '../api';
 
 export const useRecipeStore = defineStore('recipe', () => {
   const recipes = ref([]);
@@ -8,7 +9,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
   const fetchRecipes = async (userId) => {
     try {
-      const res = await axios.get(`/recipes/user/${userId}`);
+      const res = await api.get(`/recipes/user/${userId}`);
       recipes.value = res.data;
     } catch (err) {
       console.error('Error fetching recipes:', err);
@@ -17,7 +18,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
   const addRecipe = async (recipe) => {
     try {
-      const res = await axios.post(`/recipes`, recipe);
+      const res = await api.post(`/recipes`, recipe);
       recipes.value.push(res.data);
     } catch (err) {
       console.error('Error adding recipe:', err);
@@ -26,7 +27,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
   const deleteRecipe = async (recipeId, userId) => {
     try {
-      await axios.delete(`/recipes/${recipeId}/user/${userId}`);
+      await api.delete(`/recipes/${recipeId}/user/${userId}`);
       recipes.value = recipes.value.filter(r => r.id !== recipeId);
     } catch (err) {
       console.error('Error deleting recipe:', err);
@@ -35,7 +36,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
   const updateRecipe = async (recipeId, userId, updatedData) => {
     try {
-      const res = await axios.put(`/recipes/${recipeId}/user/${userId}`, updatedData);
+      const res = await api.put(`/recipes/${recipeId}/user/${userId}`, updatedData);
       const index = recipes.value.findIndex(r => r.id === recipeId);
       if (index !== -1) recipes.value[index] = res.data;
     } catch (err) {

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, reactive } from 'vue';
 import axios from 'axios';
+import api from '../api';
 
 export const useUserStore = defineStore('user', () => {
   const user = reactive({
@@ -12,7 +13,7 @@ export const useUserStore = defineStore('user', () => {
 
   const fetchUser = async (userId) => {
     try {
-      const res = await axios.get(`/users/${userId}`);
+      const res = await api.get(`/users/${userId}`);
       Object.assign(user, res.data);
     } catch (err) {
       console.error('Error fetching user:', err);
@@ -21,7 +22,7 @@ export const useUserStore = defineStore('user', () => {
 
   const updateUser = async (updatedData) => {
     try {
-      const res = await axios.put(`/users/${user.id}`, updatedData);
+      const res = await api.put(`/users/${user.id}`, updatedData);
       Object.assign(user, res.data);
       return true;
     } catch (err) {
@@ -32,7 +33,7 @@ export const useUserStore = defineStore('user', () => {
 
   const changePassword = async (currentPassword, newPassword) => {
     try {
-      await axios.put(`/users/${user.id}/password`, { currentPassword, newPassword });
+      await api.put(`/users/${user.id}/password`, { currentPassword, newPassword });
       return true;
     } catch (err) {
       console.error('Error changing password:', err);

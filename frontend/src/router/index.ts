@@ -5,8 +5,10 @@ import AddFood from '../pages/AddFood.vue';
 import Recipes from '../pages/Recipes.vue';
 import Diet from '../pages/Diet.vue';
 import UserSettings from '../pages/UserSettings.vue';
+import Register from '../pages/Register.vue';
 
 const routes = [
+  { path: '/register', component: Register },
   { path: '/', component: Dashboard },
   { path: '/history', component: DailyIntakes },
   { path: '/add-food', component: AddFood },

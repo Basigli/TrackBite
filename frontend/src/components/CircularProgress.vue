@@ -3,7 +3,7 @@
     <svg class="w-full h-full transform -rotate-90">
       <!-- Background circle -->
       <circle
-        class="text-gray-300"
+        class="text-gray-200"
         stroke="currentColor"
         stroke-width="10"
         fill="transparent"
@@ -12,10 +12,9 @@
         :cy="center"
       />
 
-      <!-- Progress circle -->
+      <!-- Progress circle with gradient -->
       <circle
-        class="text-blue-500 transition-all duration-500"
-        stroke="currentColor"
+        :stroke="gradientColor"
         stroke-width="10"
         stroke-linecap="round"
         fill="transparent"
@@ -24,13 +23,14 @@
         :cy="center"
         :stroke-dasharray="circumference"
         :stroke-dashoffset="dashOffset"
+        class="transition-all duration-700 ease-out"
       />
     </svg>
 
     <!-- Text inside the circle -->
     <div class="absolute text-center">
-      <p class="text-xl font-bold">{{ percentage }}%</p>
-      <p class="text-sm text-gray-500">{{ current }} / {{ goal }} kcal</p>
+      <p class="text-2xl font-bold text-gray-800">{{ percentage }}%</p>
+      <p class="text-sm text-gray-500 mt-1">{{ current }} / {{ goal }} kcal</p>
     </div>
   </div>
 </template>

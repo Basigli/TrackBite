@@ -6,9 +6,11 @@ import Recipes from '../pages/Recipes.vue';
 import Diet from '../pages/Diet.vue';
 import UserSettings from '../pages/UserSettings.vue';
 import Register from '../pages/Register.vue';
+import Login from '../pages/Login.vue';
 
 const routes = [
   { path: '/register', component: Register },
+  { path: '/login', component: Login },
   { path: '/', component: Dashboard },
   { path: '/history', component: DailyIntakes },
   { path: '/add-food', component: AddFood },

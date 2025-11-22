@@ -1,9 +1,14 @@
 <template>
-  <div class="dashboard p-4">
-    <h1 class="text-2xl font-bold mb-4">Dashboard</h1>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <CaloriesSummary :totalCalories="dailyIntake.totalCalories" />
-      <MacroBreakdown :macros="dailyIntake.macros" />
+  <div class="dashboard max-w-5xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Dashboard</h1>
+
+    <div class="flex flex-wrap gap-2 mb-6">
+      <div class="flex-1 min-w-[220px]">
+        <CaloriesSummary :totalCalories="dailyIntake.totalCalories" />
+      </div>
+      <div class="flex-1 min-w-[220px]">
+        <MacroBreakdown :macros="dailyIntake.macros" />
+      </div>
     </div>
 
     <DailyIntake :meals="dailyIntake.meals" />

@@ -16,7 +16,7 @@
     <aside
       class="app-sidebar w-64 h-screen bg-gray-800 text-white flex flex-col p-4 fixed lg:static z-40 transition-transform duration-300"
       :class="{ '-translate-x-full lg:translate-x-0': !isOpen, 'translate-x-0': isOpen }">
-      <div class="sidebar-logo text-2xl font-bold mb-8 mt-16 lg:mt-0">CalorieTracker</div>
+      <div class="sidebar-logo text-2xl font-bold mb-8 mt-16 lg:mt-0">TrackBite</div>
       <nav class="flex flex-col gap-2">
         <router-link to="/" class="sidebar-link text-white no-underline" active-class="active-link"
           @click="closeSidebarOnMobile">

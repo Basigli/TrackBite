@@ -1,8 +1,10 @@
 <template>
-  <div class="daily-intake mt-4">
-    <h2 class="text-xl font-semibold mb-2">Today's Meals</h2>
-    <Meal v-for="meal in meals" :key="meal.id" :meal="meal"/>
-    <Recipe v-for="recipe in recipes" :key="recipe.id" :recipe="recipe"/>
+  <div class="daily-intake mt-6 max-w-3xl mx-auto">
+    <h2 class="text-2xl font-bold text-gray-800 mb-4">Today's Meals & Recipes</h2>
+    <div class="space-y-4">
+      <Meal v-for="meal in meals" :key="meal.id" :meal="meal"/>
+      <Recipe v-for="recipe in recipes" :key="recipe.id" :recipe="recipe"/>
+    </div>
   </div>
 </template>
 

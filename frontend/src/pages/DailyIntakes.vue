@@ -1,16 +1,20 @@
 <template>
-  <div class="daily-intakes p-4">
-    <h1 class="text-2xl font-bold mb-4">Daily Intakes History</h1>
+  <div class="daily-intakes max-w-3xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Daily Intakes History</h1>
     
-    <div v-if="history.length === 0" class="text-gray-500">
+    <div v-if="history.length === 0" class="text-gray-500 text-center py-6">
       No daily intakes recorded yet.
     </div>
 
-    <ul class="space-y-2">
-      <li v-for="day in history" :key="day.id" class="border p-3 rounded hover:bg-gray-50 cursor-pointer"
-          @click="selectDay(day)">
-        <div class="flex justify-between">
-          <span class="font-semibold">{{ formatDate(day.date) }}</span>
+    <ul class="space-y-3">
+      <li
+        v-for="day in history"
+        :key="day.id"
+        @click="selectDay(day)"
+        class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      >
+        <div class="flex justify-between items-center">
+          <span class="font-semibold text-gray-800">{{ formatDate(day.date) }}</span>
           <span class="text-green-600 font-bold">{{ day.totalCalories || 0 }} kcal</span>
         </div>
         <div class="text-sm text-gray-600 mt-1">
@@ -19,8 +23,11 @@
       </li>
     </ul>
 
-    <!-- show detailed view -->
-    <DailyIntake v-if="selectedDay" :meals="selectedDay.meals" class="mt-6"/>
+    <DailyIntake
+      v-if="selectedDay"
+      :meals="selectedDay.meals"
+      class="mt-8"
+    />
   </div>
 </template>
 

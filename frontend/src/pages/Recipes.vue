@@ -1,10 +1,23 @@
 <template>
-  <div class="recipes-page p-4">
-    <h1 class="text-2xl font-bold mb-4">Recipes</h1>
-    
-    <AddRecipe @recipe-added="fetchRecipes" />
-    
-    <RecipeList :recipes="recipes" @delete-recipe="deleteRecipe" @edit-recipe="updateRecipe" />
+  <div class="recipes-page max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Recipes</h1>
+
+    <div class="mb-6">
+      <AddRecipe @recipe-added="fetchRecipes" />
+    </div>
+
+    <div>
+      <RecipeList
+        :recipes="recipes"
+        @delete-recipe="deleteRecipe"
+        @edit-recipe="updateRecipe"
+      />
+    </div>
+
+    <!-- Empty state -->
+    <div v-if="recipes.length === 0" class="text-gray-500 text-center py-6">
+      No recipes found. Add a new recipe above.
+    </div>
   </div>
 </template>
 

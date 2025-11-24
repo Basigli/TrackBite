@@ -1,12 +1,26 @@
 <template>
-  <div class="diet-page p-4">
-    <h1 class="text-2xl font-bold mb-4">Diet Plans</h1>
+  <div class="diet-page max-w-4xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Diet Plans</h1>
 
-    <!-- Diet selector -->
-    <DietSelector :diets="diets" :selectedDiet="selectedDiet" @select-diet="selectDiet" />
+    <DietSelector
+      :diets="diets"
+      :selectedDiet="selectedDiet"
+      @select-diet="selectDiet"
+      class="mb-6"
+    />
 
-    <!-- Show selected diet -->
-    <DietPlan v-if="selectedDiet" :diet="selectedDiet" @update-diet="updateDiet" @delete-diet="deleteDiet" />
+    <div v-if="selectedDiet" class="space-y-4">
+      <DietPlan
+        :diet="selectedDiet"
+        @update-diet="updateDiet"
+        @delete-diet="deleteDiet"
+      />
+    </div>
+
+    <!-- Empty state -->
+    <div v-else class="text-gray-500 text-center py-6">
+      No diet selected. Please choose a diet from above.
+    </div>
   </div>
 </template>
 

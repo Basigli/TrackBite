@@ -1,64 +1,69 @@
 <template>
-  <div class="user-settings p-4 max-w-md mx-auto">
-    <h1 class="text-2xl font-bold mb-4">User Settings</h1>
+  <div class="user-settings max-w-md mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">User Settings</h1>
 
-    <form @submit.prevent="updateProfile" class="flex flex-col gap-3 border p-4 rounded bg-gray-50">
-      <h2 class="font-semibold mb-2">Profile Info</h2>
+    <!-- Profile Info Form -->
+    <form @submit.prevent="updateProfile" class="flex flex-col gap-4 p-4 rounded-lg shadow bg-white">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Profile Info</h2>
       <input
         v-model="name"
         type="text"
         placeholder="Name"
-        class="border px-2 py-1 rounded"
+        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
         required
       />
       <input
         v-model="email"
         type="email"
         placeholder="Email"
-        class="border px-2 py-1 rounded"
+        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
         required
       />
-      <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Save Profile</button>
+      <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition">
+        Save Profile
+      </button>
     </form>
 
-    <form
-      @submit.prevent="updatePassword"
-      class="flex flex-col gap-3 border p-4 rounded bg-gray-50 mt-4"
-    >
-      <h2 class="font-semibold mb-2">Change Password</h2>
+    <!-- Change Password Form -->
+    <form @submit.prevent="updatePassword" class="flex flex-col gap-4 p-4 rounded-lg shadow bg-white mt-6">
+      <h2 class="text-xl font-semibold text-gray-700 mb-2">Change Password</h2>
       <input
         v-model="currentPassword"
         type="password"
         placeholder="Current Password"
-        class="border px-2 py-1 rounded"
+        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
       <input
         v-model="newPassword"
         type="password"
         placeholder="New Password"
-        class="border px-2 py-1 rounded"
+        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
       />
-      <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded transition">
         Change Password
       </button>
     </form>
 
-    <div class="preferences border p-4 rounded bg-gray-50 mt-4">
-      <h2 class="font-semibold mb-2">Preferences</h2>
-      <label class="flex items-center gap-2">
-        <input type="checkbox" v-model="preferences.darkMode" />
-        Dark Mode
-      </label>
-      <label class="flex items-center gap-2 mt-2">
-        <input type="checkbox" v-model="preferences.notifications" />
-        Enable Notifications
-      </label>
-      <button @click="savePreferences" class="mt-3 bg-purple-500 text-white px-4 py-2 rounded">
-        Save Preferences
-      </button>
-    </div>
+    <!-- Preferences -->
+<div class="preferences border p-4 rounded bg-gray-50 mt-4">
+  <h2 class="font-semibold mb-2">Preferences</h2>
+
+  <label class="flex items-center justify-between gap-2">
+    <span class="inline-block w-40">Dark Mode</span>
+    <input type="checkbox" v-model="preferences.darkMode" />
+  </label>
+
+  <label class="flex items-center justify-between gap-2 mt-2">
+    <span class="inline-block w-40">Notifications</span>
+    <input type="checkbox" v-model="preferences.notifications" />
+  </label>
+
+  <button @click="savePreferences" class="mt-3 bg-purple-500 text-white px-4 py-2 rounded">
+    Save Preferences
+  </button>
+</div>
   </div>
 </template>
 

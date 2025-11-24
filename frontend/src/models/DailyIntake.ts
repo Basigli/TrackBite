@@ -1,5 +1,6 @@
 import { FoodItem, FoodItemSchemaZ } from "./FoodItem";
 import { Nutrient, NutrientSchemaZ } from "./Nutrient";
+import { z } from "zod";
 
 export interface DailyIntake {
   _id: string

@@ -1,29 +1,25 @@
 import { defineStore } from 'pinia';
-import { ref, reactive } from 'vue';
-import axios from 'axios';
+import { ref, type Ref } from 'vue';
 import api from '../api';
+import type { User } from '../models/User';
 
 export const useUserStore = defineStore('user', () => {
-  const user = reactive({
-    id: null,
-    name: '',
-    email: '',
-    preferences: {}
-  });
+  const user: Ref<User | null> = ref(null);
 
-  const fetchUser = async (userId) => {
+  const fetchUser = async (userId: string) => {
     try {
-      const res = await api.get(`/users/${userId}`);
-      Object.assign(user, res.data);
+      const res = await api.get<User>(`/users/${userId}`);
+      user.value = res.data;
     } catch (err) {
       console.error('Error fetching user:', err);
     }
   };
 
-  const updateUser = async (updatedData) => {
+  const updateUser = async (updatedData: Partial<User>): Promise<boolean> => {
+    if (!user.value?._id) return false;
     try {
-      const res = await api.put(`/users/${user.id}`, updatedData);
-      Object.assign(user, res.data);
+      const res = await api.put<User>(`/users/${user.value._id}`, updatedData);
+      user.value = res.data;
       return true;
     } catch (err) {
       console.error('Error updating user:', err);
@@ -31,9 +27,10 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  const changePassword = async (currentPassword, newPassword) => {
+  const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
+    if (!user.value?._id) return false;
     try {
-      await api.put(`/users/${user.id}/password`, { currentPassword, newPassword });
+      await api.put(`/users/${user.value._id}/password`, { currentPassword, newPassword });
       return true;
     } catch (err) {
       console.error('Error changing password:', err);
@@ -41,5 +38,10 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  return { user, fetchUser, updateUser, changePassword };
+  return {
+    user,
+    fetchUser,
+    updateUser,
+    changePassword
+  };
 });

@@ -75,6 +75,33 @@ describe("User Routes", () => {
     });
   });
 
+  describe("POST /users/login", () => {
+    it("should return 404 when user not found", async () => {
+      const res = await request(app)
+        .post("/users/login")
+        .send({ nickname: "nonexistent", passwordHash: "anyPassword" })
+        .expect("Content-Type", /json/)
+        .expect(404);
+
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("should return 401 when password is incorrect", async () => {
+      const password = "correctPassword";
+      const user = { nickname: "alice", passwordHash: password };
+      await UserCredentialsModel.create(user);
+
+      const res = await request(app)
+        .post("/users/login")
+        .send({ nickname: user.nickname, passwordHash: "wrongPassword" })
+        .expect("Content-Type", /json/)
+        .expect(401);
+
+      expect(res.body).toHaveProperty("error");
+    });
+  });
+
+
   describe("GET /users/:id", () => {
     it("should return the user when valid id", async () => {
       const created = await UserModel.create({ nickname: "a", mail: "a@example.com" });

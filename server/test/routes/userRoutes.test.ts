@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
 import { UserModel } from "../../src/storage/UserSchema";
+import UserCredentialsModel from "../../src/storage/UserCredentialsSchema";
 
 let mongoServer: MongoMemoryServer;
 
@@ -40,6 +41,8 @@ describe("User Routes", () => {
       // verify in DB
       const userInDb = await UserModel.findOne({ mail: newUser.mail });
       expect(userInDb).not.toBeNull();
+      const credentialsInDb = await UserCredentialsModel.findOne({ nickname: newUser.nickname });
+      expect(credentialsInDb).not.toBeNull();
     });
 
     it("should return 400 when mail is duplicate", async () => {
@@ -53,6 +56,22 @@ describe("User Routes", () => {
         .expect(400);
 
       expect(res.body).toHaveProperty("error");
+    });
+  });
+
+  describe("POST /users/login", () => {
+    it("should log in the user and return 200", async () => {
+      const password = "passwordAlice";
+      const user = { nickname: "alice", passwordHash: password };
+      await UserCredentialsModel.create(user);
+
+      const res = await request(app)
+        .post("/users/login")
+        .send({ nickname: user.nickname, passwordHash: password })
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body).toHaveProperty("token");
     });
   });
 

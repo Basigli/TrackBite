@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { RecipeModel } from "../src/storage/RecipeSchema";
 import { DietModel } from "../src/storage/DietSchema";
 import { UserModel } from "../src/storage/UserSchema";
+import UserCredentialsModel from "../src/storage/UserCredentialsSchema";
 import { DailyIntakeModel } from "../src/storage/DailyIntakeSchema";
 import { ScannedItemModel } from "../src/storage/ScannedItemSchema";
 import { NutrientModel } from "../src/storage/NutrientSchema";
@@ -68,6 +69,13 @@ async function seed() {
   const userA = await UserModel.create({ nickname: "alice", mail: "alice@example.com", savedRecipesIds: [] });
   const userB = await UserModel.create({ nickname: "bob", mail: "bob@example.com", savedRecipesIds: [] });
   console.log("Inserted users:", userA._id, userB._id);
+
+  // UserCredentials
+  const passwordA = "passwordAlice";
+  const passwordB = "passwordBob";
+  const userCredentialsA = await UserCredentialsModel.create({ nickname: userA.nickname, passwordHash: passwordA });
+  const userCredentialsB = await UserCredentialsModel.create({ nickname: userB.nickname, passwordHash: passwordB });
+  console.log("Inserted user credentials for users");
 
   // Recipes
   const recipe = await RecipeModel.create({

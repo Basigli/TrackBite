@@ -15,7 +15,6 @@ export const createUser = async (req: Request, res: Response) => {
     const newUser = new UserModel(parsed.data);
     const savedUser = await newUser.save();
     const userCredentials = new UserCredentialsModel({
-      _id: savedUser._id,
       nickname: savedUser.nickname,
       passwordHash: savedUser,
     });
@@ -31,6 +30,8 @@ export const createUser = async (req: Request, res: Response) => {
 };
 
 export const logInUser = async (req: Request, res: Response) => {
+  console.log('Request body:', req.body); // Debug log
+  console.log('Content-Type:', req.headers['content-type']); // Debug log
   try {
     const parsed = UserCredentialsSchemaZ.safeParse(req.body);
     if (!parsed.success) {

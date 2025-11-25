@@ -10,22 +10,22 @@
 
       <!-- Login Form -->
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <!-- Email Field -->
+        <!-- Username Field -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
-            Email Address
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-1">
+            Username
           </label>
           <input
-            id="email"
-            v-model="formData.email"
-            type="email"
+            id="username"
+            v-model="formData.username"
+            type="text"
             required
             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-            :class="{ 'border-red-500': errors.email }"
-            placeholder="john@example.com"
-            autocomplete="email"
+            :class="{ 'border-red-500': errors.username }"
+            placeholder="Enter your username"
+            autocomplete="username"
           />
-          <p v-if="errors.email" class="text-red-500 text-xs mt-1">{{ errors.email }}</p>
+          <p v-if="errors.username" class="text-red-500 text-xs mt-1">{{ errors.username }}</p>
         </div>
 
         <!-- Password Field -->
@@ -138,9 +138,10 @@
 </template>
 
 <script>
+import { nextTick } from 'process';
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-
+import api from '../api';
 export default {
   name: 'LoginPage',
   setup() {
@@ -151,13 +152,13 @@ export default {
     const successMessage = ref('');
 
     const formData = reactive({
-      email: '',
+      username: '',
       password: '',
       rememberMe: false
     });
 
     const errors = reactive({
-      email: '',
+      username: '',
       password: ''
     });
 
@@ -167,13 +168,9 @@ export default {
       // Reset errors
       Object.keys(errors).forEach(key => errors[key] = '');
 
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!formData.email.trim()) {
-        errors.email = 'Email is required';
-        isValid = false;
-      } else if (!emailRegex.test(formData.email)) {
-        errors.email = 'Please enter a valid email address';
+      // Username validation
+      if (!formData.username.trim()) {
+        errors.username = 'Username is required';
         isValid = false;
       }
 
@@ -197,16 +194,20 @@ export default {
       loading.value = true;
 
       try {
-        // Replace this with your actual API call
         const response = await loginUser({
-          email: formData.email,
-          password: formData.password,
-          rememberMe: formData.rememberMe
+          username: formData.username,
+          password: formData.password
         });
 
-        // Store token/user data
-        if (response.token) {
-          localStorage.setItem('authToken', response.token);
+        // Store authentication token
+        if (response.token || response.access_token) {
+          const token = response.token || response.access_token;
+          localStorage.setItem('authToken', token);
+        }
+
+        // Store user data if provided
+        if (response.user) {
+          localStorage.setItem('user', JSON.stringify(response.user));
         }
 
         successMessage.value = 'Login successful! Redirecting...';
@@ -217,48 +218,72 @@ export default {
         }, 1000);
 
       } catch (error) {
-        generalError.value = error.message || 'Login failed. Please check your credentials.';
+        console.error('Login error:', error);
+        
+        // Handle different error scenarios
+        if (error.response) {
+          // Server responded with error status
+          const status = error.response.status;
+          const data = error.response.data;
+          
+          if (status === 401) {
+            generalError.value = 'Invalid username or password';
+          } else if (status === 400) {
+            generalError.value = data.message || 'Invalid request. Please check your input.';
+          } else if (status === 500) {
+            generalError.value = 'Server error. Please try again later.';
+          } else {
+            generalError.value = data.message || 'Login failed. Please try again.';
+          }
+        } else if (error.request) {
+          // Request was made but no response received
+          generalError.value = 'Cannot connect to server. Please check your internet connection.';
+        } else {
+          // Something else happened
+          generalError.value = error.message || 'An unexpected error occurred.';
+        }
       } finally {
         loading.value = false;
       }
     };
 
     const loginUser = async (credentials) => {
-      // Simulate API call
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate login validation
-          if (credentials.email === 'test@test.com' && credentials.password === 'password123') {
-            resolve({ 
-              success: true, 
-              token: 'fake-jwt-token',
-              user: { email: credentials.email, name: 'Test User' }
-            });
-          } else {
-            reject(new Error('Invalid email or password'));
-          }
-        }, 1500);
-      });
+      try {
+        const response = await api.post('/users/login', {
+          nickname: credentials.username,
+          passwordHash: credentials.password // Changed from passwordHash to password
+        });
 
-      // Real implementation would look like:
-      // const response = await fetch('/api/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(credentials)
-      // });
-      // if (!response.ok) throw new Error('Login failed');
-      // return await response.json();
+        // With axios, the data is directly in response.data
+        return response.data; // Should contain { token: "..." }
+      } catch (error) {
+        if (error.response) {
+          // Server responded with error status
+          const errorObj = new Error(error.response.data.error || error.response.data.message || 'Login failed');
+          errorObj.response = {
+            status: error.response.status,
+            data: error.response.data
+          };
+          throw errorObj;
+        } else if (error.request) {
+          // Request was made but no response received
+          const errorObj = new Error('Cannot connect to server. Please check your internet connection.');
+          errorObj.request = true;
+          throw errorObj;
+        } else {
+          // Something else happened
+          throw new Error(error.message || 'An unexpected error occurred.');
+        }
+      }
     };
 
     const loginWithGoogle = () => {
       console.log('Login with Google');
-      // Implement Google OAuth login
       generalError.value = 'Google login not implemented yet';
     };
 
     const loginWithFacebook = () => {
       console.log('Login with Facebook');
-      // Implement Facebook OAuth login
       generalError.value = 'Facebook login not implemented yet';
     };
 

@@ -23,6 +23,7 @@ async function seed() {
     ScannedItemModel.deleteMany({}),
     NutrientModel.deleteMany({}),
     FoodItemModel.deleteMany({}),
+    UserCredentialsModel.deleteMany({}),
   ]);
   console.log("Cleared collections");
 

@@ -7,6 +7,7 @@ import { UserModel } from "../../src/storage/UserSchema";
 import UserCredentialsModel from "../../src/storage/UserCredentialsSchema";
 
 let mongoServer: MongoMemoryServer;
+let authToken: string;
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -72,6 +73,7 @@ describe("User Routes", () => {
         .expect(200);
 
       expect(res.body).toHaveProperty("token");
+      authToken = res.body.token; // Save token for future authenticated requests
     });
   });
 
@@ -107,6 +109,7 @@ describe("User Routes", () => {
       const created = await UserModel.create({ nickname: "a", mail: "a@example.com" });
       const res = await request(app)
         .get(`/users/${created._id}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect("Content-Type", /json/)
         .expect(200);
 
@@ -118,6 +121,7 @@ describe("User Routes", () => {
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
         .get(`/users/${fakeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(404);
     });
   });
@@ -128,6 +132,7 @@ describe("User Routes", () => {
       const update = {  _id: created._id, nickname: "newnick", mail: "old@example.com", savedRecipesIds: [] };
       const res = await request(app)
         .put(`/users/${created._id}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .send(update)
         .expect("Content-Type", /json/)
         .expect(200);
@@ -144,7 +149,7 @@ describe("User Routes", () => {
 
       await request(app)
         .put(`/users/${created2._id}`)
-        .send({ nickname: "u2", mail: "m1@example.com" })
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(400);
     });
   });
@@ -155,6 +160,7 @@ describe("User Routes", () => {
 
       await request(app)
         .delete(`/users/${created._id}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(204);
 
       const userInDb = await UserModel.findById(created._id);
@@ -165,6 +171,7 @@ describe("User Routes", () => {
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
         .delete(`/users/${fakeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
         .expect(404);
     });
   });

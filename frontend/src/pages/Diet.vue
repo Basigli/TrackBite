@@ -29,13 +29,15 @@ import { onMounted } from 'vue';
 import { useDietStore } from '../store/dietStore';
 import DietPlan from '../components/DietPlan.vue';
 import DietSelector from '../components/DietSelector.vue';
+import { useUserStore } from '@/store/userStore';
 
 export default {
   name: 'Diet',
   components: { DietPlan, DietSelector },
   setup() {
     const store = useDietStore();
-    const userId = 1; // replace with logged-in user
+    const userStore = useUserStore();
+    const userId = userStore.user?._id
 
     onMounted(() => {
       store.fetchDiets(userId);

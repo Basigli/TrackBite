@@ -26,13 +26,15 @@ import { onMounted } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeList from '../components/RecipeList.vue';
 import AddRecipe from '../components/AddRecipe.vue';
+import { useUserStore } from '@/store/userStore';
 
 export default {
   name: 'Recipes',
   components: { RecipeList, AddRecipe },
   setup() {
     const store = useRecipeStore();
-    const userId = 1; // replace with logged-in user
+    const userStore = useUserStore();
+    const userId = userStore.user?._id
 
     const fetchRecipes = () => store.fetchRecipes(userId);
     const deleteRecipe = (recipeId) => store.deleteRecipe(recipeId, userId);

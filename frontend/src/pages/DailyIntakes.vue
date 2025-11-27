@@ -35,13 +35,15 @@
 import { ref, onMounted } from 'vue';
 import { useIntakeStore } from '../store/intakeStore';
 import DailyIntake from '../components/DailyIntake.vue';
+import { useUserStore } from '@/store/userStore';
 
 export default {
   name: 'DailyIntakes',
   components: { DailyIntake },
   setup() {
     const intakeStore = useIntakeStore();
-    const userId = 1; // replace with logged-in user ID
+    const userStore = useUserStore();
+    const userId = userStore.user?._id;
     const selectedDay = ref(null);
 
     const selectDay = (day) => {

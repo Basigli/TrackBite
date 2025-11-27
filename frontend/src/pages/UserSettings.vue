@@ -75,7 +75,7 @@ export default {
   name: 'UserSettings',
   setup() {
     const store = useUserStore()
-    const userId = 1 // replace with logged-in user
+    const userId = store.user?._id
 
     const name = ref('')
     const email = ref('')

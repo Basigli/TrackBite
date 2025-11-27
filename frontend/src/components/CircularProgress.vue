@@ -55,4 +55,10 @@ const percentage = computed(() =>
 const dashOffset = computed(() => {
   return circumference - (props.current / props.goal) * circumference;
 });
+
+const gradientColor = computed(() => {
+  if (percentage.value >= 100) return "#10B981"; // green
+  if (percentage.value >= 75) return "#F59E0B";  // amber
+  return "#3B82F6"; // blue default
+});
 </script>

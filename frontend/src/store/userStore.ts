@@ -13,7 +13,6 @@ export const useUserStore = defineStore('user', () => {
   });
 
   const authToken = reactive({ value: '' });
-  
 
   const login = async (nickname, password) => {
     try {
@@ -21,13 +20,8 @@ export const useUserStore = defineStore('user', () => {
       if (!res.data.token) {
         throw new Error('No token received');
       }
-      try {
-        const decoded = jwtDecode(res.data.token);
-        Object.assign(authToken, { value: decoded.nickname });
-      } catch (e) {
-          console.error('Invalid token:', e)
-        }
-      
+      const token = res.data.token;
+      Object.assign(authToken, { value: token }); 
       return true;
     } catch (err) {
       console.error('Login failed:', err);

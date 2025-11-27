@@ -12,4 +12,4 @@ export const DietSchemaZ = z.object({
   name: z.string(),
   caloriesAmount: z.number(),
   userId: z.string()
-}).partial();
+});

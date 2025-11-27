@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import { ref, type Ref, reactive } from 'vue';
+import { ref, type Ref, reactive, type Reactive } from 'vue';
 import api from '../api';
 import { jwtDecode } from 'jwt-decode';
 import type { User } from '../models/User';
 
 export const useUserStore = defineStore('user', () => {
-  const user: Ref<User | null> = ref(null);
+  const user: Reactive<User | null> = reactive({} as User);
   const authToken = reactive({ value: '' });
 
   const login = async (nickname: string, password: string) => {
@@ -26,17 +26,18 @@ export const useUserStore = defineStore('user', () => {
   const fetchUser = async (userId: string) => {
     try {
       const res = await api.get<User>(`/users/${userId}`);
-      user.value = res.data;
+      
+      Object.assign(user, res.data);
     } catch (err) {
       console.error('Error fetching user:', err);
     }
   };
 
   const updateUser = async (updatedData: Partial<User>): Promise<boolean> => {
-    if (!user.value?._id) return false;
+    if (!user?._id) return false;
     try {
-      const res = await api.put<User>(`/users/${user.value._id}`, updatedData);
-      user.value = res.data;
+      const res = await api.put<User>(`/users/${user._id}`, updatedData);
+      Object.assign(user, res.data);
       return true;
     } catch (err) {
       console.error('Error updating user:', err);
@@ -45,9 +46,9 @@ export const useUserStore = defineStore('user', () => {
   };
 
   const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
-    if (!user.value?._id) return false;
+    if (!user?._id) return false;
     try {
-      await api.put(`/users/${user.value._id}/password`, { currentPassword, newPassword });
+      await api.put(`/users/${user._id}/password`, { currentPassword, newPassword });
       return true;
     } catch (err) {
       console.error('Error changing password:', err);
@@ -73,5 +74,5 @@ export const useUserStore = defineStore('user', () => {
       alert('Session has expired. Please log in again.');
   };
 
-  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword };
+  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword, decodeToken};
 });

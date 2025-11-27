@@ -197,9 +197,10 @@ export default {
 
       try {
         const userStore = useUserStore();
-        userStore.login(formData.username, formData.password);
-
-    
+        await userStore.login(formData.username, formData.password);
+        const decoded = userStore.decodeToken();
+        console.log('Decoded token:', decoded);
+        userStore.fetchUser(decoded.id);
         successMessage.value = 'Login successful! Redirecting...';
         
         // Redirect to dashboard after 1 second
@@ -234,36 +235,6 @@ export default {
         }
       } finally {
         loading.value = false;
-      }
-    };
-
-    const loginUser = async (credentials) => {
-      try {
-        const response = await api.post('/users/login', {
-          nickname: credentials.username,
-          passwordHash: credentials.password // Changed from passwordHash to password
-        });
-
-        // With axios, the data is directly in response.data
-        return response.data; // Should contain { token: "..." }
-      } catch (error) {
-        if (error.response) {
-          // Server responded with error status
-          const errorObj = new Error(error.response.data.error || error.response.data.message || 'Login failed');
-          errorObj.response = {
-            status: error.response.status,
-            data: error.response.data
-          };
-          throw errorObj;
-        } else if (error.request) {
-          // Request was made but no response received
-          const errorObj = new Error('Cannot connect to server. Please check your internet connection.');
-          errorObj.request = true;
-          throw errorObj;
-        } else {
-          // Something else happened
-          throw new Error(error.message || 'An unexpected error occurred.');
-        }
       }
     };
 

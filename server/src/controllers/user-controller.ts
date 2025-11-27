@@ -38,14 +38,16 @@ export const logInUser = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid user credentials", details: parsed.error });
     }
     const { nickname, passwordHash } = parsed.data;
-    const user = await UserCredentialsModel.findOne({ nickname });
-    if (!user) return res.status(404).json({ error: "User not found" });
+    const userCredentials = await UserCredentialsModel.findOne({ nickname });
+    if (!userCredentials) return res.status(404).json({ error: "User not found" });
     // Compare passwordHash with user's stored passwordHash
-    if (user.passwordHash !== passwordHash) {
+    if (userCredentials.passwordHash !== passwordHash) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
+    const user = await UserModel.findOne({ nickname });
+    if (!user) return res.status(404).json({ error: "User not found" });
     // Generate JWT token
-    const token = generateToken(user._id, nickname);
+    const token = generateToken(user._id.toString(), nickname);
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ error: "Failed to log in user" });
@@ -55,6 +57,7 @@ export const logInUser = async (req: Request, res: Response) => {
 
 // GET /users/:id - Get user by ID
 export const getUserById = async (req: Request, res: Response) => {
+  console.log('Fetching user with ID:', req); // Debug log
   try {
     const { id } = req.params;
     const user = await UserModel.findById(id);

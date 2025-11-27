@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue' // Added computed
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { jwtDecode } from 'jwt-decode'
 import { useUserStore } from '@/store/userStore'
@@ -54,21 +54,15 @@ export default {
   name: 'Header',
   setup() {
     const router = useRouter()
-    const userStore = useUserStore() // Move this before using it
+    const userStore = useUserStore()
     
     const user = computed(() => {
-      const token = userStore.authToken.value || null;
-      
-      if (token) {
-        try {
-          const decoded = jwtDecode(token)
-          return { name: decoded.nickname || decoded.name || 'User' }
-        } catch (e) {
-          console.error('Invalid token:', e)
-          return { name: 'Guest' }
-        }
+      console.log(userStore.user);
+      if (!userStore.user) {
+        return {name: 'Guest'};
       }
-      return { name: 'Guest' }
+      const nickname = userStore.user.nickname || 'Guest';
+      return {name: nickname};
     })
     
     const selectedDate = ref(new Date().toISOString().substr(0, 10))

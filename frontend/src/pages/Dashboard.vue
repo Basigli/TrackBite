@@ -29,7 +29,7 @@ export default {
   setup() {
     const intakeStore = useIntakeStore()
     const userStore = useUserStore()
-    const userId = userStore.user?.value._id
+    const userId = userStore.user?.id
 
     onMounted(() => {
     //  userStore.fetchUser(userId)

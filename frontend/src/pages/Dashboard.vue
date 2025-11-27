@@ -7,11 +7,11 @@
         <CaloriesSummary :totalCalories="dailyIntake.totalCalories" />
       </div>
       <div class="flex-1 min-w-[220px]">
-        <MacroBreakdown :macros="dailyIntake.macros" />
+        <MacroBreakdown :macros="dailyIntake.totalMacros" />
       </div>
     </div>
 
-    <DailyIntake :meals="dailyIntake.meals" />
+    <DailyIntake :meals="dailyIntake.foodItems" />
   </div>
 </template>
 
@@ -21,15 +21,18 @@ import { useIntakeStore } from '../store/intakeStore'
 import DailyIntake from '../components/DailyIntake.vue'
 import CaloriesSummary from '../components/CaloriesSummary.vue'
 import MacroBreakdown from '../components/MacroBreakdown.vue'
+import { useUserStore } from '@/store/userStore'
 
 export default {
   name: 'Dashboard',
   components: { DailyIntake, CaloriesSummary, MacroBreakdown },
   setup() {
     const intakeStore = useIntakeStore()
-    const userId = 1 // replace with injected or store user ID
+    const userStore = useUserStore()
+    const userId = userStore.user?.value._id
 
     onMounted(() => {
+    //  userStore.fetchUser(userId)
       intakeStore.fetchDailyIntake(userId)
     })
 

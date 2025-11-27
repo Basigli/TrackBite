@@ -45,7 +45,7 @@ export const logInUser = async (req: Request, res: Response) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
     // Generate JWT token
-    const token = generateToken(user._id);
+    const token = generateToken(user._id, nickname);
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ error: "Failed to log in user" });
@@ -96,11 +96,11 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-function generateToken(_id: string): string {
+function generateToken(_id: string, nickname: string): string {
   // Lazy-require to avoid adding top-level imports if not already present
   // Uses JWT_SECRET from env, fallback to a dev secret (replace in production)
   // Token payload uses "sub" (subject) for the user id and expires in 1 hour
   const secret = process.env.JWT_SECRET || "replace_this_with_a_secure_secret";
-  return jwt.sign({ sub: _id }, secret, { expiresIn: "1h" });
+  return jwt.sign({ 'id': _id, 'nickname': nickname }, secret, { expiresIn: "1h" });
 }
 

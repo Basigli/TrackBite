@@ -142,6 +142,8 @@ import { nextTick } from 'process';
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../api';
+import { useUserStore } from '@/store/userStore';
+
 export default {
   name: 'LoginPage',
   setup() {
@@ -194,22 +196,10 @@ export default {
       loading.value = true;
 
       try {
-        const response = await loginUser({
-          username: formData.username,
-          password: formData.password
-        });
+        const userStore = useUserStore();
+        userStore.login(formData.username, formData.password);
 
-        // Store authentication token
-        if (response.token || response.access_token) {
-          const token = response.token || response.access_token;
-          localStorage.setItem('authToken', token);
-        }
-
-        // Store user data if provided
-        if (response.user) {
-          localStorage.setItem('user', JSON.stringify(response.user));
-        }
-
+    
         successMessage.value = 'Login successful! Redirecting...';
         
         // Redirect to dashboard after 1 second

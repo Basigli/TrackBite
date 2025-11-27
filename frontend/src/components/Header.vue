@@ -36,7 +36,7 @@
             class="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-48 py-1 z-50"
           >
             <li @click="goToSettings" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-            <li @click="logout" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+            <li @click="handleLogout" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
           </ul>
         </transition>
       </div>
@@ -44,18 +44,27 @@
   </header>
 </template>
 
-
 <script>
-import { ref, inject } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { jwtDecode } from 'jwt-decode'
+import { useUserStore } from '@/store/userStore'
 
 export default {
   name: 'Header',
   setup() {
     const router = useRouter()
-    const user = inject('user', { name: 'Guest' })
+    const user = ref({ name: 'Guest' })
     const selectedDate = ref(new Date().toISOString().substr(0, 10))
     const menuOpen = ref(false)
+    const userStore = useUserStore()
+    // Function to load user from token
+    
+    // Load user when component mounts
+    onMounted(() => {
+      // loadUserFromToken()
+      user.value.name = userStore.authToken.value;
+    })
 
     const toggleMenu = () => {
       menuOpen.value = !menuOpen.value
@@ -66,8 +75,18 @@ export default {
       menuOpen.value = false
     }
 
-    const logout = () => {
-      console.log('Logout clicked') // integrate auth logic
+    const handleLogout = () => {
+      // Clear authentication data
+      localStorage.removeItem('authToken')
+      localStorage.removeItem('user')
+      
+      // Reset user
+      user.value = { name: 'Guest' }
+      
+      // Redirect to login
+      router.push('/login')
+      
+      menuOpen.value = false
     }
 
     const dateChanged = () => {
@@ -75,8 +94,16 @@ export default {
       // Emit or update store if needed
     }
 
-    return { user, selectedDate, menuOpen, toggleMenu, goToSettings, logout, dateChanged }
-  },
+    return { 
+      user, 
+      selectedDate, 
+      menuOpen, 
+      toggleMenu, 
+      goToSettings, 
+      handleLogout, 
+      dateChanged 
+    }
+  }
 }
 </script>
 

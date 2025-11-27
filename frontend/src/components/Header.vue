@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, computed } from 'vue' // Added computed
 import { useRouter } from 'vue-router'
 import { jwtDecode } from 'jwt-decode'
 import { useUserStore } from '@/store/userStore'
@@ -54,17 +54,25 @@ export default {
   name: 'Header',
   setup() {
     const router = useRouter()
-    const user = ref({ name: 'Guest' })
+    const userStore = useUserStore() // Move this before using it
+    
+    const user = computed(() => {
+      const token = userStore.authToken.value || null;
+      
+      if (token) {
+        try {
+          const decoded = jwtDecode(token)
+          return { name: decoded.nickname || decoded.name || 'User' }
+        } catch (e) {
+          console.error('Invalid token:', e)
+          return { name: 'Guest' }
+        }
+      }
+      return { name: 'Guest' }
+    })
+    
     const selectedDate = ref(new Date().toISOString().substr(0, 10))
     const menuOpen = ref(false)
-    const userStore = useUserStore()
-    // Function to load user from token
-    
-    // Load user when component mounts
-    onMounted(() => {
-      // loadUserFromToken()
-      user.value.name = userStore.authToken.value;
-    })
 
     const toggleMenu = () => {
       menuOpen.value = !menuOpen.value
@@ -76,22 +84,13 @@ export default {
     }
 
     const handleLogout = () => {
-      // Clear authentication data
-      localStorage.removeItem('authToken')
-      localStorage.removeItem('user')
-      
-      // Reset user
-      user.value = { name: 'Guest' }
-      
-      // Redirect to login
+      userStore.logout() // Use store's logout function
       router.push('/login')
-      
       menuOpen.value = false
     }
 
     const dateChanged = () => {
       console.log('Selected date:', selectedDate.value)
-      // Emit or update store if needed
     }
 
     return { 

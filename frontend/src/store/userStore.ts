@@ -65,5 +65,23 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  return { user, authToken, login, fetchUser, updateUser, changePassword };
+  const decodeToken = () => {
+    if (!authToken.value) return null;
+    try {
+      return jwtDecode(authToken.value);
+    } catch (e) {
+      // console.error('Invalid token decode:', e);
+      return null;
+    }
+  };
+
+  const isTokenExpired = () => {
+    const decoded = decodeToken();
+    if (!decoded || !decoded.exp) return;
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (decoded.exp < currentTime)
+      alert('Session has expired. Please log in again.');
+  };
+
+  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword };
 });

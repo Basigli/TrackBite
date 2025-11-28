@@ -3,7 +3,7 @@ import { ScannedItemModel } from "../storage/ScannedItemSchema";
 import { ScannedItemSchemaZ } from "../models/ScannedItem";
 
 // GET /scanned-items
-export const getAllScannedItems = async (req: Request, res: Response) => {
+ const getAllScannedItems = async (req: Request, res: Response) => {
   try {
     const items = await ScannedItemModel.find();
     res.status(200).json(items);
@@ -13,7 +13,7 @@ export const getAllScannedItems = async (req: Request, res: Response) => {
 };
 
 // POST /scanned-items
-export const createScannedItem = async (req: Request, res: Response) => {
+ const createScannedItem = async (req: Request, res: Response) => {
   try {
     const parsed = ScannedItemSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -28,7 +28,7 @@ export const createScannedItem = async (req: Request, res: Response) => {
 };
 
 // GET /scanned-items/:id
-export const getScannedItemById = async (req: Request, res: Response) => {
+ const getScannedItemById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const item = await ScannedItemModel.findById(id);
@@ -40,7 +40,7 @@ export const getScannedItemById = async (req: Request, res: Response) => {
 };
 
 // PUT /scanned-items/:id
-export const updateScannedItem = async (req: Request, res: Response) => {
+ const updateScannedItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const parsed = ScannedItemSchemaZ.safeParse(req.body);
@@ -57,7 +57,7 @@ export const updateScannedItem = async (req: Request, res: Response) => {
 };
 
 // DELETE /scanned-items/:id
-export const deleteScannedItem = async (req: Request, res: Response) => {
+ const deleteScannedItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const deletedItem = await ScannedItemModel.findByIdAndDelete(id);
@@ -67,3 +67,11 @@ export const deleteScannedItem = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to delete scanned item" });
   }
 };
+
+export default {
+  getAllScannedItems,
+  createScannedItem,
+  getScannedItemById,
+  updateScannedItem,
+  deleteScannedItem,
+};  

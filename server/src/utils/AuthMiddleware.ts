@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 
 const jwt = require("jsonwebtoken");
 
-const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
     return res.status(401).json({ error: "Authorization header missing" });
@@ -21,5 +21,3 @@ const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
     return res.status(403).json({ error: "Invalid or expired token" });
   }
 };
-
-module.exports = authMiddleware;

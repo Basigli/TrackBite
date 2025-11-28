@@ -4,7 +4,7 @@ import { DietModel } from "../storage/DietSchema";
 import { DailyIntakeModel } from "../storage/DailyIntakeSchema";
 import { RecipeModel } from "../storage/RecipeSchema";
 
-export const getStats = async (req: Request, res: Response) => {
+ const getStats = async (req: Request, res: Response) => {
   const stats = {
     uptime: process.uptime(),
     memoryUsage: process.memoryUsage(),
@@ -17,7 +17,7 @@ export const getStats = async (req: Request, res: Response) => {
   res.status(200).json(stats);
 }
 
-export const getDbStats = async (req: Request, res: Response) => {
+ const getDbStats = async (req: Request, res: Response) => {
   try {
     const userCount = await UserModel.countDocuments();
     const dietCount = await DietModel.countDocuments();
@@ -36,3 +36,5 @@ export const getDbStats = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error retrieving database statistics", error });
   }
 }
+
+export default { getStats, getDbStats };

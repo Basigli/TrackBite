@@ -112,6 +112,8 @@ async function seed() {
   // Diets
   const diet = await DietModel.create({ name: "Low Carb", caloriesAmount: 1500, userId: userA._id.toString() });
   console.log("Inserted diet:", diet._id);
+  const diet2 = await DietModel.create({ name: "High Protein", caloriesAmount: 2000, userId: userA._id.toString() });
+  console.log("Inserted diet:", diet2._id);
 
   console.log("Seeding done.");
   await mongoose.disconnect();

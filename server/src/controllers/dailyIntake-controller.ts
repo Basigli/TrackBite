@@ -7,7 +7,7 @@ import { DailyIntakeSchemaZ } from "../models/DailyIntake";
  * GET /daily-intakes
  * List all daily intakes
  */
-export const getAllDailyIntakes = async (req: Request, res: Response) => {
+ const getAllDailyIntakes = async (req: Request, res: Response) => {
   try {
     const dailyIntakes = await DailyIntakeModel.find();
     res.status(200).json(dailyIntakes);
@@ -20,7 +20,7 @@ export const getAllDailyIntakes = async (req: Request, res: Response) => {
  * POST /daily-intakes
  * Create a new daily intake
  */
-export const createDailyIntake = async (req: Request, res: Response) => {
+ const createDailyIntake = async (req: Request, res: Response) => {
   try {
 
     const parsed = DailyIntakeSchemaZ.safeParse(req.body);
@@ -40,7 +40,7 @@ export const createDailyIntake = async (req: Request, res: Response) => {
  * GET /daily-intakes/:id
  * Get daily intake by ID
  */
-export const getDailyIntakeById = async (req: Request, res: Response) => {
+ const getDailyIntakeById = async (req: Request, res: Response) => {
   try {
     const dailyIntake = await DailyIntakeModel.findById(req.params.id);
     if (!dailyIntake) {
@@ -56,7 +56,7 @@ export const getDailyIntakeById = async (req: Request, res: Response) => {
  * PUT /daily-intakes/:id/
  * Update daily intake by ID
  */
-export const updateDailyIntake = async (req: Request, res: Response) => {
+ const updateDailyIntake = async (req: Request, res: Response) => {
   try {
     // mongoose validation
     const parsed = DailyIntakeSchemaZ.safeParse(req.body);
@@ -94,7 +94,7 @@ export const updateDailyIntake = async (req: Request, res: Response) => {
  * DELETE /daily-intakes/:id/user/:userId
  * Delete daily intake
  */
-export const deleteDailyIntake = async (req: Request, res: Response) => {
+ const deleteDailyIntake = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
 
@@ -122,7 +122,7 @@ export const deleteDailyIntake = async (req: Request, res: Response) => {
  * GET /daily-intakes/:dailyIntakeId/food-items
  * List food items in a daily intake
  */
-export const getFoodItemsByDailyIntake = async (req: Request, res: Response) => {
+ const getFoodItemsByDailyIntake = async (req: Request, res: Response) => {
   try {
     const dailyIntake = await DailyIntakeModel.findById(req.params.dailyIntakeId);
     if (!dailyIntake) {
@@ -138,7 +138,7 @@ export const getFoodItemsByDailyIntake = async (req: Request, res: Response) => 
  * POST /daily-intakes/:dailyIntakeId/food-items
  * Add a food item to a daily intake
  */
-export const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
+ const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
   try {
     const { dailyIntakeId } = req.params;
     const foodItem: FoodItem = FoodItemSchemaZ.safeParse(req.body).success ? req.body : null;
@@ -162,7 +162,7 @@ export const addFoodItemToDailyIntake = async (req: Request, res: Response) => {
 };
 
 // GET /daily-intakes/history/user/:userId
-export const getDailyIntakeHistoryByUserId = async (req: Request, res: Response) => {
+ const getDailyIntakeHistoryByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const dailyIntakes = await DailyIntakeModel.find({ userId }).sort({ date: -1 });
@@ -170,4 +170,15 @@ export const getDailyIntakeHistoryByUserId = async (req: Request, res: Response)
   } catch (error) {
     res.status(500).json({ message: "Error fetching daily intake history", error });
   }
+};
+
+export default {
+  getAllDailyIntakes,
+  createDailyIntake,
+  getDailyIntakeById,
+  updateDailyIntake,
+  deleteDailyIntake,
+  getFoodItemsByDailyIntake,
+  addFoodItemToDailyIntake,
+  getDailyIntakeHistoryByUserId,
 };

@@ -6,7 +6,7 @@ import { UserCredentialsSchemaZ } from "../models/UserCredentials";
 const jwt = require("jsonwebtoken");
 
 // POST /users - Create a new user
-export const createUser = async (req: Request, res: Response) => {
+ const createUser = async (req: Request, res: Response) => {
   try {
     const parsed = UserSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -29,7 +29,7 @@ export const createUser = async (req: Request, res: Response) => {
   }
 };
 
-export const logInUser = async (req: Request, res: Response) => {
+ const logInUser = async (req: Request, res: Response) => {
   console.log('Request body:', req.body); // Debug log
   console.log('Content-Type:', req.headers['content-type']); // Debug log
   try {
@@ -56,7 +56,7 @@ export const logInUser = async (req: Request, res: Response) => {
 };
 
 // GET /users/:id - Get user by ID
-export const getUserById = async (req: Request, res: Response) => {
+ const getUserById = async (req: Request, res: Response) => {
   console.log('Fetching user with ID:', req); // Debug log
   try {
     const { id } = req.params;
@@ -69,7 +69,7 @@ export const getUserById = async (req: Request, res: Response) => {
 };
 
 // PUT /users/:id - Update user
-export const updateUser = async (req: Request, res: Response) => {
+ const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const parsed = UserSchemaZ.safeParse(req.body);
@@ -88,7 +88,7 @@ export const updateUser = async (req: Request, res: Response) => {
 };
 
 // DELETE /users/:id - Delete user
-export const deleteUser = async (req: Request, res: Response) => {
+ const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const deletedUser = await UserModel.findByIdAndDelete(id);
@@ -107,3 +107,10 @@ function generateToken(_id: string, nickname: string): string {
   return jwt.sign({ 'id': _id, 'nickname': nickname }, secret, { expiresIn: "1h" });
 }
 
+export default {
+  createUser,
+  logInUser,
+  getUserById,
+  updateUser,
+  deleteUser,
+};

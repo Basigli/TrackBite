@@ -3,7 +3,7 @@ import { DietModel } from "../storage/DietSchema";
 import { Diet, DietSchemaZ } from "../models/Diet";
 
 // GET /diets - List all diets
-export const getAllDiets = async (req: Request, res: Response) => {
+ const getAllDiets = async (req: Request, res: Response) => {
   try {
     const diets = await DietModel.find();
     res.status(200).json(diets);
@@ -13,7 +13,7 @@ export const getAllDiets = async (req: Request, res: Response) => {
 };
 
 // POST /diets - Create a new diet
-export const createDiet = async (req: Request, res: Response) => {
+ const createDiet = async (req: Request, res: Response) => {
   try {
     const parsed = DietSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -28,7 +28,7 @@ export const createDiet = async (req: Request, res: Response) => {
 };
 
 // GET /diets/:id - Get diet by ID
-export const getDietById = async (req: Request, res: Response) => {
+ const getDietById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const diet = await DietModel.findById(id);
@@ -40,9 +40,9 @@ export const getDietById = async (req: Request, res: Response) => {
 };
 
 // PUT /diets/:id - Update a diet
-export const updateDiet = async (req: Request, res: Response) => {
+ const updateDiet = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { userId, id } = req.params;
     const parsed = DietSchemaZ.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Invalid diet data", error: parsed.error });
@@ -54,6 +54,12 @@ export const updateDiet = async (req: Request, res: Response) => {
 
     if (diet.userId.toString() !== parsed.data.userId) {
       return res.status(403).json({ message: "Forbidden: not your diet" });
+    }
+
+    if (diet.userId.toString() !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Forbidden: you do not own this diet" });
     }
 
     const { name, caloriesAmount } = parsed.data;
@@ -70,7 +76,7 @@ export const updateDiet = async (req: Request, res: Response) => {
 };
 
 // DELETE /diets/:id/user/:userId - Delete a diet
-export const deleteDiet = async (req: Request, res: Response) => {
+ const deleteDiet = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
 
@@ -90,7 +96,7 @@ export const deleteDiet = async (req: Request, res: Response) => {
 };
 
 // GET /diets/user/:userId - Get diets by User ID
-export const getDietsByUserId = async (req: Request, res: Response) => {
+ const getDietsByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const diets = await DietModel.find({ userId });
@@ -99,4 +105,13 @@ export const getDietsByUserId = async (req: Request, res: Response) => {
     console.log(error);
     res.status(500).json({ message: "Error fetching diets for user", error });
   }
+};
+
+export default {
+  getAllDiets,
+  createDiet,
+  getDietById,
+  updateDiet,
+  deleteDiet,
+  getDietsByUserId,
 };

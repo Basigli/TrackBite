@@ -40,13 +40,15 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
   }
 };
 
-// PUT /recipes/:id - Update a recipe
+// PUT /recipes/:id/user/:userId - Update a recipe
  const updateRecipe = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
+    const userId = req.params.userId;
 
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
+      console.log("Invalid recipe data:", parsed.error, req.body);
       return res.status(400).json({
         message: "Invalid recipe data",
         error: parsed.error,

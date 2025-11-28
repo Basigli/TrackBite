@@ -18,6 +18,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
   const addRecipe = async (recipe: Omit<Recipe, "_id">) => {
     try {
+      console.log('Adding recipe for user:', recipe);
       const res = await api.post<Recipe>(`/recipes`, recipe);
       recipes.value.push(res.data);
     } catch (err) {
@@ -27,6 +28,7 @@ export const useRecipeStore = defineStore('recipe', () => {
 
   const deleteRecipe = async (recipeId: string, userId: string) => {
     try {
+      console.log('Deleting recipe:', recipeId, 'for user:', userId);
       await api.delete(`/recipes/${recipeId}/user/${userId}`);
       recipes.value = recipes.value.filter(r => r._id !== recipeId);
     } catch (err) {
@@ -40,6 +42,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     updatedData: Partial<Recipe>
   ) => {
     try {
+      console.log('Updating recipe:', recipeId, 'for user:', userId, 'with data:', updatedData);
       const res = await api.put<Recipe>(`/recipes/${recipeId}/user/${userId}`, updatedData);
       const index = recipes.value.findIndex(r => r._id === recipeId);
 

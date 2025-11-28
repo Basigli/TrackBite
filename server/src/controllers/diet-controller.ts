@@ -39,7 +39,7 @@ import { Diet, DietSchemaZ } from "../models/Diet";
   }
 };
 
-// PUT /diets/:id - Update a diet
+// PUT /diets/:id/user/:userId - Update a diet
  const updateDiet = async (req: Request, res: Response) => {
   try {
     const { userId, id } = req.params;
@@ -52,7 +52,8 @@ import { Diet, DietSchemaZ } from "../models/Diet";
     const diet = await DietModel.findById(id);
     if (!diet) return res.status(404).json({ message: "Diet not found" });
 
-    if (diet.userId.toString() !== parsed.data.userId) {
+    if (diet.userId.toString() !== userId) {
+      console.log("userId:", userId, "diet.userId:", diet.userId.toString());
       return res.status(403).json({ message: "Forbidden: not your diet" });
     }
 

@@ -31,6 +31,7 @@ export const useDietStore = defineStore('diet', () => {
 
   const updateDiet = async (dietId: string, userId: string, data: Partial<Diet>) => {
     try {
+      console.log('Updating diet:', dietId, 'for user:', userId, 'with data:', data);
       const res = await api.put<Diet>(`/diets/${dietId}/user/${userId}`, data);
       const index = diets.value.findIndex(d => d._id === dietId);
       if (index !== -1) diets.value[index] = res.data;

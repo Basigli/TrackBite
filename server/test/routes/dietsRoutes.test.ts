@@ -81,13 +81,13 @@ describe("Diet Routes", () => {
     });
   });
 
-  describe("PUT /diets/:id", () => {
+  describe("PUT /diets/:id/user/:userId", () => {
     it("should update the diet and return 200", async () => {
       const created = await DietModel.create(sampleDiet);
       const update = { name: "High Protein", caloriesAmount: 2000, userId: "test-user-id"};
 
       const res = await request(app)
-        .put(`/diets/${created._id}`)
+        .put(`/diets/${created._id}/user/${created.userId}`)
         .send(update)
         .expect("Content-Type", /json/)
         .expect(200);

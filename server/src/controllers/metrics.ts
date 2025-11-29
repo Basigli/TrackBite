@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const client = require("prom-client");
+import client from "prom-client";
 const register = new client.Registry();
 
 const httpRequestDuration = new client.Histogram({
@@ -20,7 +20,7 @@ register.registerMetric(httpRequestDuration);
 register.registerMetric(httpRequestCount);
 client.collectDefaultMetrics({ register });
 
-export function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
+ function metricsMiddleware(req: Request, res: Response, next: NextFunction) {
   const end = httpRequestDuration.startTimer();
   res.on("finish", () => {
     const route = req.route?.path || req.originalUrl || "unknown_route";
@@ -30,7 +30,9 @@ export function metricsMiddleware(req: Request, res: Response, next: NextFunctio
   next();
 }
 
-export const getMetrics = async (req: Request, res: Response) => {
+ const getMetrics = async (req: Request, res: Response) => {
   res.set("Content-Type", register.contentType);
   res.end(await register.metrics());
 };
+
+export default { metricsMiddleware, getMetrics };

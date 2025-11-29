@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 
-export const liveness = async (req: Request, res: Response)=> res.status(200).json({ status: "ok" });
+ const liveness = async (req: Request, res: Response)=> res.status(200).json({ status: "ok" });
 
-export const readiness = async (req: Request, res: Response) => {
+ const readiness = async (req: Request, res: Response) => {
   const dbOk = await checkDatabaseConnection();
   if (dbOk) res.status(200).json({ status: "ok" });
   else res.status(500).json({ status: "error", db: "disconnected" });
@@ -26,3 +26,5 @@ async function checkDatabaseConnection() {
     return false;
   }
 }
+
+export default { liveness, readiness };

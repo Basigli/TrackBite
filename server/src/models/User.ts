@@ -16,4 +16,4 @@ export const UserSchemaZ = z.object({
   mail: z.string().email(),
   savedRecipesIds: z.array(z.string()),
   // diets: z.array(DietSchemaZ)
-});
+}).partial();

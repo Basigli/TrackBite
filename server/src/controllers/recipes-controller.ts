@@ -3,7 +3,7 @@ import { RecipeModel } from "../storage/RecipeSchema";
 import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 
 // GET /recipes - List all recipes
-export const getAllRecipes = async (_req: Request, res: Response) => {
+ const getAllRecipes = async (_req: Request, res: Response) => {
   try {
     const recipes: Recipe[] = await RecipeModel.find();
     res.status(200).json(recipes);
@@ -13,7 +13,7 @@ export const getAllRecipes = async (_req: Request, res: Response) => {
 };
 
 // POST /recipes - Create a new recipe
-export const createRecipe = async (req: Request, res: Response) => {
+ const createRecipe = async (req: Request, res: Response) => {
   try {
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -29,7 +29,7 @@ export const createRecipe = async (req: Request, res: Response) => {
 };
 
 // GET /recipes/:id - Get a recipe by ID
-export const getRecipeById = async (req: Request, res: Response) => {
+ const getRecipeById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const recipe = await RecipeModel.findById(id);
@@ -40,13 +40,15 @@ export const getRecipeById = async (req: Request, res: Response) => {
   }
 };
 
-// PUT /recipes/:id - Update a recipe
-export const updateRecipe = async (req: Request, res: Response) => {
+// PUT /recipes/:id/user/:userId - Update a recipe
+ const updateRecipe = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
+    const userId = req.params.userId;
 
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
+      console.log("Invalid recipe data:", parsed.error, req.body);
       return res.status(400).json({
         message: "Invalid recipe data",
         error: parsed.error,
@@ -76,7 +78,7 @@ export const updateRecipe = async (req: Request, res: Response) => {
 };
 
 // DELETE /recipes/:id/user/:userId - Delete a recipe
-export const deleteRecipe = async (req: Request, res: Response) => {
+ const deleteRecipe = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
 
@@ -99,7 +101,7 @@ export const deleteRecipe = async (req: Request, res: Response) => {
 };
 
 // GET /recipes/user/:userId - Get recipes by User ID
-export const getRecipesByUserId = async (req: Request, res: Response) => {
+ const getRecipesByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const recipes = await RecipeModel.find({ userId });
@@ -110,7 +112,7 @@ export const getRecipesByUserId = async (req: Request, res: Response) => {
 };
 
 // GET /recipes/search/ingredient/:ingredient - Get recipes by Ingredient
-export const getRecipesByIngredient = async (req: Request, res: Response) => {
+ const getRecipesByIngredient = async (req: Request, res: Response) => {
   try {
     const ingredientName: string = req.params.ingredient;
     const recipes = await RecipeModel.find({ "ingredients.scannedItem.name": { $regex: ingredientName, $options: 'i' } });
@@ -120,3 +122,13 @@ export const getRecipesByIngredient = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching recipes by ingredient", error: err });
   }
 };
+
+export default {
+  getAllRecipes,
+  createRecipe,
+  getRecipeById,
+  updateRecipe,
+  deleteRecipe,
+  getRecipesByUserId,
+  getRecipesByIngredient
+};  

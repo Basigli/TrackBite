@@ -1,26 +1,23 @@
-import { get } from "http";
-import { getMetrics } from "../controllers/metrics";
+import { Router } from 'express';
 
-const express = require("express");
+import dailyIntakeController from "../controllers/dailyIntake-controller";
+import dietController from "../controllers/diet-controller";
+import recipesController from "../controllers/recipes-controller";
+import scannedItemsController from "../controllers/scannedItems-controller";
+import userController from "../controllers/user-controller";
+import healthCheck from "../controllers/healthCheck";
+import stats from "../controllers/stats";
+import metrics from "../controllers/metrics";
+import {authMiddleware} from "../utils/AuthMiddleware";
 
-const dailyIntakeController = require("../controllers/dailyIntake-controller");
-const dietController = require("../controllers/diet-controller");
-const recipesController = require("../controllers/recipes-controller");
-const scannedItemsController = require("../controllers/scannedItems-controller");
-const userController = require("../controllers/user-controller");
-const healthCheck = require("../controllers/healthCheck");
-const stats = require("../controllers/stats");
-const metrics = require("../controllers/metrics");
-const authMiddleware = require("../utils/AuthMiddleware");
-
-const router = express.Router();
-
+// const router = express.Router();
+const router = Router();
 
 router.route("/users")
   .post(userController.createUser);
 
 router.route("/users/login")
-  .post(userController.loginUser);
+  .post(userController.logInUser);
 
 router.use(authMiddleware); // Apply authentication middleware to all routes below
 
@@ -65,9 +62,9 @@ router.route("/diets/user/:userId")
 
 router.route("/diets/:id")
   .get(dietController.getDietById)
-  .put(dietController.updateDiet)
 
 router.route("/diets/:id/user/:userId")
+  .put(dietController.updateDiet)
   .delete(dietController.deleteDiet);
 
 // Recipes Routes
@@ -103,4 +100,4 @@ router.route("/users/:id")
   .put(userController.updateUser)
   .delete(userController.deleteUser);
 
-module.exports = router;
+export default router;

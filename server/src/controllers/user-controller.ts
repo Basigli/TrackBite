@@ -16,7 +16,7 @@ const jwt = require("jsonwebtoken");
     const savedUser = await newUser.save();
     const userCredentials = new UserCredentialsModel({
       nickname: savedUser.nickname,
-      passwordHash: savedUser,
+      passwordHash: req.body.passwordHash,
     });
     await userCredentials.save();
     res.status(201).json(savedUser);

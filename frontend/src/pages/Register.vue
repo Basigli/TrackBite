@@ -141,6 +141,7 @@
 <script>
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
+import api from '../api';
 
 export default {
   name: 'RegisterPage',
@@ -230,13 +231,11 @@ export default {
       loading.value = true;
 
       try {
-        // Replace this with your actual API call
-        const response = await registerUser({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password
-        });
+        const res = await api.post('/users', { nickname: formData.name, mail: formData.email, savedRecipesIds: [], passwordHash: formData.password });
 
+        if (res.status !== 201) {
+          throw new Error('Registration failed. Please try again.');
+        }
         successMessage.value = 'Account created successfully! Redirecting...';
         
         // Redirect to login or dashboard after 2 seconds
@@ -249,29 +248,6 @@ export default {
       } finally {
         loading.value = false;
       }
-    };
-
-    const registerUser = async (userData) => {
-      // Simulate API call
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate successful registration
-          if (userData.email === 'test@test.com') {
-            reject(new Error('Email already exists'));
-          } else {
-            resolve({ success: true, user: userData });
-          }
-        }, 1500);
-      });
-
-      // Real implementation would look like:
-      // const response = await fetch('/api/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(userData)
-      // });
-      // if (!response.ok) throw new Error('Registration failed');
-      // return await response.json();
     };
 
     return {

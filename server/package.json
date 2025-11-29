@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "predev": "node -r ts-node/register src/initDb.ts",
+    "predev": "node -r ts-node/register src/initFullDb.ts",
     "dev": "npx tsc && node dist/index.js",
     "test": "npx jest",
     "test:parser": "node -r ts-node/register test/TestParser.ts",

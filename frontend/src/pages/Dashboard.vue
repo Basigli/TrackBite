@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue' // ✅ Add computed
 import { useIntakeStore } from '../store/intakeStore'
 import DailyIntake from '../components/DailyIntake.vue'
 import CaloriesSummary from '../components/CaloriesSummary.vue'
@@ -32,11 +32,10 @@ export default {
     const userId = userStore.user?._id
 
     onMounted(() => {
-    //  userStore.fetchUser(userId)
       intakeStore.fetchDailyIntake(userId)
     })
 
-    return { dailyIntake: intakeStore.dailyIntake }
+    return { dailyIntake: computed(() => intakeStore.dailyIntake) } // ✅ Wrap in computed
   },
 }
 </script>

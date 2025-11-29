@@ -9,7 +9,7 @@
     <ul class="space-y-3">
       <li
         v-for="day in history"
-        :key="day.id"
+        :key="day._id"
         @click="selectDay(day)"
         class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
       >
@@ -18,14 +18,14 @@
           <span class="text-green-600 font-bold">{{ day.totalCalories || 0 }} kcal</span>
         </div>
         <div class="text-sm text-gray-600 mt-1">
-          {{ summarizeMeals(day.meals) }}
+          {{ summarizeFoodItems(day.foodItems) }}
         </div>
       </li>
     </ul>
 
     <DailyIntake
       v-if="selectedDay"
-      :meals="selectedDay.meals"
+      :meals="selectedDay.foodItems"
       class="mt-8"
     />
   </div>
@@ -55,16 +55,22 @@ export default {
       return date.toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     };
 
-    const summarizeMeals = (meals) => {
-      if (!meals || meals.length === 0) return 'No meals logged';
-      return meals.map(m => `${m.name}: ${m.foods.reduce((sum,f)=>sum+f.calories,0)} kcal`).join(' | ');
+    const summarizeFoodItems = (foodItems) => {
+      if (!foodItems || foodItems.length === 0) return 'No food items logged';
+      const count = foodItems.length;
+      const itemNames = foodItems
+        .slice(0, 3)
+        .map(f => f.scannedItem.name)
+        .join(', ');
+      const more = count > 3 ? ` +${count - 3} more` : '';
+      return `${itemNames}${more}`;
     };
 
     onMounted(() => {
       intakeStore.fetchDailyIntakeHistory(userId);
     });
 
-    return { history: intakeStore.history, selectedDay, selectDay, formatDate, summarizeMeals };
+    return { history: intakeStore.history, selectedDay, selectDay, formatDate, summarizeFoodItems };
   }
 };
 </script>

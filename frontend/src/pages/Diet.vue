@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useDietStore } from '../store/dietStore';
 import DietPlan from '../components/DietPlan.vue';
 import DietSelector from '../components/DietSelector.vue';
@@ -47,7 +47,9 @@ export default {
     const updateDiet = (dietId, data) => store.updateDiet(dietId, userId, data);
     const deleteDiet = (dietId) => store.deleteDiet(dietId, userId);
 
-    return { diets: store.diets, selectedDiet: store.selectedDiet, selectDiet, updateDiet, deleteDiet };
+    return { diets: computed(() => store.diets), 
+      selectedDiet: computed(() => store.selectedDiet), 
+      selectDiet, updateDiet, deleteDiet };
   }
 };
 </script>

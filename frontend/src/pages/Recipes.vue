@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeList from '../components/RecipeList.vue';
 import AddRecipe from '../components/AddRecipe.vue';
@@ -31,7 +31,7 @@ const store = useRecipeStore();
 const userStore = useUserStore();
 const userId = userStore.user?._id;
 
-const recipes = store.recipes;
+const recipes = computed(() => store.recipes);
 
 const fetchRecipes = () => store.fetchRecipes(userId);
 const deleteRecipe = (recipeId) => store.deleteRecipe(recipeId, userId);

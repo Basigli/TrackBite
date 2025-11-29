@@ -74,5 +74,11 @@ export const useUserStore = defineStore('user', () => {
       alert('Session has expired. Please log in again.');
   };
 
-  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword, decodeToken};
+  const logout = () => {
+    Object.assign(user, {} as User);
+    Object.assign(authToken, { value: '' });
+  };
+
+
+  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword, decodeToken, logout};
 });

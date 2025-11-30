@@ -102,32 +102,6 @@ export default {
       scannerError.value = null;
     };
 
-    const fetchFoodByBarcode = async (barcode) => {
-      // Example implementation using OpenFoodFacts API
-      // You should replace this with your own API call
-      try {
-        const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
-        const data = await response.json();
-        
-        if (data.status === 1 && data.product) {
-          const product = data.product;
-          return {
-            name: product.product_name || 'Unknown Product',
-            quantity: 100, // Default quantity
-            calories: product.nutriments?.['energy-kcal_100g'] || 0,
-            protein: product.nutriments?.proteins_100g || 0,
-            carbs: product.nutriments?.carbohydrates_100g || 0,
-            fat: product.nutriments?.fat_100g || 0,
-            barcode: barcode
-          };
-        }
-        return null;
-      } catch (error) {
-        console.error('Error fetching from OpenFoodFacts:', error);
-        return null;
-      }
-    };
-
     const addFoodToDailyIntake = (food) => {
       selectedFoods.value.push(food);
       // Clear scanned item after adding

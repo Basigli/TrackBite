@@ -52,6 +52,7 @@ import { useIntakeStore } from '../store/intakeStore';
 import FoodSearch from '../components/FoodSearch.vue';
 import ScannedItem from '../components/ScannedItem.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
+import api from '../api';
 
 export default {
   name: 'AddFood',
@@ -80,10 +81,9 @@ export default {
       console.log('Barcode detected:', result);
       lastScannedCode.value = result;
       
-      // Fetch food data from barcode (you'll need to implement this)
-      // Example: Call OpenFoodFacts API or your own backend
       try {
-        const foodData = await fetchFoodByBarcode(result);
+        const response = await api.get(`scanned-items/${result}`);
+        const foodData = response.data;
         if (foodData) {
           scannedItem.value = foodData;
           // Optionally auto-close scanner after successful scan

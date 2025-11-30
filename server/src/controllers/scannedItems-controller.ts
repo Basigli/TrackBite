@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { ScannedItemModel } from "../storage/ScannedItemSchema";
 import { ScannedItemSchemaZ } from "../models/ScannedItem";
-
+import axios from "axios";
+import { ScanParser } from "../utils/ScanParser";
 // GET /scanned-items
  const getAllScannedItems = async (req: Request, res: Response) => {
   try {
@@ -32,7 +33,27 @@ import { ScannedItemSchemaZ } from "../models/ScannedItem";
   try {
     const { id } = req.params;
     const item = await ScannedItemModel.findById(id);
-    if (!item) return res.status(404).json({ error: "Item not found" });
+    if (!item) {
+      console.log("Item not found for ID:", id);
+      try {
+        const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${id}.json`;
+        const response = await axios.get(apiUrl);
+        if (response.data.status === 1) {
+          const productData = JSON.stringify(response.data);
+          const parsedData = ScanParser.parse(productData, id);
+          const newItem = new ScannedItemModel(parsedData);
+          const savedItem = await newItem.save();
+          return res.status(200).json(savedItem);
+        } else {
+          return res.status(404).json({ error: "Item not found in external database" });
+        }
+      }
+      catch (error) {
+        console.error("Error fetching from external API:", error);
+        return res.status(500).json({ error: "Failed to fetch item from external API" });
+      }
+    }
+    // if (!item) return res.status(404).json({ error: "Item not found" });
     res.status(200).json(item);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch scanned item" });

@@ -3,6 +3,7 @@ import { ScannedItem } from "../models/ScannedItem";
 import { NutrientSchema } from "./NutrientSchema";
 
 export const ScannedItemSchema: Schema<ScannedItem> = new Schema({
+  _id: { type: String},
   name: { type: String, required: true },
   allergens: { type: [String], default: [] },
   nutrients: { type: [NutrientSchema], default: [] },

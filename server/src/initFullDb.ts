@@ -74,6 +74,7 @@ async function seed() {
 
   // ===== SCANNED ITEMS (Products) =====
   const chickenBreast = await ScannedItemModel.create({
+    _id: "0000000000001",
     name: "Chicken Breast",
     allergens: [],
     nutrients: [
@@ -93,6 +94,7 @@ async function seed() {
   });
 
   const brownRice = await ScannedItemModel.create({
+    _id: "0000000000002",
     name: "Brown Rice",
     allergens: [],
     nutrients: [
@@ -113,6 +115,7 @@ async function seed() {
   });
 
   const almondMilk = await ScannedItemModel.create({
+    _id: "0000000000003",
     name: "Almond Milk Unsweetened",
     allergens: ["nuts", "tree nuts"],
     nutrients: [
@@ -133,6 +136,7 @@ async function seed() {
   });
 
   const spinach = await ScannedItemModel.create({
+    _id: "0000000000004",
     name: "Fresh Spinach",
     allergens: [],
     nutrients: [
@@ -153,6 +157,7 @@ async function seed() {
   });
 
   const salmonFillet = await ScannedItemModel.create({
+    _id: "0000000000005",
     name: "Atlantic Salmon Fillet",
     allergens: ["fish"],
     nutrients: [
@@ -172,6 +177,7 @@ async function seed() {
   });
 
   const wholeWheatBread = await ScannedItemModel.create({
+    _id: "0000000000006",
     name: "Whole Wheat Bread",
     allergens: ["wheat", "gluten", "soy"],
     nutrients: [

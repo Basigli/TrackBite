@@ -3,8 +3,11 @@ import { Nutrient } from "./Nutrient";
 import { z } from "zod";
 
 export interface ScannedItem {
-  _id: string, 
-  name: string, 
+  _id: string,
+  name: string,
+  quantity: number,
+  quantityPerServing: number,
+  quantityUnit: string,
   allergens: Array<string>,
   nutrients: Array<Nutrient>,
   ingredients: Array<string>,
@@ -16,6 +19,9 @@ export interface ScannedItem {
 export const ScannedItemSchemaZ = z.object({
   _id: z.string().optional(),
   name: z.string(),
+  quantity: z.number(),
+  quantityPerServing: z.number(),
+  quantityUnit: z.string(),
   allergens: z.array(z.string()),
   nutrients: z.array(NutrientSchemaZ),
   ingredients: z.array(z.string()),

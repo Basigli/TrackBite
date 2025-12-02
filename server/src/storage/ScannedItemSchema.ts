@@ -5,6 +5,9 @@ import { NutrientSchema } from "./NutrientSchema";
 export const ScannedItemSchema: Schema<ScannedItem> = new Schema({
   _id: { type: String},
   name: { type: String, required: true },
+  quantity: { type: Number, required: true },
+  quantityPerServing: { type: Number, required: true },
+  quantityUnit: { type: String, required: true },
   allergens: { type: [String], default: [] },
   nutrients: { type: [NutrientSchema], default: [] },
   ingredients: { type: [String], default: [] },

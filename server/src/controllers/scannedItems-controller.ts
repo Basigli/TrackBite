@@ -3,6 +3,7 @@ import { ScannedItemModel } from "../storage/ScannedItemSchema";
 import { ScannedItemSchemaZ } from "../models/ScannedItem";
 import axios from "axios";
 import { ScanParser } from "../utils/ScanParser";
+
 // GET /scanned-items
  const getAllScannedItems = async (req: Request, res: Response) => {
   try {

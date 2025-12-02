@@ -16,5 +16,4 @@ export const NutrientSchemaZ = z.object({
   totalAmount: z.number(),
   amount100g: z.number(),
   amountPerServing: z.number(),
-  // scannedItemId: z.string()
 });

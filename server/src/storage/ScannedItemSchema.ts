@@ -3,7 +3,7 @@ import { ScannedItem } from "../models/ScannedItem";
 import { NutrientSchema } from "./NutrientSchema";
 
 export const ScannedItemSchema: Schema<ScannedItem> = new Schema({
-  _id: { type: String},
+  barcode: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   quantity: { type: Number, required: true },
   quantityPerServing: { type: Number, required: true },

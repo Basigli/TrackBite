@@ -81,7 +81,7 @@ async function seed() {
 
   // ===== SCANNED ITEMS (Products) =====
   const chickenBreast = await ScannedItemModel.create({
-    _id: "0000000000001",
+    barcode: "0000000000001",
     name: "Chicken Breast",
     quantity: 100,
     quantityPerServing: 100,
@@ -104,7 +104,7 @@ async function seed() {
   });
 
   const brownRice = await ScannedItemModel.create({
-    _id: "0000000000002",
+    barcode: "0000000000002",
     name: "Brown Rice",
     quantity: 100,
     quantityPerServing: 100,
@@ -128,7 +128,7 @@ async function seed() {
   });
 
   const almondMilk = await ScannedItemModel.create({
-    _id: "0000000000003",
+    barcode: "0000000000003",
     name: "Almond Milk Unsweetened",
     quantity: 100,
     quantityPerServing: 100,
@@ -152,7 +152,7 @@ async function seed() {
   });
 
   const spinach = await ScannedItemModel.create({
-    _id: "0000000000004",
+    barcode: "0000000000004",
     name: "Fresh Spinach",
     quantity: 500,
     quantityPerServing: 100,
@@ -176,7 +176,7 @@ async function seed() {
   });
 
   const salmonFillet = await ScannedItemModel.create({
-    _id: "0000000000005",
+    barcode: "0000000000005",
     name: "Atlantic Salmon Fillet",
     quantity: 1000,
     quantityPerServing: 100,
@@ -199,7 +199,7 @@ async function seed() {
   });
 
   const wholeWheatBread = await ScannedItemModel.create({
-    _id: "0000000000006",
+    barcode: "0000000000006",
     name: "Whole Wheat Bread",
     quantity: 100,
     quantityPerServing: 100,

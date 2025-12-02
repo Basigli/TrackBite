@@ -3,7 +3,8 @@ import { Nutrient } from "./Nutrient";
 import { z } from "zod";
 
 export interface ScannedItem {
-  _id: string, 
+  _id?: string, 
+  barcode: string,
   name: string, 
   quantity: number,
   quantityPerServing: number,
@@ -18,6 +19,7 @@ export interface ScannedItem {
 
 export const ScannedItemSchemaZ = z.object({
   _id: z.string().optional(),
+  barcode: z.string(),
   name: z.string(),
   quantity: z.number(),
   quantityPerServing: z.number(),

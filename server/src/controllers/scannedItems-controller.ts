@@ -33,9 +33,9 @@ import { ScanParser } from "../utils/ScanParser";
  const getScannedItemById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const item = await ScannedItemModel.findById(id);
+    const item = await ScannedItemModel.findOne({ barcode: id });
     if (!item) {
-      console.log("Item not found for ID:", id);
+      console.log("Item not found for barcode:", id);
       try {
         const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${id}.json`;
         const response = await axios.get(apiUrl);

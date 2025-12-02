@@ -26,7 +26,7 @@ afterEach(async () => {
 describe("Scanned Items Routes", () => {
   it("POST /scanned-items - should create a new scanned item", async () => {
     const newItem = {
-      _id: "1234567890123",
+      barcode: "1234567890123",
       name: "Apple",
       quantity: 200,
       quantityPerServing: 100,
@@ -46,7 +46,7 @@ describe("Scanned Items Routes", () => {
 
   it("GET /scanned-items - should return all scanned items", async () => {
     const item = new ScannedItemModel({ 
-      _id: "5555555555555",
+      barcode: "5555555555555",
       name: "Banana", 
       quantity: 150,
       quantityPerServing: 75,
@@ -67,7 +67,7 @@ describe("Scanned Items Routes", () => {
 
   it("GET /scanned-items/:id - should get a scanned item by id", async () => {
     const item = new ScannedItemModel({
-      _id: "9876543210987",
+      barcode: "9876543210987",
       name: "Orange", 
       quantity: 180,
       quantityPerServing: 90,
@@ -87,7 +87,7 @@ describe("Scanned Items Routes", () => {
 
   it("PUT /scanned-items/:id - should update a scanned item", async () => {
     const item = new ScannedItemModel({ 
-      _id: "2468101214161",
+      barcode: "2468101214161",
       name: "Pear Updated", 
       quantity: 250,
       quantityPerServing: 125,
@@ -115,7 +115,7 @@ describe("Scanned Items Routes", () => {
 
   it("DELETE /scanned-items/:id - should delete a scanned item", async () => {
     const item = new ScannedItemModel({ 
-      _id: "3210987654321",
+      barcode: "3210987654321",
       name: "Mango", 
       quantity: 300,
       quantityPerServing: 150,

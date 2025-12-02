@@ -5,7 +5,7 @@ import { ScannedItemImpl } from '../models/ScannedItemImpl';
 
 export class ScanParser {
   
-  static parse(scanData: string, id: string = '-1'): ScannedItem {
+  static parse(scanData: string, barcode: string = '-1'): ScannedItem {
     let parsedData: any;
     try {
       parsedData = JSON.parse(scanData);
@@ -23,7 +23,7 @@ export class ScanParser {
     let ingredients = parsedData.product.ingredients_without_ecobalyse_ids?.map((ingredient: string) => ingredient.split(':')[1]) || [];
     let allergens = ScanParser.parseAllergenNames(parsedData.product.allergens_from_ingredients || '');
     let nutrients = ScanParser.parseNutrients(parsedData.product.nutriments || {});
-    return new ScannedItemImpl(id, name, quantity, quantityPerServing, quantityUnit, allergens, nutrients, ingredients, score, grade, nutrientLevels);
+    return new ScannedItemImpl( barcode, name, quantity, quantityPerServing, quantityUnit, allergens, nutrients, ingredients, score, grade, nutrientLevels);
   }
 
   static parseNutrients(nutrientData: any): Array<Nutrient> {

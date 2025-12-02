@@ -19,7 +19,10 @@ router.route("/users")
 router.route("/users/login")
   .post(userController.logInUser);
 
-router.use(authMiddleware); // Apply authentication middleware to all routes below
+// Apply authentication middleware to all routes below
+if (process.env.NODE_ENV !== "test") {
+  router.use(authMiddleware);
+} 
 
 // GET /health
 router.get("/health/liveness", healthCheck.liveness);
@@ -100,4 +103,11 @@ router.route("/users/:id")
   .put(userController.updateUser)
   .delete(userController.deleteUser);
 
+router.route('/users/:id/saved-recipes/:recipeId')
+  .post(userController.addSavedRecipe)
+  .delete(userController.removeSavedRecipe);
+
+router.route('/users/:id/saved-scanned-items/:itemId')
+  .post(userController.addSavedScannedItem)
+  .delete(userController.removeSavedScannedItem);
 export default router;

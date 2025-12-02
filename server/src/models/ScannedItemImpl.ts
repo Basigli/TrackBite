@@ -5,6 +5,9 @@ export class ScannedItemImpl implements ScannedItem {
   constructor(
     public _id: string,
     public name: string,
+    public quantity: number,
+    public quantityPerServing: number,
+    public quantityUnit: string,
     public allergens: Array<string>,
     public nutrients: Array<Nutrient>,
     public ingredients: Array<string>,

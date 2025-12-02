@@ -82,6 +82,9 @@ async function seed() {
   const chickenBreast = await ScannedItemModel.create({
     _id: "0000000000001",
     name: "Chicken Breast",
+    quantity: 100,
+    quantityPerServing: 100,
+    quantityUnit: "g",
     allergens: [],
     nutrients: [
       { ...proteinNutrient.toObject(), totalAmount: 31, amount100g: 31, amountPerServing: 30 },
@@ -102,6 +105,9 @@ async function seed() {
   const brownRice = await ScannedItemModel.create({
     _id: "0000000000002",
     name: "Brown Rice",
+    quantity: 100,
+    quantityPerServing: 100,
+    quantityUnit: "g",
     allergens: [],
     nutrients: [
       { ...proteinNutrient.toObject(), totalAmount: 7.5, amount100g: 7.5, amountPerServing: 8 },
@@ -123,6 +129,9 @@ async function seed() {
   const almondMilk = await ScannedItemModel.create({
     _id: "0000000000003",
     name: "Almond Milk Unsweetened",
+    quantity: 100,
+    quantityPerServing: 100,
+    quantityUnit: "g",
     allergens: ["nuts", "tree nuts"],
     nutrients: [
       { ...proteinNutrient.toObject(), totalAmount: 1.0, amount100g: 1.0, amountPerServing: 1 },
@@ -144,6 +153,9 @@ async function seed() {
   const spinach = await ScannedItemModel.create({
     _id: "0000000000004",
     name: "Fresh Spinach",
+    quantity: 100,
+    quantityPerServing: 100,
+    quantityUnit: "g",
     allergens: [],
     nutrients: [
       { ...proteinNutrient.toObject(), totalAmount: 2.9, amount100g: 2.9, amountPerServing: 3 },
@@ -165,6 +177,9 @@ async function seed() {
   const salmonFillet = await ScannedItemModel.create({
     _id: "0000000000005",
     name: "Atlantic Salmon Fillet",
+    quantity: 100,
+    quantityPerServing: 100,
+    quantityUnit: "g",
     allergens: ["fish"],
     nutrients: [
       { ...proteinNutrient.toObject(), totalAmount: 25.4, amount100g: 25.4, amountPerServing: 26 },
@@ -185,6 +200,9 @@ async function seed() {
   const wholeWheatBread = await ScannedItemModel.create({
     _id: "0000000000006",
     name: "Whole Wheat Bread",
+    quantity: 100,
+    quantityPerServing: 100,
+    quantityUnit: "g",
     allergens: ["wheat", "gluten", "soy"],
     nutrients: [
       { ...proteinNutrient.toObject(), totalAmount: 9.2, amount100g: 9.2, amountPerServing: 10 },

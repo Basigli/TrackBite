@@ -14,14 +14,16 @@ export class ScanParser {
     }
     
     let name = parsedData.product.product_name || parsedData.product.generic_name || 'unknown';
+    let quantity = parsedData.product.product_quantity || 0;
+    let quantityPerServing = parsedData.product.serving_quantity || quantity;
+    let quantityUnit = parsedData.product.product_quantity_unit || 'g';
     let score = parsedData.product.nutriscore_score || -1;
     let grade = parsedData.product.nutriscore_grade || 'unknown';
     let nutrientLevels = new Map<string, string>(Object.entries(parsedData.product.nutrient_levels || {}));
     let ingredients = parsedData.product.ingredients_without_ecobalyse_ids?.map((ingredient: string) => ingredient.split(':')[1]) || [];
     let allergens = ScanParser.parseAllergenNames(parsedData.product.allergens_from_ingredients || '');
     let nutrients = ScanParser.parseNutrients(parsedData.product.nutriments || {});
-    
-    return new ScannedItemImpl(id, name, allergens, nutrients, ingredients, score, grade, nutrientLevels);
+    return new ScannedItemImpl(id, name, quantity, quantityPerServing, quantityUnit, allergens, nutrients, ingredients, score, grade, nutrientLevels);
   }
 
   static parseNutrients(nutrientData: any): Array<Nutrient> {

@@ -23,12 +23,19 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await UserModel.deleteMany({});
+  await UserCredentialsModel.deleteMany({});
 });
 
 describe("User Routes", () => {
   describe("POST /users", () => {
     it("should create a new user and return 201", async () => {
-      const newUser = { nickname: "testuser", mail: "test@example.com", savedRecipesIds: [], password: "securepassword123" };
+      const newUser = { 
+        nickname: "testuser", 
+        mail: "test@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [],
+        passwordHash: "securepassword123" 
+      };
       const res = await request(app)
         .post("/users")
         .send(newUser)
@@ -38,6 +45,8 @@ describe("User Routes", () => {
       expect(res.body).toHaveProperty("_id");
       expect(res.body.nickname).toBe(newUser.nickname);
       expect(res.body.mail).toBe(newUser.mail);
+      expect(res.body.savedRecipesIds).toEqual([]);
+      expect(res.body.savedScannedItemsIds).toEqual([]);
       
       // verify in DB
       const userInDb = await UserModel.findOne({ mail: newUser.mail });
@@ -47,12 +56,23 @@ describe("User Routes", () => {
     });
 
     it("should return 400 when mail is duplicate", async () => {
-      const user = {  nickname: "u1", mail: "dup@example.com" };
+      const user = { 
+        nickname: "u1", 
+        mail: "dup@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      };
       await UserModel.create(user);
 
       const res = await request(app)
         .post("/users")
-        .send({ nickname: "u2", mail: "dup@example.com" })
+        .send({ 
+          nickname: "u2", 
+          mail: "dup@example.com", 
+          savedRecipesIds: [], 
+          savedScannedItemsIds: [],
+          passwordHash: "password123" 
+        })
         .expect("Content-Type", /json/)
         .expect(400);
 
@@ -61,10 +81,16 @@ describe("User Routes", () => {
   });
 
   describe("POST /users/login", () => {
-    it("should log in the user and return 200", async () => {
+    it("should log in the user and return 200 with token and user", async () => {
       const password = "passwordAlice";
-      const user = { nickname: "alice", passwordHash: password };
-      await UserCredentialsModel.create(user);
+      const user = { 
+        nickname: "alice", 
+        mail: "alice@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      };
+      await UserModel.create(user);
+      await UserCredentialsModel.create({ nickname: user.nickname, passwordHash: password });
 
       const res = await request(app)
         .post("/users/login")
@@ -73,11 +99,11 @@ describe("User Routes", () => {
         .expect(200);
 
       expect(res.body).toHaveProperty("token");
+      expect(res.body).toHaveProperty("user");
+      expect(res.body.user.nickname).toBe(user.nickname);
       authToken = res.body.token; // Save token for future authenticated requests
     });
-  });
 
-  describe("POST /users/login", () => {
     it("should return 404 when user not found", async () => {
       const res = await request(app)
         .post("/users/login")
@@ -90,8 +116,14 @@ describe("User Routes", () => {
 
     it("should return 401 when password is incorrect", async () => {
       const password = "correctPassword";
-      const user = { nickname: "alice", passwordHash: password };
-      await UserCredentialsModel.create(user);
+      const user = { 
+        nickname: "alice", 
+        mail: "alice@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      };
+      await UserModel.create(user);
+      await UserCredentialsModel.create({ nickname: user.nickname, passwordHash: password });
 
       const res = await request(app)
         .post("/users/login")
@@ -103,10 +135,14 @@ describe("User Routes", () => {
     });
   });
 
-
   describe("GET /users/:id", () => {
     it("should return the user when valid id", async () => {
-      const created = await UserModel.create({ nickname: "a", mail: "a@example.com" });
+      const created = await UserModel.create({ 
+        nickname: "a", 
+        mail: "a@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
       const res = await request(app)
         .get(`/users/${created._id}`)
         .set("Authorization", `Bearer ${authToken}`)
@@ -128,8 +164,19 @@ describe("User Routes", () => {
 
   describe("PUT /users/:id", () => {
     it("should update the user and return 200", async () => {
-      const created = await UserModel.create({ nickname: "old", mail: "old@example.com", savedRecipesIds: [] });
-      const update = {  _id: created._id, nickname: "newnick", mail: "old@example.com", savedRecipesIds: [] };
+      const created = await UserModel.create({ 
+        nickname: "old", 
+        mail: "old@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
+      const update = { 
+        _id: created._id, 
+        nickname: "newnick", 
+        mail: "old@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      };
       const res = await request(app)
         .put(`/users/${created._id}`)
         .set("Authorization", `Bearer ${authToken}`)
@@ -144,19 +191,40 @@ describe("User Routes", () => {
     });
 
     it("should return 400 if updating mail to one that exists", async () => {
-      await UserModel.create({ nickname: "u1", mail: "m1@example.com" });
-      const created2 = await UserModel.create({ nickname: "u2", mail: "m2@example.com" });
+      await UserModel.create({ 
+        nickname: "u1", 
+        mail: "m1@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
+      const created2 = await UserModel.create({ 
+        nickname: "u2", 
+        mail: "m2@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
 
       await request(app)
         .put(`/users/${created2._id}`)
         .set("Authorization", `Bearer ${authToken}`)
+        .send({ 
+          nickname: "u2", 
+          mail: "m1@example.com", 
+          savedRecipesIds: [], 
+          savedScannedItemsIds: [] 
+        })
         .expect(400);
     });
   });
 
   describe("DELETE /users/:id", () => {
     it("should delete the user and return 204", async () => {
-      const created = await UserModel.create({ nickname: "toDelete", mail: "td@example.com" });
+      const created = await UserModel.create({ 
+        nickname: "toDelete", 
+        mail: "td@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
 
       await request(app)
         .delete(`/users/${created._id}`)
@@ -171,6 +239,178 @@ describe("User Routes", () => {
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
         .delete(`/users/${fakeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(404);
+    });
+  });
+
+  describe("POST /users/:id/saved-recipes/:recipeId", () => {
+    it("should add a recipe to saved recipes and return 200", async () => {
+      const user = await UserModel.create({ 
+        nickname: "user1", 
+        mail: "user1@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
+      const recipeId = new mongoose.Types.ObjectId().toString();
+
+      const res = await request(app)
+        .post(`/users/${user._id}/saved-recipes/${recipeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.savedRecipesIds).toContain(recipeId);
+      
+      // verify in DB
+      const userInDb = await UserModel.findById(user._id);
+      expect(userInDb?.savedRecipesIds).toContain(recipeId);
+    });
+
+    it("should return 400 when recipe is already saved", async () => {
+      const recipeId = new mongoose.Types.ObjectId().toString();
+      const user = await UserModel.create({ 
+        nickname: "user1", 
+        mail: "user1@example.com", 
+        savedRecipesIds: [recipeId], 
+        savedScannedItemsIds: [] 
+      });
+
+      const res = await request(app)
+        .post(`/users/${user._id}/saved-recipes/${recipeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect("Content-Type", /json/)
+        .expect(400);
+
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("should return 404 when user not found", async () => {
+      const fakeUserId = new mongoose.Types.ObjectId();
+      const recipeId = new mongoose.Types.ObjectId().toString();
+
+      await request(app)
+        .post(`/users/${fakeUserId}/saved-recipes/${recipeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(404);
+    });
+  });
+
+  describe("DELETE /users/:id/saved-recipes/:recipeId", () => {
+    it("should remove a recipe from saved recipes and return 200", async () => {
+      const recipeId = new mongoose.Types.ObjectId().toString();
+      const user = await UserModel.create({ 
+        nickname: "user1", 
+        mail: "user1@example.com", 
+        savedRecipesIds: [recipeId], 
+        savedScannedItemsIds: [] 
+      });
+
+      const res = await request(app)
+        .delete(`/users/${user._id}/saved-recipes/${recipeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.savedRecipesIds).not.toContain(recipeId);
+      
+      // verify in DB
+      const userInDb = await UserModel.findById(user._id);
+      expect(userInDb?.savedRecipesIds).not.toContain(recipeId);
+    });
+
+    it("should return 404 when user not found", async () => {
+      const fakeUserId = new mongoose.Types.ObjectId();
+      const recipeId = new mongoose.Types.ObjectId().toString();
+
+      await request(app)
+        .delete(`/users/${fakeUserId}/saved-recipes/${recipeId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(404);
+    });
+  });
+
+  describe("POST /users/:id/saved-scanned-items/:itemId", () => {
+    it("should add a scanned item to saved items and return 200", async () => {
+      const user = await UserModel.create({ 
+        nickname: "user1", 
+        mail: "user1@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [] 
+      });
+      const itemId = new mongoose.Types.ObjectId().toString();
+
+      const res = await request(app)
+        .post(`/users/${user._id}/saved-scanned-items/${itemId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.savedScannedItemsIds).toContain(itemId);
+      
+      // verify in DB
+      const userInDb = await UserModel.findById(user._id);
+      expect(userInDb?.savedScannedItemsIds).toContain(itemId);
+    });
+
+    it("should return 400 when item is already saved", async () => {
+      const itemId = new mongoose.Types.ObjectId().toString();
+      const user = await UserModel.create({ 
+        nickname: "user1", 
+        mail: "user1@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [itemId] 
+      });
+
+      const res = await request(app)
+        .post(`/users/${user._id}/saved-scanned-items/${itemId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect("Content-Type", /json/)
+        .expect(400);
+
+      expect(res.body).toHaveProperty("error");
+    });
+
+    it("should return 404 when user not found", async () => {
+      const fakeUserId = new mongoose.Types.ObjectId();
+      const itemId = new mongoose.Types.ObjectId().toString();
+
+      await request(app)
+        .post(`/users/${fakeUserId}/saved-scanned-items/${itemId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect(404);
+    });
+  });
+
+  describe("DELETE /users/:id/saved-scanned-items/:itemId", () => {
+    it("should remove a scanned item from saved items and return 200", async () => {
+      const itemId = new mongoose.Types.ObjectId().toString();
+      const user = await UserModel.create({ 
+        nickname: "user1", 
+        mail: "user1@example.com", 
+        savedRecipesIds: [], 
+        savedScannedItemsIds: [itemId] 
+      });
+
+      const res = await request(app)
+        .delete(`/users/${user._id}/saved-scanned-items/${itemId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .expect("Content-Type", /json/)
+        .expect(200);
+
+      expect(res.body.savedScannedItemsIds).not.toContain(itemId);
+      
+      // verify in DB
+      const userInDb = await UserModel.findById(user._id);
+      expect(userInDb?.savedScannedItemsIds).not.toContain(itemId);
+    });
+
+    it("should return 404 when user not found", async () => {
+      const fakeUserId = new mongoose.Types.ObjectId();
+      const itemId = new mongoose.Types.ObjectId().toString();
+
+      await request(app)
+        .delete(`/users/${fakeUserId}/saved-scanned-items/${itemId}`)
         .set("Authorization", `Bearer ${authToken}`)
         .expect(404);
     });

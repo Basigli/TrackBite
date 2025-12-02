@@ -6,7 +6,7 @@ import { UserCredentialsSchemaZ } from "../models/UserCredentials";
 const jwt = require("jsonwebtoken");
 
 // POST /users - Create a new user
- const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response) => {
   try {
     const parsed = UserSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -29,7 +29,7 @@ const jwt = require("jsonwebtoken");
   }
 };
 
- const logInUser = async (req: Request, res: Response) => {
+const logInUser = async (req: Request, res: Response) => {
   console.log('Request body:', req.body); // Debug log
   console.log('Content-Type:', req.headers['content-type']); // Debug log
   try {
@@ -48,16 +48,15 @@ const jwt = require("jsonwebtoken");
     if (!user) return res.status(404).json({ error: "User not found" });
     // Generate JWT token
     const token = generateToken(user._id.toString(), nickname);
-    res.status(200).json({ token });
+    res.status(200).json({ token, user });
   } catch (error) {
     res.status(500).json({ error: "Failed to log in user" });
   }
-
 };
 
 // GET /users/:id - Get user by ID
- const getUserById = async (req: Request, res: Response) => {
-  console.log('Fetching user with ID:', req); // Debug log
+const getUserById = async (req: Request, res: Response) => {
+  console.log('Fetching user with ID:', req.params.id); // Debug log
   try {
     const { id } = req.params;
     const user = await UserModel.findById(id);
@@ -69,7 +68,7 @@ const jwt = require("jsonwebtoken");
 };
 
 // PUT /users/:id - Update user
- const updateUser = async (req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const parsed = UserSchemaZ.safeParse(req.body);
@@ -88,7 +87,7 @@ const jwt = require("jsonwebtoken");
 };
 
 // DELETE /users/:id - Delete user
- const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const deletedUser = await UserModel.findByIdAndDelete(id);
@@ -96,6 +95,74 @@ const jwt = require("jsonwebtoken");
     res.status(204).send();
   } catch (err) {
     res.status(500).json({ error: "Failed to delete user" });
+  }
+};
+
+// POST /users/:id/saved-recipes/:recipeId - Add recipe to saved recipes
+const addSavedRecipe = async (req: Request, res: Response) => {
+  try {
+    const { id, recipeId } = req.params;
+    const user = await UserModel.findById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    if (user.savedRecipesIds.includes(recipeId)) {
+      return res.status(400).json({ error: "Recipe already saved" });
+    }
+    
+    user.savedRecipesIds.push(recipeId);
+    await user.save();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add saved recipe" });
+  }
+};
+
+// DELETE /users/:id/saved-recipes/:recipeId - Remove recipe from saved recipes
+const removeSavedRecipe = async (req: Request, res: Response) => {
+  try {
+    const { id, recipeId } = req.params;
+    const user = await UserModel.findById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    user.savedRecipesIds = user.savedRecipesIds.filter(rid => rid !== recipeId);
+    await user.save();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to remove saved recipe" });
+  }
+};
+
+// POST /users/:id/saved-scanned-items/:itemId - Add scanned item to saved items
+const addSavedScannedItem = async (req: Request, res: Response) => {
+  try {
+    const { id, itemId } = req.params;
+    const user = await UserModel.findById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    if (user.savedScannedItemsIds.includes(itemId)) {
+      return res.status(400).json({ error: "Item already saved" });
+    }
+    
+    user.savedScannedItemsIds.push(itemId);
+    await user.save();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to add saved scanned item" });
+  }
+};
+
+// DELETE /users/:id/saved-scanned-items/:itemId - Remove scanned item from saved items
+const removeSavedScannedItem = async (req: Request, res: Response) => {
+  try {
+    const { id, itemId } = req.params;
+    const user = await UserModel.findById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    user.savedScannedItemsIds = user.savedScannedItemsIds.filter(iid => iid !== itemId);
+    await user.save();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to remove saved scanned item" });
   }
 };
 
@@ -113,4 +180,8 @@ export default {
   getUserById,
   updateUser,
   deleteUser,
+  addSavedRecipe,
+  removeSavedRecipe,
+  addSavedScannedItem,
+  removeSavedScannedItem,
 };

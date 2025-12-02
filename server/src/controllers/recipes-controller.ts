@@ -115,7 +115,7 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
  const getRecipesByIngredient = async (req: Request, res: Response) => {
   try {
     const ingredientName: string = req.params.ingredient;
-    const recipes = await RecipeModel.find({ "ingredients.scannedItem.name": { $regex: ingredientName, $options: 'i' } });
+    const recipes = await RecipeModel.find({ "ingredients.ingredients": { $regex: ingredientName, $options: 'i' } });
     res.status(200).json(recipes);
   } catch (err) {
     console.log("Error in getRecipesByIngredient:", err);

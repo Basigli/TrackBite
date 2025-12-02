@@ -7,6 +7,7 @@ import { DailyIntakeModel } from "../src/storage/DailyIntakeSchema";
 import { ScannedItemModel } from "../src/storage/ScannedItemSchema";
 import { NutrientModel } from "../src/storage/NutrientSchema";
 import { FoodItemModel } from "../src/storage/FoodItemSchema";
+import { FoodItemConverter } from "./utils/FoodItemConverter";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/trackbite";
 
@@ -153,7 +154,7 @@ async function seed() {
   const spinach = await ScannedItemModel.create({
     _id: "0000000000004",
     name: "Fresh Spinach",
-    quantity: 100,
+    quantity: 500,
     quantityPerServing: 100,
     quantityUnit: "g",
     allergens: [],
@@ -177,7 +178,7 @@ async function seed() {
   const salmonFillet = await ScannedItemModel.create({
     _id: "0000000000005",
     name: "Atlantic Salmon Fillet",
-    quantity: 100,
+    quantity: 1000,
     quantityPerServing: 100,
     quantityUnit: "g",
     allergens: ["fish"],
@@ -228,25 +229,15 @@ async function seed() {
   console.log("Inserted scanned items");
 
   // ===== FOOD ITEMS =====
-  const foodItemChicken = await FoodItemModel.create({
-    scannedItem: chickenBreast.toObject(),
-    percentage: 100
-  });
+  const converter = new FoodItemConverter();
 
-  const foodItemRice = await FoodItemModel.create({
-    scannedItem: brownRice.toObject(),
-    percentage: 75
-  });
+  const foodItemChicken = await FoodItemModel.create(converter.toFoodItemWithGrams(chickenBreast, 100));
+  const foodItemRice = await FoodItemModel.create(converter.toFoodItemWithGrams(brownRice, 75));
+  const foodItemSpinach = await FoodItemModel.create(converter.toFoodItemWithServings(spinach, 1));
+  const foodItemSalmon = await FoodItemModel.create(converter.toFoodItemWithServings(salmonFillet, 2));
+  const foodItemWholeWheatBread = await FoodItemModel.create(converter.toFoodItemWithGrams(wholeWheatBread, 50));
+  const foodItemAlmondMilk = await FoodItemModel.create(converter.toFoodItemWithGrams(almondMilk, 200));
 
-  const foodItemSpinach = await FoodItemModel.create({
-    scannedItem: spinach.toObject(),
-    percentage: 100
-  });
-
-  const foodItemSalmon = await FoodItemModel.create({
-    scannedItem: salmonFillet.toObject(),
-    percentage: 100
-  });
 
   console.log("Inserted food items");
 
@@ -293,21 +284,9 @@ async function seed() {
   const recipeGrilledChicken = await RecipeModel.create({
     name: "Grilled Chicken with Brown Rice and Spinach",
     ingredients: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: chickenBreast.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: brownRice.toObject(),
-        percentage: 75
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: spinach.toObject(),
-        percentage: 100
-      }
+      foodItemChicken,
+      foodItemRice,
+      foodItemSpinach
     ],
     userId: userAlice._id.toString()
   });
@@ -315,21 +294,9 @@ async function seed() {
   const recipeSalmonBowl = await RecipeModel.create({
     name: "Salmon Power Bowl",
     ingredients: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: salmonFillet.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: brownRice.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: spinach.toObject(),
-        percentage: 50
-      }
+      foodItemSalmon,
+      foodItemRice,
+      foodItemSpinach
     ],
     userId: userBob._id.toString()
   });
@@ -337,16 +304,8 @@ async function seed() {
   const recipeBreakfastToast = await RecipeModel.create({
     name: "Protein Breakfast Toast",
     ingredients: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: wholeWheatBread.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: almondMilk.toObject(),
-        percentage: 100
-      }
+      foodItemWholeWheatBread,
+      foodItemAlmondMilk
     ],
     userId: userCharlie._id.toString()
   });
@@ -367,121 +326,69 @@ async function seed() {
   const threeDaysAgo = new Date(Date.now() - 3 * 86400000);
 
   const dailyIntakeToday = await DailyIntakeModel.create({
-    totalCalories: 1850,
-    totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 145, amount100g: 26.5, amountPerServing: 27 },
-      { ...fatNutrient.toObject(), totalAmount: 62, amount100g: 12.3, amountPerServing: 13 },
-      { ...carbsNutrient.toObject(), totalAmount: 180, amount100g: 45.8, amountPerServing: 46 }
-    ],
-    foodItems: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: chickenBreast.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: brownRice.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: spinach.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: salmonFillet.toObject(),
-        percentage: 100
-      }
-    ],
-    date: today.toISOString(),
-    userId: userAlice._id.toString()
-  });
+  totalCalories: 1850,
+  totalMacros: [
+    { name: "Protein", unit: "g", totalAmount: 145, amount100g: 26.5, amountPerServing: 27 },
+    { name: "Fat", unit: "g", totalAmount: 62, amount100g: 12.3, amountPerServing: 13 },
+    { name: "Carbohydrates", unit: "g", totalAmount: 180, amount100g: 45.8, amountPerServing: 46 }
+  ],
+  foodItems: [
+    converter.toFoodItemWithGrams(chickenBreast, 100),
+    converter.toFoodItemWithGrams(brownRice, 100),
+    converter.toFoodItemWithServings(spinach, 1),
+    converter.toFoodItemWithServings(salmonFillet, 1)
+  ],
+  date: today.toISOString(),
+  userId: userAlice._id.toString()
+});
 
-  const dailyIntakeYesterday = await DailyIntakeModel.create({
-    totalCalories: 2100,
-    totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 160, amount100g: 26.5, amountPerServing: 27 },
-      { ...fatNutrient.toObject(), totalAmount: 70, amount100g: 12.3, amountPerServing: 13 },
-      { ...carbsNutrient.toObject(), totalAmount: 210, amount100g: 45.8, amountPerServing: 46 }
-    ],
-    foodItems: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: salmonFillet.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: brownRice.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: wholeWheatBread.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: almondMilk.toObject(),
-        percentage: 100
-      }
-    ],
-    date: yesterday.toISOString(),
-    userId: userAlice._id.toString()
-  });
+const dailyIntakeYesterday = await DailyIntakeModel.create({
+  totalCalories: 2100,
+  totalMacros: [
+    { name: "Protein", unit: "g", totalAmount: 160, amount100g: 26.5, amountPerServing: 27 },
+    { name: "Fat", unit: "g", totalAmount: 70, amount100g: 12.3, amountPerServing: 13 },
+    { name: "Carbohydrates", unit: "g", totalAmount: 210, amount100g: 45.8, amountPerServing: 46 }
+  ],
+  foodItems: [
+    converter.toFoodItemWithServings(salmonFillet, 1),
+    converter.toFoodItemWithGrams(brownRice, 100),
+    converter.toFoodItemWithGrams(wholeWheatBread, 100),
+    converter.toFoodItemWithGrams(almondMilk, 100)
+  ],
+  date: yesterday.toISOString(),
+  userId: userAlice._id.toString()
+});
 
-  const dailyIntakeTwoDaysAgo = await DailyIntakeModel.create({
-    totalCalories: 1650,
-    totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 120, amount100g: 26.5, amountPerServing: 27 },
-      { ...fatNutrient.toObject(), totalAmount: 55, amount100g: 12.3, amountPerServing: 13 },
-      { ...carbsNutrient.toObject(), totalAmount: 165, amount100g: 45.8, amountPerServing: 46 }
-    ],
-    foodItems: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: chickenBreast.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: spinach.toObject(),
-        percentage: 100
-      }
-    ],
-    date: twoDaysAgo.toISOString(),
-    userId: userBob._id.toString()
-  });
+const dailyIntakeTwoDaysAgo = await DailyIntakeModel.create({
+  totalCalories: 1650,
+  totalMacros: [
+    { name: "Protein", unit: "g", totalAmount: 120, amount100g: 26.5, amountPerServing: 27 },
+    { name: "Fat", unit: "g", totalAmount: 55, amount100g: 12.3, amountPerServing: 13 },
+    { name: "Carbohydrates", unit: "g", totalAmount: 165, amount100g: 45.8, amountPerServing: 46 }
+  ],
+  foodItems: [
+    converter.toFoodItemWithGrams(chickenBreast, 100),
+    converter.toFoodItemWithServings(spinach, 2)
+  ],
+  date: twoDaysAgo.toISOString(),
+  userId: userBob._id.toString()
+});
 
-  const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
-    totalCalories: 1950,
-    totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 135, amount100g: 26.5, amountPerServing: 27 },
-      { ...fatNutrient.toObject(), totalAmount: 68, amount100g: 12.3, amountPerServing: 13 },
-      { ...carbsNutrient.toObject(), totalAmount: 195, amount100g: 45.8, amountPerServing: 46 }
-    ],
-    foodItems: [
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: salmonFillet.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: brownRice.toObject(),
-        percentage: 100
-      },
-      {
-        _id: new mongoose.Types.ObjectId().toString(),
-        scannedItem: spinach.toObject(),
-        percentage: 100
-      }
-    ],
-    date: threeDaysAgo.toISOString(),
-    userId: userCharlie._id.toString()
-  });
+const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
+  totalCalories: 1950,
+  totalMacros: [
+    { name: "Protein", unit: "g", totalAmount: 135, amount100g: 26.5, amountPerServing: 27 },
+    { name: "Fat", unit: "g", totalAmount: 68, amount100g: 12.3, amountPerServing: 13 },
+    { name: "Carbohydrates", unit: "g", totalAmount: 195, amount100g: 45.8, amountPerServing: 46 }
+  ],
+  foodItems: [
+    converter.toFoodItemWithServings(salmonFillet, 1),
+    converter.toFoodItemWithGrams(brownRice, 100),
+    converter.toFoodItemWithServings(spinach, 1)
+  ],
+  date: threeDaysAgo.toISOString(),
+  userId: userCharlie._id.toString()
+});
 
   console.log("Inserted daily intakes");
 

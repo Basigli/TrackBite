@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export interface FoodItem {
-  _id: string, 
+  _id?: string, 
   name: string,
   quantity: string,
   calories: number,

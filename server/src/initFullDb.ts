@@ -32,42 +32,48 @@ async function seed() {
     name: "Protein",
     unit: "g",
     totalAmount: 26.5,
-    amount100g: 26.5
+    amount100g: 26.5,
+    amountPerServing: 27
   });
 
   const fatNutrient = await NutrientModel.create({
     name: "Fat",
     unit: "g",
     totalAmount: 12.3,
-    amount100g: 12.3
+    amount100g: 12.3,
+    amountPerServing: 13
   });
 
   const carbsNutrient = await NutrientModel.create({
     name: "Carbohydrates",
     unit: "g",
     totalAmount: 45.8,
-    amount100g: 45.8
+    amount100g: 45.8,
+    amountPerServing: 46
   });
 
   const fiberNutrient = await NutrientModel.create({
     name: "Fiber",
     unit: "g",
     totalAmount: 8.2,
-    amount100g: 8.2
+    amount100g: 8.2,
+    amountPerServing: 8.5
   });
 
   const sodiumNutrient = await NutrientModel.create({
     name: "Sodium",
     unit: "mg",
     totalAmount: 340,
-    amount100g: 340
+    amount100g: 340,
+    amountPerServing: 350
   });
 
   const sugarNutrient = await NutrientModel.create({
     name: "Sugar",
     unit: "g",
     totalAmount: 15.6,
-    amount100g: 15.6
+    amount100g: 15.6,
+    amountPerServing: 16
   });
 
   console.log("Inserted nutrients");
@@ -78,9 +84,9 @@ async function seed() {
     name: "Chicken Breast",
     allergens: [],
     nutrients: [
-      { ...proteinNutrient.toObject(), totalAmount: 31, amount100g: 31 },
-      { ...fatNutrient.toObject(), totalAmount: 3.6, amount100g: 3.6 },
-      { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0 }
+      { ...proteinNutrient.toObject(), totalAmount: 31, amount100g: 31, amountPerServing: 30 },
+      { ...fatNutrient.toObject(), totalAmount: 3.6, amount100g: 3.6, amountPerServing: 3 },
+      { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0, amountPerServing: 0 }
     ],
     ingredients: ["Chicken breast", "Water", "Salt"],
     score: 9,
@@ -98,10 +104,10 @@ async function seed() {
     name: "Brown Rice",
     allergens: [],
     nutrients: [
-      { ...proteinNutrient.toObject(), totalAmount: 7.5, amount100g: 7.5 },
-      { ...fatNutrient.toObject(), totalAmount: 2.8, amount100g: 2.8 },
-      { ...carbsNutrient.toObject(), totalAmount: 77.2, amount100g: 77.2 },
-      { ...fiberNutrient.toObject(), totalAmount: 3.5, amount100g: 3.5 }
+      { ...proteinNutrient.toObject(), totalAmount: 7.5, amount100g: 7.5, amountPerServing: 8 },
+      { ...fatNutrient.toObject(), totalAmount: 2.8, amount100g: 2.8, amountPerServing: 3 },
+      { ...carbsNutrient.toObject(), totalAmount: 77.2, amount100g: 77.2, amountPerServing: 80 },
+      { ...fiberNutrient.toObject(), totalAmount: 3.5, amount100g: 3.5, amountPerServing: 4 }
     ],
     ingredients: ["Whole grain brown rice"],
     score: 8,
@@ -119,10 +125,10 @@ async function seed() {
     name: "Almond Milk Unsweetened",
     allergens: ["nuts", "tree nuts"],
     nutrients: [
-      { ...proteinNutrient.toObject(), totalAmount: 1.0, amount100g: 1.0 },
-      { ...fatNutrient.toObject(), totalAmount: 2.5, amount100g: 2.5 },
-      { ...carbsNutrient.toObject(), totalAmount: 1.4, amount100g: 1.4 },
-      { ...sodiumNutrient.toObject(), totalAmount: 170, amount100g: 170 }
+      { ...proteinNutrient.toObject(), totalAmount: 1.0, amount100g: 1.0, amountPerServing: 1 },
+      { ...fatNutrient.toObject(), totalAmount: 2.5, amount100g: 2.5, amountPerServing: 3 },
+      { ...carbsNutrient.toObject(), totalAmount: 1.4, amount100g: 1.4, amountPerServing: 2 },
+      { ...sodiumNutrient.toObject(), totalAmount: 170, amount100g: 170, amountPerServing: 180 }
     ],
     ingredients: ["Filtered water", "Almonds", "Calcium carbonate", "Sea salt", "Vitamin E"],
     score: 7,
@@ -140,10 +146,10 @@ async function seed() {
     name: "Fresh Spinach",
     allergens: [],
     nutrients: [
-      { ...proteinNutrient.toObject(), totalAmount: 2.9, amount100g: 2.9 },
-      { ...fatNutrient.toObject(), totalAmount: 0.4, amount100g: 0.4 },
-      { ...carbsNutrient.toObject(), totalAmount: 3.6, amount100g: 3.6 },
-      { ...fiberNutrient.toObject(), totalAmount: 2.2, amount100g: 2.2 }
+      { ...proteinNutrient.toObject(), totalAmount: 2.9, amount100g: 2.9, amountPerServing: 3 },
+      { ...fatNutrient.toObject(), totalAmount: 0.4, amount100g: 0.4, amountPerServing: 0.5 },
+      { ...carbsNutrient.toObject(), totalAmount: 3.6, amount100g: 3.6, amountPerServing: 4 },
+      { ...fiberNutrient.toObject(), totalAmount: 2.2, amount100g: 2.2, amountPerServing: 2.5 }
     ],
     ingredients: ["Spinach"],
     score: 10,
@@ -161,9 +167,9 @@ async function seed() {
     name: "Atlantic Salmon Fillet",
     allergens: ["fish"],
     nutrients: [
-      { ...proteinNutrient.toObject(), totalAmount: 25.4, amount100g: 25.4 },
-      { ...fatNutrient.toObject(), totalAmount: 13.4, amount100g: 13.4 },
-      { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0 }
+      { ...proteinNutrient.toObject(), totalAmount: 25.4, amount100g: 25.4, amountPerServing: 26 },
+      { ...fatNutrient.toObject(), totalAmount: 13.4, amount100g: 13.4, amountPerServing: 14 },
+      { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0, amountPerServing: 0 }
     ],
     ingredients: ["Atlantic salmon", "Water retained during processing"],
     score: 9,
@@ -181,12 +187,12 @@ async function seed() {
     name: "Whole Wheat Bread",
     allergens: ["wheat", "gluten", "soy"],
     nutrients: [
-      { ...proteinNutrient.toObject(), totalAmount: 9.2, amount100g: 9.2 },
-      { ...fatNutrient.toObject(), totalAmount: 3.4, amount100g: 3.4 },
-      { ...carbsNutrient.toObject(), totalAmount: 43.3, amount100g: 43.3 },
-      { ...fiberNutrient.toObject(), totalAmount: 6.0, amount100g: 6.0 },
-      { ...sugarNutrient.toObject(), totalAmount: 4.5, amount100g: 4.5 },
-      { ...sodiumNutrient.toObject(), totalAmount: 491, amount100g: 491 }
+      { ...proteinNutrient.toObject(), totalAmount: 9.2, amount100g: 9.2, amountPerServing: 10 },
+      { ...fatNutrient.toObject(), totalAmount: 3.4, amount100g: 3.4, amountPerServing: 4 },
+      { ...carbsNutrient.toObject(), totalAmount: 43.3, amount100g: 43.3, amountPerServing: 45 },
+      { ...fiberNutrient.toObject(), totalAmount: 6.0, amount100g: 6.0, amountPerServing: 6.5 },
+      { ...sugarNutrient.toObject(), totalAmount: 4.5, amount100g: 4.5, amountPerServing: 5 },
+      { ...sodiumNutrient.toObject(), totalAmount: 491, amount100g: 491, amountPerServing: 500 }
     ],
     ingredients: ["Whole wheat flour", "Water", "Yeast", "Salt", "Soybean oil", "Sugar", "Wheat gluten"],
     score: 7,
@@ -345,9 +351,9 @@ async function seed() {
   const dailyIntakeToday = await DailyIntakeModel.create({
     totalCalories: 1850,
     totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 145, amount100g: 26.5 },
-      { ...fatNutrient.toObject(), totalAmount: 62, amount100g: 12.3 },
-      { ...carbsNutrient.toObject(), totalAmount: 180, amount100g: 45.8 }
+      { ...proteinNutrient.toObject(), totalAmount: 145, amount100g: 26.5, amountPerServing: 27 },
+      { ...fatNutrient.toObject(), totalAmount: 62, amount100g: 12.3, amountPerServing: 13 },
+      { ...carbsNutrient.toObject(), totalAmount: 180, amount100g: 45.8, amountPerServing: 46 }
     ],
     foodItems: [
       {
@@ -378,9 +384,9 @@ async function seed() {
   const dailyIntakeYesterday = await DailyIntakeModel.create({
     totalCalories: 2100,
     totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 160, amount100g: 26.5 },
-      { ...fatNutrient.toObject(), totalAmount: 70, amount100g: 12.3 },
-      { ...carbsNutrient.toObject(), totalAmount: 210, amount100g: 45.8 }
+      { ...proteinNutrient.toObject(), totalAmount: 160, amount100g: 26.5, amountPerServing: 27 },
+      { ...fatNutrient.toObject(), totalAmount: 70, amount100g: 12.3, amountPerServing: 13 },
+      { ...carbsNutrient.toObject(), totalAmount: 210, amount100g: 45.8, amountPerServing: 46 }
     ],
     foodItems: [
       {
@@ -411,9 +417,9 @@ async function seed() {
   const dailyIntakeTwoDaysAgo = await DailyIntakeModel.create({
     totalCalories: 1650,
     totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 120, amount100g: 26.5 },
-      { ...fatNutrient.toObject(), totalAmount: 55, amount100g: 12.3 },
-      { ...carbsNutrient.toObject(), totalAmount: 165, amount100g: 45.8 }
+      { ...proteinNutrient.toObject(), totalAmount: 120, amount100g: 26.5, amountPerServing: 27 },
+      { ...fatNutrient.toObject(), totalAmount: 55, amount100g: 12.3, amountPerServing: 13 },
+      { ...carbsNutrient.toObject(), totalAmount: 165, amount100g: 45.8, amountPerServing: 46 }
     ],
     foodItems: [
       {
@@ -434,9 +440,9 @@ async function seed() {
   const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
     totalCalories: 1950,
     totalMacros: [
-      { ...proteinNutrient.toObject(), totalAmount: 135, amount100g: 26.5 },
-      { ...fatNutrient.toObject(), totalAmount: 68, amount100g: 12.3 },
-      { ...carbsNutrient.toObject(), totalAmount: 195, amount100g: 45.8 }
+      { ...proteinNutrient.toObject(), totalAmount: 135, amount100g: 26.5, amountPerServing: 27 },
+      { ...fatNutrient.toObject(), totalAmount: 68, amount100g: 12.3, amountPerServing: 13 },
+      { ...carbsNutrient.toObject(), totalAmount: 195, amount100g: 45.8, amountPerServing: 46 }
     ],
     foodItems: [
       {

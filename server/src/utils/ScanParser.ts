@@ -39,6 +39,7 @@ export class ScanParser {
       const totalAmount = nutrientData[name + "_value"] || nutrientData[name];
       const unit = nutrientData[name + "_unit"] || 'g';
       const amount100g = nutrientData[name + "_100g"] || totalAmount;
+      const amountPerServing = nutrientData[name + "_serving"] || undefined;
       
       // Only add if we have valid data
       if (totalAmount !== undefined && unit && amount100g !== undefined) {
@@ -47,7 +48,8 @@ export class ScanParser {
           name: name,
           unit: unit,
           totalAmount: totalAmount,
-          amount100g: amount100g
+          amount100g: amount100g,
+          amountPerServing: amountPerServing
         } as Nutrient);
         seenNutrients.add(name);
       }

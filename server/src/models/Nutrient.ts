@@ -6,6 +6,7 @@ export interface Nutrient {
     unit: string,
     totalAmount: number,
     amount100g: number,
+    amountPerServing: number,
     // scannedItemId: string
 }
 
@@ -15,5 +16,6 @@ export const NutrientSchemaZ = z.object({
   unit: z.string(),
   totalAmount: z.number(),
   amount100g: z.number(),
+  amountPerServing: z.number(),
   // scannedItemId: z.string()
 });

@@ -80,7 +80,7 @@ describe("Scanned Items Routes", () => {
       nutrientLevels: {} 
     });
     await item.save();
-    const res = await request(app).get(`/scanned-items/${item._id}`);
+    const res = await request(app).get(`/scanned-items/${item.barcode}`);
     expect(res.status).toBe(200);
     expect(res.body.name).toBe("Orange");
   });
@@ -108,7 +108,7 @@ describe("Scanned Items Routes", () => {
       nutrientLevels: {"iron": "high"} 
     });
     await item.save();
-    const res = await request(app).put(`/scanned-items/${item._id}`).send(item.toJSON());
+    const res = await request(app).put(`/scanned-items/${item.barcode}`).send(item.toJSON());
     expect(res.status).toBe(200);
     expect(res.body.name).toBe("Pear Updated");
   });
@@ -128,9 +128,9 @@ describe("Scanned Items Routes", () => {
       nutrientLevels: {} 
     });
     await item.save();
-    const res = await request(app).delete(`/scanned-items/${item._id}`);
+    const res = await request(app).delete(`/scanned-items/${item.barcode}`);
     expect(res.status).toBe(204);
-    const check = await ScannedItemModel.findById(item._id);
+    const check = await ScannedItemModel.findOne({ barcode: item.barcode });
     expect(check).toBeNull();
   });
 });

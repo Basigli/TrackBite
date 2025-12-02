@@ -70,7 +70,7 @@ import { ScanParser } from "../utils/ScanParser";
       console.error("Validation failed:", parsed.error);
       return res.status(400).json({ error: "Invalid scanned item data", details: parsed.error });
     }
-    const updatedItem = await ScannedItemModel.findByIdAndUpdate(id, parsed.data, { new: true });
+    const updatedItem = await ScannedItemModel.findOneAndUpdate({ barcode: id }, parsed.data, { new: true });
     if (!updatedItem) return res.status(404).json({ error: "Item not found" });
     res.status(200).json(updatedItem);
   } catch (err) {
@@ -82,7 +82,7 @@ import { ScanParser } from "../utils/ScanParser";
  const deleteScannedItem = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const deletedItem = await ScannedItemModel.findByIdAndDelete(id);
+    const deletedItem = await ScannedItemModel.findOneAndDelete({ barcode: id });
     if (!deletedItem) return res.status(404).json({ error: "Item not found" });
     res.status(204).send();
   } catch (err) {

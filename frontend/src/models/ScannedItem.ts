@@ -3,8 +3,8 @@ import { Nutrient } from "./Nutrient";
 import { z } from "zod";
 
 export interface ScannedItem {
-  _id: string,
-  name: string,
+  _id: string, 
+  name: string, 
   quantity: number,
   quantityPerServing: number,
   quantityUnit: string,

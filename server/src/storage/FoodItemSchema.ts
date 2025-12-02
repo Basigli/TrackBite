@@ -1,6 +1,5 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { FoodItem } from "../models/FoodItem";
-import { ScannedItemSchema } from "./ScannedItemSchema";
 
 export const FoodItemSchema: Schema<FoodItem> = new Schema({
   name: { type: String, required: true },

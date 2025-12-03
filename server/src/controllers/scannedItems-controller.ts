@@ -37,9 +37,9 @@ import { UserModel } from "../storage/UserSchema";
     const { barcode } = req.params;
     const item = await ScannedItemModel.findOne({ barcode });
     if (!item) {
-      console.log("Item not found for barcode:", id);
+      console.log("Item not found for barcode:", barcode);
       try {
-        const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${id}.json`;
+        const apiUrl = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
         const response = await axios.get(apiUrl);
         if (response.data.status === 1) {
           const productData = JSON.stringify(response.data);

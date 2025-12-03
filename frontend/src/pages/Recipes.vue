@@ -1,7 +1,14 @@
 <template>
   <div class="recipes-page max-w-4xl mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Recipes</h1>
-    <div>
+    
+    <!-- Add Recipe Form (moved to top) -->
+    <div class="mb-6">
+      <AddRecipe @recipe-added="fetchRecipes" />
+    </div>
+
+    <!-- Recipe List (with proper conditional) -->
+    <div v-if="recipes.length > 0">
       <RecipeList
         :recipes="recipes"
         @delete-recipe="deleteRecipe"
@@ -10,12 +17,8 @@
     </div>
 
     <!-- Empty state -->
-    <div v-if="recipes.length === 0" class="text-gray-500 text-center py-6">
+    <div v-else class="text-gray-500 text-center py-6">
       No recipes found. Add a new recipe above.
-    </div>
-
-    <div class="mb-6">
-      <AddRecipe @recipe-added="fetchRecipes" />
     </div>
   </div>
 </template>
@@ -31,7 +34,7 @@ const store = useRecipeStore();
 const userStore = useUserStore();
 const userId = userStore.user?._id;
 
-const recipes = computed(() => store.recipes);
+const recipes = computed(() => store.recipes || []);
 
 const fetchRecipes = () => store.fetchRecipes(userId);
 const deleteRecipe = (recipeId) => store.deleteRecipe(recipeId, userId);

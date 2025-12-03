@@ -6,20 +6,30 @@
     </h4>
 
     <!-- Ingredients List -->
-    <ul class="ml-2 space-y-1 text-gray-600">
+    <ul v-if="recipe.ingredients && recipe.ingredients.length > 0" class="ml-2 space-y-1 text-gray-600">
       <li
         v-for="foodItem in recipe.ingredients"
-        :key="foodItem._id"
+        :key="foodItem._id || foodItem.id"
       >
         <!-- Display scanned item name and percentage -->
-        {{ foodItem.scannedItem.name }} — {{ foodItem.percentage }}%
+        <template v-if="foodItem.scannedItem">
+          {{ foodItem.scannedItem.name }} — {{ foodItem.percentage }}%
+          
+          <!-- Optional: display allergens -->
+          <span v-if="foodItem.scannedItem.allergens?.length > 0" class="text-red-500 ml-1">
+            (Allergens: {{ foodItem.scannedItem.allergens.join(', ') }})
+          </span>
+        </template>
         
-        <!-- Optional: display allergens -->
-        <span v-if="foodItem.scannedItem.allergens.length > 0" class="text-red-500 ml-1">
-          (Allergens: {{ foodItem.scannedItem.allergens.join(', ') }})
-        </span>
+        <!-- Fallback if scannedItem is missing -->
+        <template v-else>
+          {{ foodItem.name || 'Unknown ingredient' }} — {{ foodItem.percentage }}%
+        </template>
       </li>
     </ul>
+    
+    <!-- Empty state -->
+    <p v-else class="text-gray-500 text-sm ml-2">No ingredients listed</p>
   </div>
 </template>
 

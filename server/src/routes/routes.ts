@@ -93,10 +93,13 @@ router.route("/scanned-items")
   .get(scannedItemsController.getAllScannedItems)
   .post(scannedItemsController.createScannedItem);
   
-router.route("/scanned-items/:id")
-  .get(scannedItemsController.getScannedItemById)
+router.route("/scanned-items/:barcode")
+  .get(scannedItemsController.getScannedItemByBarcode)
   .put(scannedItemsController.updateScannedItem)
   .delete(scannedItemsController.deleteScannedItem);
+
+  router.route("/scanned-items/user/:userId")
+  .get(scannedItemsController.getScannedItemsByUserId);
 
 router.route("/users/:id")
   .get(userController.getUserById)

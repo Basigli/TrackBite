@@ -65,7 +65,7 @@ describe("Scanned Items Routes", () => {
     expect(res.body[0].name).toBe("Banana");
   });
 
-  it("GET /scanned-items/:id - should get a scanned item by id", async () => {
+  it("GET /scanned-items/:barcode - should get a scanned item by barcode", async () => {
     const item = new ScannedItemModel({
       barcode: "9876543210987",
       name: "Orange", 
@@ -85,7 +85,7 @@ describe("Scanned Items Routes", () => {
     expect(res.body.name).toBe("Orange");
   });
 
-  it("PUT /scanned-items/:id - should update a scanned item", async () => {
+  it("PUT /scanned-items/:barcode - should update a scanned item", async () => {
     const item = new ScannedItemModel({ 
       barcode: "2468101214161",
       name: "Pear Updated", 
@@ -113,7 +113,7 @@ describe("Scanned Items Routes", () => {
     expect(res.body.name).toBe("Pear Updated");
   });
 
-  it("DELETE /scanned-items/:id - should delete a scanned item", async () => {
+  it("DELETE /scanned-items/:barcode - should delete a scanned item", async () => {
     const item = new ScannedItemModel({ 
       barcode: "3210987654321",
       name: "Mango", 

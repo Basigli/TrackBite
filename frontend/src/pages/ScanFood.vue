@@ -1,6 +1,6 @@
 <template>
   <div class="add-food p-4">
-    <h1 class="text-2xl font-bold mb-4">Add Food</h1>
+    <h1 class="text-2xl font-bold mb-4">Scan Food</h1>
 
     <!-- Barcode Scanner Toggle Button -->
     <button 

@@ -26,9 +26,9 @@
           @click="closeSidebarOnMobile">
           History
         </router-link>
-        <router-link to="/add-food" class="sidebar-link text-white no-underline" active-class="active-link"
+        <router-link to="/scan-food" class="sidebar-link text-white no-underline" active-class="active-link"
           @click="closeSidebarOnMobile">
-          Add Food
+          Scan Food
         </router-link>
         <router-link to="/recipes" class="sidebar-link text-white no-underline" active-class="active-link"
           @click="closeSidebarOnMobile">

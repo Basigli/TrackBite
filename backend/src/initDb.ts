@@ -1,12 +1,12 @@
 import mongoose from "mongoose";
-import { RecipeModel } from "../src/storage/RecipeSchema";
-import { DietModel } from "../src/storage/DietSchema";
-import { UserModel } from "../src/storage/UserSchema";
-import UserCredentialsModel from "../src/storage/UserCredentialsSchema";
-import { DailyIntakeModel } from "../src/storage/DailyIntakeSchema";
-import { ScannedItemModel } from "../src/storage/ScannedItemSchema";
-import { NutrientModel } from "../src/storage/NutrientSchema";
-import { FoodItemModel } from "../src/storage/FoodItemSchema";
+import { RecipeModel } from "./storage/RecipeSchema";
+import { DietModel } from "./storage/DietSchema";
+import { UserModel } from "./storage/UserSchema";
+import UserCredentialsModel from "./storage/UserCredentialsSchema";
+import { DailyIntakeModel } from "./storage/DailyIntakeSchema";
+import { ScannedItemModel } from "./storage/ScannedItemSchema";
+import { NutrientModel } from "./storage/NutrientSchema";
+import { FoodItemModel } from "./storage/FoodItemSchema";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/trackbite";
 

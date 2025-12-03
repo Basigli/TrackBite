@@ -1,4 +1,4 @@
-import { NutrientSchemaZ } from "../models/Nutrient";
+import { NutrientSchemaZ } from "./Nutrient";
 import { Nutrient } from "./Nutrient";
 import { z } from "zod";
 

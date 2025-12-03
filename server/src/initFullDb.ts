@@ -77,6 +77,14 @@ async function seed() {
     amountPerServing: 16
   });
 
+  const energyNutrient = await NutrientModel.create({
+    name: "energy",
+    unit: "kcal",
+    totalAmount: 250,
+    amount100g: 250,
+    amountPerServing: 255
+  });
+
   console.log("Inserted nutrients");
 
   // ===== SCANNED ITEMS (Products) =====
@@ -88,6 +96,7 @@ async function seed() {
     quantityUnit: "g",
     allergens: [],
     nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 165, amount100g: 165, amountPerServing: 160 },
       { ...proteinNutrient.toObject(), totalAmount: 31, amount100g: 31, amountPerServing: 30 },
       { ...fatNutrient.toObject(), totalAmount: 3.6, amount100g: 3.6, amountPerServing: 3 },
       { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0, amountPerServing: 0 }
@@ -111,6 +120,7 @@ async function seed() {
     quantityUnit: "g",
     allergens: [],
     nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 370, amount100g: 370, amountPerServing: 400 },
       { ...proteinNutrient.toObject(), totalAmount: 7.5, amount100g: 7.5, amountPerServing: 8 },
       { ...fatNutrient.toObject(), totalAmount: 2.8, amount100g: 2.8, amountPerServing: 3 },
       { ...carbsNutrient.toObject(), totalAmount: 77.2, amount100g: 77.2, amountPerServing: 80 },
@@ -135,6 +145,7 @@ async function seed() {
     quantityUnit: "g",
     allergens: ["nuts", "tree nuts"],
     nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 15, amount100g: 15, amountPerServing: 20 },
       { ...proteinNutrient.toObject(), totalAmount: 1.0, amount100g: 1.0, amountPerServing: 1 },
       { ...fatNutrient.toObject(), totalAmount: 2.5, amount100g: 2.5, amountPerServing: 3 },
       { ...carbsNutrient.toObject(), totalAmount: 1.4, amount100g: 1.4, amountPerServing: 2 },
@@ -159,6 +170,7 @@ async function seed() {
     quantityUnit: "g",
     allergens: [],
     nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 23, amount100g: 23, amountPerServing: 25 },
       { ...proteinNutrient.toObject(), totalAmount: 2.9, amount100g: 2.9, amountPerServing: 3 },
       { ...fatNutrient.toObject(), totalAmount: 0.4, amount100g: 0.4, amountPerServing: 0.5 },
       { ...carbsNutrient.toObject(), totalAmount: 3.6, amount100g: 3.6, amountPerServing: 4 },
@@ -183,6 +195,7 @@ async function seed() {
     quantityUnit: "g",
     allergens: ["fish"],
     nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 208, amount100g: 208, amountPerServing: 210 },
       { ...proteinNutrient.toObject(), totalAmount: 25.4, amount100g: 25.4, amountPerServing: 26 },
       { ...fatNutrient.toObject(), totalAmount: 13.4, amount100g: 13.4, amountPerServing: 14 },
       { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0, amountPerServing: 0 }
@@ -206,6 +219,7 @@ async function seed() {
     quantityUnit: "g",
     allergens: ["wheat", "gluten", "soy"],
     nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 247, amount100g: 247, amountPerServing: 250 },
       { ...proteinNutrient.toObject(), totalAmount: 9.2, amount100g: 9.2, amountPerServing: 10 },
       { ...fatNutrient.toObject(), totalAmount: 3.4, amount100g: 3.4, amountPerServing: 4 },
       { ...carbsNutrient.toObject(), totalAmount: 43.3, amount100g: 43.3, amountPerServing: 45 },

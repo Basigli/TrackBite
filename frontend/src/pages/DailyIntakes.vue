@@ -42,6 +42,7 @@ export default {
   components: { DailyIntake },
   setup() {
     const intakeStore = useIntakeStore();
+    const { history } = storeToRefs(intakeStore);
     const userStore = useUserStore();
     const userId = userStore.user?._id;
     const selectedDay = ref(null);
@@ -70,7 +71,7 @@ export default {
       intakeStore.fetchDailyIntakeHistory(userId);
     });
 
-    return { history: intakeStore.history, selectedDay, selectDay, formatDate, summarizeFoodItems };
+    return { history, selectedDay, selectDay, formatDate, summarizeFoodItems };
   }
 };
 </script>

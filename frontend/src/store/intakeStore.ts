@@ -15,20 +15,21 @@ const emptyDailyIntake: DailyIntake = {
 export const useIntakeStore = defineStore('intake', () => {
   const dailyIntake = reactive<DailyIntake>({ ...emptyDailyIntake });
   const history: Ref<DailyIntake[]> = ref([]);
+  const selectedDate = ref(new Date().toISOString().substr(0, 10)); // Add this
 
   const fetchDailyIntake = async (userId: string) => {
     try {
       const res = await api.get<DailyIntake[]>(`/daily-intakes/history/user/${userId}`);
 
-      // find today's intake
-      const today = res.data.find(
+      // Find intake for the selected date
+      const targetDate = res.data.find(
         d =>
           new Date(d.date).toDateString() ===
-          new Date().toDateString()
+          new Date(selectedDate.value).toDateString() // Use selectedDate instead of today
       );
 
-      if (today) {
-        Object.assign(dailyIntake, today);
+      if (targetDate) {
+        Object.assign(dailyIntake, targetDate);
       } else {
         Object.assign(dailyIntake, emptyDailyIntake);
       }
@@ -47,10 +48,16 @@ export const useIntakeStore = defineStore('intake', () => {
     }
   };
 
+  const setSelectedDate = (date: string) => {
+    selectedDate.value = date;
+  };
+
   return {
     dailyIntake,
     history,
+    selectedDate,
     fetchDailyIntake,
     fetchDailyIntakeHistory,
+    setSelectedDate,
   };
 });

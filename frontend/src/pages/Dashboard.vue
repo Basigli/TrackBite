@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import { onMounted, computed } from 'vue' // ✅ Add computed
+import { onMounted, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useIntakeStore } from '../store/intakeStore'
 import DailyIntake from '../components/DailyIntake.vue'
 import CaloriesSummary from '../components/CaloriesSummary.vue'
@@ -30,12 +31,21 @@ export default {
     const intakeStore = useIntakeStore()
     const userStore = useUserStore()
     const userId = userStore.user?._id
+    const { dailyIntake, selectedDate } = storeToRefs(intakeStore)
 
-    onMounted(() => {
-      intakeStore.fetchDailyIntake(userId)
+    watch(selectedDate, () => {
+      if (userId) {
+        intakeStore.fetchDailyIntake(userId)
+      }
     })
 
-    return { dailyIntake: computed(() => intakeStore.dailyIntake) } // ✅ Wrap in computed
+    onMounted(() => {
+      if (userId) {
+        intakeStore.fetchDailyIntake(userId)
+      }
+    })
+
+    return { dailyIntake }
   },
 }
 </script>

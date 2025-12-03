@@ -259,19 +259,22 @@ async function seed() {
   const userAlice = await UserModel.create({
     nickname: "alice",
     mail: "alice@example.com",
-    savedRecipesIds: []
+    savedRecipesIds: [],
+    savedScannedItemsIds: [salmonFillet.id.toString()]
   });
 
   const userBob = await UserModel.create({
     nickname: "bob",
     mail: "bob@example.com",
-    savedRecipesIds: []
+    savedRecipesIds: [],
+    savedScannedItemsIds: [spinach.id.toString()]
   });
 
   const userCharlie = await UserModel.create({
     nickname: "charlie",
     mail: "charlie@fitlife.com",
-    savedRecipesIds: []
+    savedRecipesIds: [],
+    savedScannedItemsIds: []
   });
 
   console.log("Inserted users:", userAlice._id, userBob._id, userCharlie._id);

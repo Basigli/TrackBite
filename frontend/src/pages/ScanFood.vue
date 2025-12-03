@@ -31,6 +31,11 @@
     <!-- Optional: scanned item -->
     <ScannedItem v-if="scannedItem" :item="scannedItem" @add="addFoodToDailyIntake"/>
 
+    <!-- Saved Scanned Items List -->
+    <div class="mt-6 mb-6">
+      <ScannedItemList @add="addFoodToDailyIntake" />
+    </div>
+
     <!-- Display currently selected items to add -->
     <div v-if="selectedFoods.length" class="mt-4">
       <h2 class="text-xl font-semibold mb-2">Selected Foods</h2>
@@ -51,6 +56,7 @@ import { ref } from 'vue';
 import { useIntakeStore } from '@/store/intakeStore';
 import FoodSearch from '../components/FoodSearch.vue';
 import ScannedItem from '../components/ScannedItem.vue';
+import ScannedItemList from '../components/ScannedItemList.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';
@@ -60,6 +66,7 @@ export default {
   components: { 
     FoodSearch, 
     ScannedItem,
+    ScannedItemList,
     StreamBarcodeReader
   },
   setup() {
@@ -103,8 +110,6 @@ export default {
         console.error('Error updating user saved items:', error);
         scannerError.value = 'Error updating user saved items';
       }
-
-
     };
 
     const onLoaded = () => {

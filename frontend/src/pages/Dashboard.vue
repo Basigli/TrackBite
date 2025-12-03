@@ -19,6 +19,7 @@
 import { onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useIntakeStore } from '../store/intakeStore'
+import { useDietStore } from '../store/dietStore'
 import DailyIntake from '../components/DailyIntake.vue'
 import CaloriesSummary from '../components/CaloriesSummary.vue'
 import MacroBreakdown from '../components/MacroBreakdown.vue'
@@ -29,19 +30,25 @@ export default {
   components: { DailyIntake, CaloriesSummary, MacroBreakdown },
   setup() {
     const intakeStore = useIntakeStore()
+    const dietStore = useDietStore()
     const userStore = useUserStore()
     const userId = userStore.user?._id
+
+    // Get reactive references from the store
     const { dailyIntake, selectedDate } = storeToRefs(intakeStore)
 
+    // Watch for date changes and refetch intake
     watch(selectedDate, () => {
       if (userId) {
         intakeStore.fetchDailyIntake(userId)
       }
     })
 
+    // Initial fetch on mount
     onMounted(() => {
       if (userId) {
         intakeStore.fetchDailyIntake(userId)
+        dietStore.fetchDiets(userId) // Fetch diets to get calorie goal
       }
     })
 

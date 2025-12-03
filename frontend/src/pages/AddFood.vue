@@ -48,11 +48,12 @@
 
 <script>
 import { ref } from 'vue';
-import { useIntakeStore } from '../store/intakeStore';
+import { useIntakeStore } from '@/store/intakeStore';
 import FoodSearch from '../components/FoodSearch.vue';
 import ScannedItem from '../components/ScannedItem.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
-import api from '../api';
+import { useScannedItemStore } from '@/store/scannedItemStore';
+import { useUserStore } from '@/store/userStore';
 
 export default {
   name: 'AddFood',
@@ -82,15 +83,13 @@ export default {
       lastScannedCode.value = result;
       
       try {
-        const response = await api.get(`scanned-items/${result}`);
-        const foodData = response.data;
-        if (foodData) {
-          scannedItem.value = foodData;
-          // Optionally auto-close scanner after successful scan
-          // showScanner.value = false;
-        } else {
+        const scannedItemStore = useScannedItemStore()
+        if (!scannedItem) {
           scannerError.value = 'Product not found in database';
+        } else {
+          scannerError.value = null;
         }
+        scannedItem.value = await scannedItemStore.fetchScannedItem(result);
       } catch (error) {
         console.error('Error fetching food data:', error);
         scannerError.value = 'Error fetching product information';

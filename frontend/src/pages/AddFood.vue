@@ -81,6 +81,7 @@ export default {
     const onDecode = async (result) => {
       console.log('Barcode detected:', result);
       lastScannedCode.value = result;
+      const localScannedItem = ref(null);
       
       try {
         const scannedItemStore = useScannedItemStore()
@@ -89,11 +90,21 @@ export default {
         } else {
           scannerError.value = null;
         }
-        scannedItem.value = await scannedItemStore.fetchScannedItem(result);
+        localScannedItem.value = await scannedItemStore.fetchScannedItem(result);
+        scannedItem.value = localScannedItem.value;
       } catch (error) {
         console.error('Error fetching food data:', error);
         scannerError.value = 'Error fetching product information';
       }
+      try {
+        const userStore = useUserStore();
+        userStore.addSavedScannedItem(localScannedItem.value._id);
+      } catch (error) {
+        console.error('Error updating user saved items:', error);
+        scannerError.value = 'Error updating user saved items';
+      }
+
+
     };
 
     const onLoaded = () => {

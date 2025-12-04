@@ -9,6 +9,7 @@ import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
 import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminUserManagement from '../components/AdminUserManagement.vue';
+import AdminRecipeManagement from '../components/AdminRecipeManagement.vue';
 
 const routes = [
   { path: '/register', component: Register },
@@ -21,6 +22,7 @@ const routes = [
   { path: '/settings', component: UserSettings },
   { path: '/admin', component: AdminDashboard },
   { path: '/admin/users', component: AdminUserManagement },
+  { path: '/admin/recipes', component: AdminRecipeManagement },
 ];
 
 const router = createRouter({

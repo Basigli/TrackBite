@@ -101,6 +101,10 @@ router.route("/scanned-items/:barcode")
   router.route("/scanned-items/user/:userId")
   .get(scannedItemsController.getScannedItemsByUserId);
 
+// User Routes
+router.route("/users")
+  .get(userController.getAllUsers)
+
 router.route("/users/:id")
   .get(userController.getUserById)
   .put(userController.updateUser)

@@ -5,6 +5,16 @@ import UserCredentialsModel from "../storage/UserCredentialsSchema";
 import { UserCredentialsSchemaZ } from "../models/UserCredentials";
 const jwt = require("jsonwebtoken");
 
+// GET /users - Get all users
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const users = await UserModel.find();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch users" });
+  }
+};
+
 // POST /users - Create a new user
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -175,6 +185,7 @@ function generateToken(_id: string, nickname: string): string {
 }
 
 export default {
+  getAllUsers,
   createUser,
   logInUser,
   getUserById,

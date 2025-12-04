@@ -36,6 +36,7 @@ export default {
       // Admin-specific items if user is admin
       if (userStore.user?.isAdmin) {
         return [
+          { path: '/admin', label: 'Dashboard' },
           { path: '/admin/users', label: 'Manage Users' },
           { path: '/admin/recipes', label: 'Manage Recipes' },
           { path: '/settings', label: 'Settings' }

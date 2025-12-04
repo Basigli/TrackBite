@@ -358,7 +358,7 @@ async function seed() {
     converter.toFoodItemWithServings(spinach, 1),
     converter.toFoodItemWithServings(salmonFillet, 1)
   ],
-  date: today.toISOString(),
+  date: today.toISOString().substring(0, 10),
   userId: userAlice._id.toString()
 });
 
@@ -375,7 +375,7 @@ const dailyIntakeYesterday = await DailyIntakeModel.create({
     converter.toFoodItemWithGrams(wholeWheatBread, 100),
     converter.toFoodItemWithGrams(almondMilk, 100)
   ],
-  date: yesterday.toISOString(),
+  date: yesterday.toISOString().substring(0, 10)  ,
   userId: userAlice._id.toString()
 });
 
@@ -390,7 +390,7 @@ const dailyIntakeTwoDaysAgo = await DailyIntakeModel.create({
     converter.toFoodItemWithGrams(chickenBreast, 100),
     converter.toFoodItemWithServings(spinach, 2)
   ],
-  date: twoDaysAgo.toISOString(),
+  date: twoDaysAgo.toISOString().substring(0, 10),
   userId: userBob._id.toString()
 });
 
@@ -406,7 +406,7 @@ const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
     converter.toFoodItemWithGrams(brownRice, 100),
     converter.toFoodItemWithServings(spinach, 1)
   ],
-  date: threeDaysAgo.toISOString(),
+  date: threeDaysAgo.toISOString().substring(0, 10),
   userId: userCharlie._id.toString()
 });
 

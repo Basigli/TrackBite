@@ -2,6 +2,9 @@ import { defineStore } from 'pinia';
 import { ref, reactive, type Ref } from 'vue';
 import api from '../api';
 import type { DailyIntake } from '../models/DailyIntake';
+import type { FoodItem } from '@/models/FoodItem';
+import type { DailyIntakeImpl } from '@/models/DailyIntakeImpl';
+import type { Nutrient } from '@/models/Nutrient';
 
 const emptyDailyIntake: DailyIntake = {
   _id: '',
@@ -39,6 +42,79 @@ export const useIntakeStore = defineStore('intake', () => {
     }
   };
 
+  const createDailyIntake = async (userId: string, date: string): Promise<DailyIntake | null> => {
+    try {
+      const res = await api.post<DailyIntake>('/daily-intakes', {
+        userId,
+        date,
+        totalCalories: 0,
+        totalMacros: [],
+        foodItems: [],
+      });
+      Object.assign(dailyIntake, res.data);
+      return res.data;
+    } catch (err) {
+      console.error('Error creating daily intake:', err);
+      return null;
+    }
+  };
+
+  const addToDailyIntake = async (userId: string, foodItem: FoodItem, date: string): Promise<boolean> => {
+    try {
+      // Check if daily intake exists for this date
+      if (!dailyIntake._id || dailyIntake.userId !== userId || dailyIntake.date !== date) {
+        await fetchDailyIntake(userId);
+        
+        // If still no daily intake, create one
+        if (!dailyIntake._id) {
+          const newIntake = await createDailyIntake(userId, date);
+          if (!newIntake) {
+            console.error('Failed to create daily intake');
+            return false;
+          }
+        }
+      } 
+
+      // Add food item locally
+      dailyIntake.foodItems.push(foodItem);
+      dailyIntake.totalCalories += foodItem.calories;
+
+
+      foodItem.macros.forEach((value, key) => {
+          if (!dailyIntake.totalMacros.find(m => m.name.toLowerCase() === key.toLowerCase())) {
+            dailyIntake.totalMacros.push({
+              name: key.charAt(0).toUpperCase() + key.slice(1),
+              unit: 'g',
+              totalAmount: 0,
+              amount100g: 0,
+              amountPerServing: 0} as Nutrient);
+          } else {
+              let macroToUpdate = dailyIntake.totalMacros.find(m => m.name.toLowerCase() === key.toLowerCase())!;
+              let valueNum = parseFloat(value.match(/[\d.]+/)?.[0] || '0');
+              macroToUpdate.totalAmount += valueNum;
+          }
+      });
+      console.log('Updated daily intake locally:', dailyIntake);
+
+      // Send PUT request with updated daily intake
+      const res = await api.put<DailyIntake>(`/daily-intakes/${dailyIntake._id}`, {
+        ...dailyIntake,
+        foodItems: dailyIntake.foodItems
+      });
+
+      // Update local state with server response
+      Object.assign(dailyIntake, res.data);
+      console.log('Updated daily intake from server:', dailyIntake);
+      
+      return true;
+    } catch (err) {
+      console.error('Error adding to daily intake:', err);
+      // Revert local change on error
+      dailyIntake.foodItems.pop();
+      return false;
+    }
+  };
+
   const fetchDailyIntakeHistory = async (userId: string) => {
     try {
       const res = await api.get<DailyIntake[]>(`/daily-intakes/history/user/${userId}`);
@@ -52,11 +128,14 @@ export const useIntakeStore = defineStore('intake', () => {
     selectedDate.value = date;
   };
 
+
   return {
     dailyIntake,
     history,
     selectedDate,
+    createDailyIntake,
     fetchDailyIntake,
+    addToDailyIntake,
     fetchDailyIntakeHistory,
     setSelectedDate,
   };

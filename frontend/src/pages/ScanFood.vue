@@ -71,6 +71,7 @@ export default {
   },
   setup() {
     const intakeStore = useIntakeStore();
+    const userStore = useUserStore();
     const selectedFoods = ref([]);
     const scannedItem = ref(null);
     const showScanner = ref(false);
@@ -121,6 +122,12 @@ export default {
       selectedFoods.value.push(food);
       // Clear scanned item after adding
       scannedItem.value = null;
+      intakeStore.fetchDailyIntake(userStore.user._id);
+      if (intakeStore.dailyIntake._id == "") {
+        intakeStore.createDailyIntake(userStore.user._id, new Date().toISOString().substr(0, 10));
+      }
+      intakeStore.addToDailyIntake(userStore.user._id, food, new Date().toISOString().substr(0, 10));
+      alert(`${food.name} added to daily intake!`);
     };
 
     const removeFood = (index) => {

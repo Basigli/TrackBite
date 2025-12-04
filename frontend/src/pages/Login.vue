@@ -138,11 +138,9 @@
 </template>
 
 <script>
-import { nextTick } from 'process';
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import api from '../api';
-import { useUserStore } from '@/store/userStore';
+import { useUserStore } from '../store/userStore';
 
 export default {
   name: 'LoginPage',
@@ -200,12 +198,17 @@ export default {
         await userStore.login(formData.username, formData.password);
         const decoded = userStore.decodeToken();
         console.log('Decoded token:', decoded);
-        userStore.fetchUser(decoded.id);
+        await userStore.fetchUser(decoded.id);
+        
         successMessage.value = 'Login successful! Redirecting...';
         
-        // Redirect to dashboard after 1 second
+        // Redirect based on user role after 1 second
         setTimeout(() => {
-          router.push('/');
+          if (userStore.user?.isAdmin) {
+            router.push('/admin');
+          } else {
+            router.push('/');
+          }
         }, 1000);
 
       } catch (error) {

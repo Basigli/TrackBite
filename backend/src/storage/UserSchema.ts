@@ -6,6 +6,7 @@ const UserSchema: Schema<User> = new Schema({
   mail: { type: String, required: true, unique: true },
   savedRecipesIds: { type: [String], default: [] },
   savedScannedItemsIds: { type: [String], default: [] },
+  isAdmin: { type: Boolean, default: false },
 });
 
 export const UserModel = mongoose.model<User>('User', UserSchema);

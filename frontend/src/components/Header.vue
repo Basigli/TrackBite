@@ -3,8 +3,9 @@
     <div class="logo text-xl font-bold lg:hidden">TrackBite</div>
 
     <div class="header-actions flex items-center gap-4">
-      <!-- Date picker -->
+      <!-- Date picker - only show when logged in -->
       <input
+        v-if="isAuthenticated"
         type="date"
         v-model="selectedDate"
         @change="dateChanged"
@@ -17,7 +18,7 @@
           @click="toggleMenu"
           class="flex items-center gap-2 font-medium hover:text-gray-100 focus:outline-none"
         >
-          {{ user.name }}
+          {{ displayName }}
           <svg
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'rotate-180': menuOpen }"
@@ -35,8 +36,15 @@
             v-if="menuOpen"
             class="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-48 py-1 z-50"
           >
-            <li @click="goToSettings" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-            <li @click="handleLogout" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+            <!-- Show different options based on auth status -->
+            <template v-if="isAuthenticated">
+              <li @click="goToSettings" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
+              <li @click="handleLogout" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+            </template>
+            <template v-else>
+              <li @click="goToLogin" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Login</li>
+              <li @click="goToRegister" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Register</li>
+            </template>
           </ul>
         </transition>
       </div>
@@ -59,16 +67,20 @@ export default {
     const intakeStore = useIntakeStore()
     const { selectedDate } = storeToRefs(intakeStore)
     
-    const user = computed(() => {
-      console.log(userStore.user);
-      if (!userStore.user) {
-        return {name: 'Guest'};
-      }
-      const nickname = userStore.user.nickname || 'Guest';
-      return {name: nickname};
-    })
-    
     const menuOpen = ref(false)
+
+    // Check if user is authenticated
+    const isAuthenticated = computed(() => {
+      return !!userStore.authToken.value && !userStore.isTokenExpired()
+    })
+
+    // Get display name
+    const displayName = computed(() => {
+      if (!isAuthenticated.value || !userStore.user || !userStore.user._id) {
+        return 'Guest'
+      }
+      return userStore.user.nickname || userStore.user.name || 'Guest'
+    })
 
     const toggleMenu = () => {
       menuOpen.value = !menuOpen.value
@@ -76,6 +88,16 @@ export default {
 
     const goToSettings = () => {
       router.push('/settings')
+      menuOpen.value = false
+    }
+
+    const goToLogin = () => {
+      router.push('/login')
+      menuOpen.value = false
+    }
+
+    const goToRegister = () => {
+      router.push('/register')
       menuOpen.value = false
     }
 
@@ -94,11 +116,14 @@ export default {
     }
 
     return { 
-      user, 
+      displayName,
+      isAuthenticated,
       selectedDate, 
       menuOpen, 
       toggleMenu, 
-      goToSettings, 
+      goToSettings,
+      goToLogin,
+      goToRegister,
       handleLogout, 
       dateChanged 
     }
@@ -109,5 +134,13 @@ export default {
 <style scoped>
 .app-header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>

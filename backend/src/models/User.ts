@@ -6,7 +6,7 @@ export interface User {
   mail: string,
   savedRecipesIds: Array<string>,
   savedScannedItemsIds: Array<string>,
-  isAdmin: boolean,
+  isAdmin: boolean, 
 }
 
 export const UserSchemaZ = z.object({

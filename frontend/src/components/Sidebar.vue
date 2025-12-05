@@ -16,31 +16,16 @@
     <aside
       class="app-sidebar w-64 h-screen bg-gray-800 text-white flex flex-col p-4 fixed lg:static z-40 transition-transform duration-300"
       :class="{ '-translate-x-full lg:translate-x-0': !isOpen, 'translate-x-0': isOpen }">
-      <div class="sidebar-logo text-2xl font-bold mb-8 mt-16 lg:mt-0">TrackBite</div>
+      <div class="sidebar-logo text-2xl font-bold mb-8 mt-16 lg:mt-0">{{ appName }}</div>
       <nav class="flex flex-col gap-2">
-        <router-link to="/" class="sidebar-link text-white no-underline" active-class="active-link"
+        <router-link 
+          v-for="item in computedNavItems" 
+          :key="item.path"
+          :to="item.path" 
+          class="sidebar-link text-white no-underline" 
+          active-class="active-link"
           @click="closeSidebarOnMobile">
-          Dashboard
-        </router-link>
-        <router-link to="/history" class="sidebar-link text-white no-underline" active-class="active-link"
-          @click="closeSidebarOnMobile">
-          History
-        </router-link>
-        <router-link to="/add-food" class="sidebar-link text-white no-underline" active-class="active-link"
-          @click="closeSidebarOnMobile">
-          Add Food
-        </router-link>
-        <router-link to="/recipes" class="sidebar-link text-white no-underline" active-class="active-link"
-          @click="closeSidebarOnMobile">
-          Recipes
-        </router-link>
-        <router-link to="/diet" class="sidebar-link text-white no-underline" active-class="active-link"
-          @click="closeSidebarOnMobile">
-          Diet
-        </router-link>
-        <router-link to="/settings" class="sidebar-link text-white no-underline" active-class="active-link"
-          @click="closeSidebarOnMobile">
-          Settings
+          {{ item.label }}
         </router-link>
       </nav>
     </aside>
@@ -48,11 +33,52 @@
 </template>
 
 <script>
+import { useUserStore } from '../store/userStore'
+
 export default {
   name: 'Sidebar',
+  props: {
+    navItems: {
+      type: Array,
+      default: null
+    },
+    appName: {
+      type: String,
+      default: 'TrackBite'
+    }
+  },
   data() {
     return {
       isOpen: false,
+    }
+  },
+  computed: {
+    computedNavItems() {
+      // If navItems prop is provided, use it
+      if (this.navItems) {
+        return this.navItems
+      }
+
+      // Otherwise, compute based on user role
+      const userStore = useUserStore()
+      const baseItems = [
+        { path: '/', label: 'Dashboard' },
+        { path: '/history', label: 'History' },
+        { path: '/scan-food', label: 'Scan Food' },
+        { path: '/recipes', label: 'Recipes' },
+        { path: '/diet', label: 'Diet' }
+      ]
+
+      if (userStore.user?.isAdmin) {
+        return [
+          // ...baseItems,
+          // { path: '/admin/users', label: 'Manage Users' },
+          // { path: '/admin/reports', label: 'Reports' },
+          // { path: '/settings', label: 'Settings' }
+        ]
+      }
+
+      return [...baseItems, { path: '/settings', label: 'Settings' }]
     }
   },
   methods: {

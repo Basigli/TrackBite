@@ -10,16 +10,30 @@
 </template>
 
 <script>
-import CircularProgress from './CircularProgress.vue';
+import { computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useDietStore } from '../store/dietStore'
+import CircularProgress from './CircularProgress.vue'
 
 export default {
   name: 'CaloriesSummary',
   components: { CircularProgress },
-  props: { totalCalories: Number },
+  props: { 
+    totalCalories: {
+      type: Number,
+      default: 0
+    }
+  },
 
   setup() {
-    const dailyGoal = 2000; // Or inject from store later
-    return { dailyGoal };
+    const dietStore = useDietStore()
+    const { selectedDiet } = storeToRefs(dietStore)
+
+    const dailyGoal = computed(() => {
+      return selectedDiet.value?.caloriesAmount ?? 2000
+    })
+
+    return { dailyGoal }
   }
-};
+}
 </script>

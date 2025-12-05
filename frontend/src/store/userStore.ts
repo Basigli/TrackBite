@@ -45,6 +45,22 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
+  const addSavedScannedItem = async (itemId: string): Promise<boolean> => {
+    if (!user?._id) return false;
+    try {
+      await api.post(`/users/${user._id}/saved-scanned-items/${itemId}`);
+      if (!user.savedScannedItemsIds) {
+        user.savedScannedItemsIds = [];
+      }
+      user.savedScannedItemsIds.push(itemId);
+      return true;
+    } catch (err) {
+      console.error('Error adding saved scanned item:', err);
+      return false;
+    }
+  };
+
+
   const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
     if (!user?._id) return false;
     try {
@@ -80,5 +96,5 @@ export const useUserStore = defineStore('user', () => {
   };
 
 
-  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword, decodeToken, logout};
+  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword, decodeToken, logout, addSavedScannedItem };
 });

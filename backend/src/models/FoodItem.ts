@@ -8,7 +8,7 @@ export interface FoodItem {
   allergens: Array<string>,
   ingredients: Array<string>,
   nutrients:  Map<string, string>,
-  macros: Map<string, string>
+  macros: Map<string, string>,
   score: number,
   grade: string,
   nutrientLevels: Map<string, string>

@@ -45,16 +45,19 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { jwtDecode } from 'jwt-decode'
 import { useUserStore } from '@/store/userStore'
+import { useIntakeStore } from '@/store/intakeStore'
+import { storeToRefs } from 'pinia'
 
 export default {
   name: 'Header',
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
+    const intakeStore = useIntakeStore()
+    const { selectedDate } = storeToRefs(intakeStore)
     
     const user = computed(() => {
       console.log(userStore.user);
@@ -65,7 +68,6 @@ export default {
       return {name: nickname};
     })
     
-    const selectedDate = ref(new Date().toISOString().substr(0, 10))
     const menuOpen = ref(false)
 
     const toggleMenu = () => {
@@ -78,13 +80,17 @@ export default {
     }
 
     const handleLogout = () => {
-      userStore.logout() // Use store's logout function
+      userStore.logout()
       router.push('/login')
       menuOpen.value = false
     }
 
     const dateChanged = () => {
       console.log('Selected date:', selectedDate.value)
+      const userId = userStore.user?._id
+      if (userId) {
+        intakeStore.fetchDailyIntake(userId)
+      }
     }
 
     return { 

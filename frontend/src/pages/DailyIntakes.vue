@@ -33,6 +33,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useIntakeStore } from '../store/intakeStore';
 import DailyIntake from '../components/DailyIntake.vue';
 import { useUserStore } from '@/store/userStore';
@@ -42,6 +43,7 @@ export default {
   components: { DailyIntake },
   setup() {
     const intakeStore = useIntakeStore();
+    const { history } = storeToRefs(intakeStore);
     const userStore = useUserStore();
     const userId = userStore.user?._id;
     const selectedDay = ref(null);
@@ -57,10 +59,16 @@ export default {
 
     const summarizeFoodItems = (foodItems) => {
       if (!foodItems || foodItems.length === 0) return 'No food items logged';
-      const count = foodItems.length;
-      const itemNames = foodItems
+      
+      // Filter out items without name
+      const validItems = foodItems.filter(f => f?.name);
+      
+      if (validItems.length === 0) return 'No food items logged';
+      
+      const count = validItems.length;
+      const itemNames = validItems
         .slice(0, 3)
-        .map(f => f.scannedItem.name)
+        .map(f => f.name)
         .join(', ');
       const more = count > 3 ? ` +${count - 3} more` : '';
       return `${itemNames}${more}`;
@@ -70,7 +78,7 @@ export default {
       intakeStore.fetchDailyIntakeHistory(userId);
     });
 
-    return { history: intakeStore.history, selectedDay, selectDay, formatDate, summarizeFoodItems };
+    return { history, selectedDay, selectDay, formatDate, summarizeFoodItems };
   }
 };
 </script>

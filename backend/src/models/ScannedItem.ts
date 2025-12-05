@@ -1,4 +1,4 @@
-import { NutrientSchemaZ } from "../models/Nutrient";
+import { NutrientSchemaZ } from "./Nutrient";
 import { Nutrient } from "./Nutrient";
 import { z } from "zod";
 
@@ -29,5 +29,5 @@ export const ScannedItemSchemaZ = z.object({
   ingredients: z.array(z.string()),
   score: z.number(),
   grade: z.string(),
-  nutrientLevels: z.record(z.string(), z.string())
+  nutrientLevels: z.record(z.string(), z.string()),
 });

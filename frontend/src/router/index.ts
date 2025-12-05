@@ -9,7 +9,7 @@ import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
 import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminRecipesPage from '../pages/AdminRecipesPage.vue';
-
+import AdminUsersPage from '../pages/AdminUsersPage.vue';
 
 import AdminUserManagement from '../components/AdminUserManagement.vue';
 import AdminRecipeManagement from '../components/AdminRecipeManagement.vue';
@@ -27,7 +27,7 @@ const routes = [
   { path: '/diet', component: Diet, meta: { requiresAuth: true } },
   { path: '/settings', component: UserSettings, meta: { requiresAuth: true } },
   { path: '/admin', component: AdminDashboard, meta: { requiresAuth: true } },
-  { path: '/admin/users', component: AdminUserManagement, meta: { requiresAuth: true } },
+  { path: '/admin/users', component: AdminUsersPage, meta: { requiresAuth: true } },
   { path: '/admin/recipes', component: AdminRecipesPage, meta: { requiresAuth: true } },
   { path: "/:pathMatch(.*)*", component: NotFound, meta: { requiresAuth: false } },
 ];

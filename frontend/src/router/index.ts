@@ -10,6 +10,7 @@ import Login from '../pages/Login.vue';
 import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminUserManagement from '../components/AdminUserManagement.vue';
 import AdminRecipeManagement from '../components/AdminRecipeManagement.vue';
+import NotFound from '../pages/NotFound.vue';
 
 const routes = [
   { path: '/register', component: Register },
@@ -23,6 +24,7 @@ const routes = [
   { path: '/admin', component: AdminDashboard },
   { path: '/admin/users', component: AdminUserManagement },
   { path: '/admin/recipes', component: AdminRecipeManagement },
+  { path: "/:pathMatch(.*)*", component: NotFound },
 ];
 
 const router = createRouter({

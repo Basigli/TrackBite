@@ -33,10 +33,11 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-  const updateUser = async (updatedData: Partial<User>): Promise<boolean> => {
+  const updateUser = async (updatedData : Partial<User>): Promise<boolean> => {
     if (!user?._id) return false;
     try {
-      const res = await api.put<User>(`/users/${user._id}`, updatedData);
+      const fullUserData = { ...user, ...updatedData };
+      const res = await api.put<User>(`/users/${user._id}`, fullUserData);
       Object.assign(user, res.data);
       return true;
     } catch (err) {

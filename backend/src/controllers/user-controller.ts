@@ -81,7 +81,9 @@ const getUserById = async (req: Request, res: Response) => {
 const updateUser = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    console.log(req.body);
     const parsed = UserSchemaZ.safeParse(req.body);
+    console.log(parsed);
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid user data", details: parsed.error });
     }
@@ -176,6 +178,33 @@ const removeSavedScannedItem = async (req: Request, res: Response) => {
   }
 };
 
+// PUT /users/:id/password - Change user password
+const changePassword = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { currentPassword, newPassword } = req.body;
+    
+    const user = await UserModel.findById(id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+    
+    const userCredentials = await UserCredentialsModel.findOne({ nickname: user.nickname });
+    if (!userCredentials) return res.status(404).json({ error: "Credentials not found" });
+    
+    // Verify current password
+    if (userCredentials.passwordHash !== currentPassword) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+    
+    // Update password
+    userCredentials.passwordHash = newPassword;
+    await userCredentials.save();
+    
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to change password" });
+  }
+};
+
 function generateToken(_id: string, nickname: string): string {
   // Lazy-require to avoid adding top-level imports if not already present
   // Uses JWT_SECRET from env, fallback to a dev secret (replace in production)
@@ -195,4 +224,5 @@ export default {
   removeSavedRecipe,
   addSavedScannedItem,
   removeSavedScannedItem,
+  changePassword,
 };

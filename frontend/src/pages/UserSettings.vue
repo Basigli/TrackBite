@@ -1,69 +1,72 @@
 <template>
-  <div class="user-settings max-w-md mx-auto p-6">
+  <div class="user-settings max-w-5xl mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">User Settings</h1>
 
-    <!-- Profile Info Form -->
-    <form @submit.prevent="updateProfile" class="flex flex-col gap-4 p-4 rounded-lg shadow bg-white">
-      <h2 class="text-xl font-semibold text-gray-700 mb-2">Profile Info</h2>
-      <input
-        v-model="name"
-        type="text"
-        placeholder="Name"
-        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-        required
-      />
-      <input
-        v-model="email"
-        type="email"
-        placeholder="Email"
-        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
-        required
-      />
-      <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition">
-        Save Profile
-      </button>
-    </form>
+    <div class="flex flex-col gap-6">
+      <!-- Profile Info Form -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Profile Info</h2>
+        <form @submit.prevent="updateProfile" class="flex flex-col gap-4">
+          <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <input
+              id="name"
+              v-model="name"
+              type="text"
+              placeholder="Enter your name"
+              class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              id="email"
+              v-model="email"
+              type="email"
+              placeholder="Enter your email"
+              class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
+              required
+            />
+          </div>
+          <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-semibold px-4 py-2 rounded transition">
+            Save Profile
+          </button>
+        </form>
+      </div>
 
-    <!-- Change Password Form -->
-    <form @submit.prevent="updatePassword" class="flex flex-col gap-4 p-4 rounded-lg shadow bg-white mt-6">
-      <h2 class="text-xl font-semibold text-gray-700 mb-2">Change Password</h2>
-      <input
-        v-model="currentPassword"
-        type="password"
-        placeholder="Current Password"
-        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        required
-      />
-      <input
-        v-model="newPassword"
-        type="password"
-        placeholder="New Password"
-        class="border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        required
-      />
-      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded transition">
-        Change Password
-      </button>
-    </form>
-
-    <!-- Preferences -->
-<div class="preferences border p-4 rounded bg-gray-50 mt-4">
-  <h2 class="font-semibold mb-2">Preferences</h2>
-
-  <label class="flex items-center justify-between gap-2">
-    <span class="inline-block w-40">Dark Mode</span>
-    <input type="checkbox" v-model="preferences.darkMode" />
-  </label>
-
-  <label class="flex items-center justify-between gap-2 mt-2">
-    <span class="inline-block w-40">Notifications</span>
-    <input type="checkbox" v-model="preferences.notifications" />
-  </label>
-
-  <button @click="savePreferences" class="mt-3 bg-purple-500 text-white px-4 py-2 rounded">
-    Save Preferences
-  </button>
-</div>
+      <!-- Change Password Form -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-xl font-semibold text-gray-700 mb-4">Change Password</h2>
+        <form @submit.prevent="updatePassword" class="flex flex-col gap-4">
+          <div>
+            <label for="current-password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <input
+              id="current-password"
+              v-model="currentPassword"
+              type="password"
+              placeholder="Enter current password"
+              class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <div>
+            <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+            <input
+              id="new-password"
+              v-model="newPassword"
+              type="password"
+              placeholder="Enter new password"
+              class="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+          <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded transition">
+            Change Password
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -98,7 +101,7 @@ export default {
     )
 
     const updateProfile = async () => {
-      const success = await store.updateUser({ name: name.value, email: email.value })
+      const success = await store.updateUser({ nickname: name.value, mail: email.value })
       if (success) alert('Profile updated!')
     }
 
@@ -113,11 +116,6 @@ export default {
       }
     }
 
-    const savePreferences = async () => {
-      const success = await store.updateUser({ preferences })
-      if (success) alert('Preferences saved!')
-    }
-
     return {
       name,
       email,
@@ -126,7 +124,6 @@ export default {
       preferences,
       updateProfile,
       updatePassword,
-      savePreferences,
     }
   },
 }

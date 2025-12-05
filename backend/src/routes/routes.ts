@@ -110,6 +110,8 @@ router.route("/users/:id")
   .put(userController.updateUser)
   .delete(userController.deleteUser);
 
+router.put('/users/:id/password', userController.changePassword);
+
 router.route('/users/:id/saved-recipes/:recipeId')
   .post(userController.addSavedRecipe)
   .delete(userController.removeSavedRecipe);

@@ -8,8 +8,12 @@ import UserSettings from '../pages/UserSettings.vue';
 import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
 import AdminDashboard from '../pages/AdminDashboard.vue';
+import AdminRecipesPage from '../pages/AdminRecipesPage.vue';
+
+
 import AdminUserManagement from '../components/AdminUserManagement.vue';
 import AdminRecipeManagement from '../components/AdminRecipeManagement.vue';
+
 import NotFound from '../pages/NotFound.vue';
 import { useUserStore } from '../store/userStore';
 
@@ -24,7 +28,7 @@ const routes = [
   { path: '/settings', component: UserSettings, meta: { requiresAuth: true } },
   { path: '/admin', component: AdminDashboard, meta: { requiresAuth: true } },
   { path: '/admin/users', component: AdminUserManagement, meta: { requiresAuth: true } },
-  { path: '/admin/recipes', component: AdminRecipeManagement, meta: { requiresAuth: true } },
+  { path: '/admin/recipes', component: AdminRecipesPage, meta: { requiresAuth: true } },
   { path: "/:pathMatch(.*)*", component: NotFound, meta: { requiresAuth: false } },
 ];
 

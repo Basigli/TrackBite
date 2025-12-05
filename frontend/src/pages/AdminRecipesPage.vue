@@ -54,15 +54,15 @@
 <script>
 import { ref, computed, onMounted } from 'vue';
 import api from '../api';
-import RecipesPageHeader from '../components/admin/RecipesPageHeader.vue';
-import RecipesStatsCards from '../components/admin/RecipesStatsCards.vue';
-import RecipesFilters from '../components/admin/RecipesFilters.vue';
-import RecipesLoadingState from '../components/admin/RecipesLoadingState.vue';
-import RecipesAlerts from '../components/admin/RecipesAlerts.vue';
-import RecipesEmptyState from '../components/admin/RecipesEmptyState.vue';
-import RecipesList from '../components/admin/RecipesList.vue';
-import RecipeDeleteModal from '../components/admin/RecipeDeleteModal.vue';
-import RecipeDetailsModal from '../components/admin/RecipeDetailsModal.vue';
+import RecipesPageHeader from '../components/admin/recipes/RecipesPageHeader.vue';
+import RecipesStatsCards from '../components/admin/recipes/RecipesStatsCards.vue';
+import RecipesFilters from '../components/admin/recipes/RecipesFilters.vue';
+import RecipesLoadingState from '../components/admin/recipes/RecipesLoadingState.vue';
+import RecipesAlerts from '../components/admin/recipes/RecipesAlerts.vue';
+import RecipesEmptyState from '../components/admin/recipes/RecipesEmptyState.vue';
+import RecipesList from '../components/admin/recipes/RecipesList.vue';
+import RecipeDeleteModal from '../components/admin/recipes/RecipeDeleteModal.vue';
+import RecipeDetailsModal from '../components/admin/recipes/RecipeDetailsModal.vue';
 
 export default {
   name: 'AdminRecipesPage',

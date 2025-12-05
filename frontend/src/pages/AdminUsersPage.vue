@@ -65,11 +65,11 @@
 import { ref, computed, onMounted } from 'vue';
 import { useUserStore } from '../store/userStore';
 import api from '../api';
-import UserStatsCards from '../components/admin/UserStatsCards.vue';
-import UserSearchFilter from '../components/admin/UserSearchFilter.vue';
-import UserCardMobile from '../components/admin/UserCardMobile.vue';
-import UserTableDesktop from '../components/admin/UserTableDesktop.vue';
-import DeleteConfirmModal from '../components/admin/DeleteConfirmModal.vue';
+import UserStatsCards from '../components/admin/users/UserStatsCards.vue';
+import UserSearchFilter from '../components/admin/users/UserSearchFilter.vue';
+import UserCardMobile from '../components/admin/users/UserCardMobile.vue';
+import UserTableDesktop from '../components/admin/users/UserTableDesktop.vue';
+import DeleteConfirmModal from '../components/admin/users/DeleteConfirmModal.vue';
 export default {
   name: 'AdminUsersPage',
   components: {

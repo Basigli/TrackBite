@@ -7,6 +7,7 @@ import Diet from '../pages/Diet.vue';
 import UserSettings from '../pages/UserSettings.vue';
 import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
+
 import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminRecipesPage from '../pages/AdminRecipesPage.vue';
 import AdminUsersPage from '../pages/AdminUsersPage.vue';

@@ -68,9 +68,9 @@
               Remember me
             </label>
           </div>
-          <router-link to="/forgot-password" class="text-sm text-green-500 hover:underline">
+          <!-- <router-link to="/forgot-password" class="text-sm text-green-500 hover:underline">
             Forgot password?
-          </router-link>
+          </router-link> -->
         </div>
 
         <!-- Submit Button -->
@@ -267,5 +267,4 @@ export default {
 </script>
 
 <style scoped>
-/* Add any additional custom styles here */
 </style>

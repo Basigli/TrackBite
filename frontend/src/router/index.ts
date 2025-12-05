@@ -11,25 +11,67 @@ import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminUserManagement from '../components/AdminUserManagement.vue';
 import AdminRecipeManagement from '../components/AdminRecipeManagement.vue';
 import NotFound from '../pages/NotFound.vue';
+import { useUserStore } from '../store/userStore';
 
 const routes = [
-  { path: '/register', component: Register },
-  { path: '/login', component: Login },
-  { path: '/', component: Dashboard },
-  { path: '/history', component: DailyIntakes },
-  { path: '/scan-food', component: AddFood },
-  { path: '/recipes', component: Recipes },
-  { path: '/diet', component: Diet },
-  { path: '/settings', component: UserSettings },
-  { path: '/admin', component: AdminDashboard },
-  { path: '/admin/users', component: AdminUserManagement },
-  { path: '/admin/recipes', component: AdminRecipeManagement },
-  { path: "/:pathMatch(.*)*", component: NotFound },
+  { path: '/register', component: Register, meta: { requiresAuth: false } },
+  { path: '/login', name: 'Login', component: Login, meta: { requiresAuth: false } },
+  { path: '/', component: Dashboard, meta: { requiresAuth: true } },
+  { path: '/history', component: DailyIntakes, meta: { requiresAuth: true } },
+  { path: '/scan-food', component: AddFood, meta: { requiresAuth: true } },
+  { path: '/recipes', component: Recipes, meta: { requiresAuth: true } },
+  { path: '/diet', component: Diet, meta: { requiresAuth: true } },
+  { path: '/settings', component: UserSettings, meta: { requiresAuth: true } },
+  { path: '/admin', component: AdminDashboard, meta: { requiresAuth: true } },
+  { path: '/admin/users', component: AdminUserManagement, meta: { requiresAuth: true } },
+  { path: '/admin/recipes', component: AdminRecipeManagement, meta: { requiresAuth: true } },
+  { path: "/:pathMatch(.*)*", component: NotFound, meta: { requiresAuth: false } },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes
 });
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+
+  // No auth required → continue
+  if (!to.meta.requiresAuth) {
+    return next()
+  }
+
+  // No token → redirect to login
+  if (!userStore.authToken.value) {
+    return next({
+      name: 'Login',
+      query: { redirect: to.fullPath }
+    })
+  }
+
+  // Decode token and validate
+  const decoded = userStore.decodeToken()
+  userStore.isTokenExpired()
+
+  if (!decoded?.exp) {
+    alert("Session Expired")
+    userStore.logout()
+    return next({ name: 'Login' })
+  }
+
+  const now = Math.floor(Date.now() / 1000)
+
+  // Token expired
+  if (decoded.exp < now) {
+    userStore.logout()
+    return next({
+      name: 'Login',
+      query: { redirect: to.fullPath }
+    })
+  }
+
+  // Everything OK → continue
+  next()
+})
 
 export default router;

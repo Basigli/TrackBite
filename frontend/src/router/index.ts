@@ -12,9 +12,6 @@ import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminRecipesPage from '../pages/AdminRecipesPage.vue';
 import AdminUsersPage from '../pages/AdminUsersPage.vue';
 
-import AdminUserManagement from '../components/AdminUserManagement.vue';
-import AdminRecipeManagement from '../components/AdminRecipeManagement.vue';
-
 import NotFound from '../pages/NotFound.vue';
 import { useUserStore } from '../store/userStore';
 

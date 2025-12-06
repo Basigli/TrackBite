@@ -48,13 +48,14 @@ export class FoodItemBuilder {
     /**
      * Scale nutrients based on the percentage
      */
-    private scaleNutrients(nutrients: Array<Nutrient>, percentage: number): Map<string, string> {
-        return new Map(
-            nutrients.map(nutrient => [
-                nutrient.name,
-                `${(nutrient.totalAmount * (percentage / 100)).toFixed(2)} ${nutrient.unit}`
-            ])
-        );
+    private scaleNutrients(nutrients: Array<Nutrient>, percentage: number): Array<Nutrient> {
+        return nutrients.map(nutrient => ({
+            name: nutrient.name,
+            unit: nutrient.unit,
+            totalAmount: parseFloat((nutrient.totalAmount * (percentage / 100)).toFixed(2)),
+            amount100g: nutrient.amount100g,
+            amountPerServing: nutrient.amountPerServing
+        } as Nutrient));
     }
 
     /**
@@ -71,17 +72,11 @@ export class FoodItemBuilder {
         return {
             name: this.scannedItem.name,
             quantity: `${(this.scannedItem.quantity * (this.percentage / 100)).toFixed(2)} g`,
-            calories: parseFloat(scaledNutrients.get('energy') ?? '0'),
+            calories: parseFloat(scaledNutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy')?.totalAmount.toString() ?? '0'),
             allergens: this.scannedItem.allergens,
             ingredients: this.scannedItem.ingredients,
-            nutrients: new Map(
-            Array.from(scaledNutrients)
-                .filter(([name]) => !macroNames.includes(name.toLowerCase()))
-            ),
-            macros: new Map(
-            Array.from(scaledNutrients)
-                .filter(([name]) => macroNames.includes(name.toLowerCase()))
-            ),
+            nutrients: scaledNutrients.filter(nutrient => !macroNames.includes(nutrient.name.toLowerCase())),
+            macros: scaledNutrients.filter(nutrient => macroNames.includes(nutrient.name.toLowerCase())),
             score: this.scannedItem.score,
             grade: this.scannedItem.grade,
             nutrientLevels: this.scannedItem.nutrientLevels

@@ -26,18 +26,18 @@
       </div>
     </div>
     
-    <div v-if="food.nutrients && Object.keys(food.nutrients).length > 0" class="mt-3 pt-3 border-t border-gray-100">
+    <div v-if="food.nutrients && food.nutrients.length > 0" class="mt-3 pt-3 border-t border-gray-100">
       <div class="grid grid-cols-3 gap-2 text-sm">
-        <div v-for="(value, name) in food.nutrients" :key="name" class="text-gray-600">
-          <span class="font-medium">{{ name }}:</span> {{ value }}
+        <div v-for="nutrient in food.nutrients" :key="nutrient.name" class="text-gray-600">
+          <span class="font-medium">{{ nutrient.name }}:</span> {{ nutrient.totalAmount }} {{ nutrient.unit }}  
         </div>
       </div>
     </div>
 
-    <div v-if="food.macros && Object.keys(food.macros).length > 0" class="mt-3 pt-3 border-t border-gray-100">
+    <div v-if="food.macros && food.macros.length > 0" class="mt-3 pt-3 border-t border-gray-100">
       <div class="grid grid-cols-3 gap-2 text-sm">
-        <div v-for="(value, name) in food.macros" :key="name" class="text-gray-600">
-          <span class="font-medium">{{ name }}:</span> {{ value }}
+        <div v-for="macro in food.macros" :key="macro.name" class="text-gray-600">
+          <span class="font-medium">{{ macro.name }}:</span> {{ macro.totalAmount }} {{ macro.unit }}  
         </div>
       </div>
     </div>

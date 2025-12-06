@@ -3,7 +3,6 @@ import { ref, reactive, type Ref } from 'vue';
 import api from '../api';
 import type { DailyIntake } from '../models/DailyIntake';
 import type { FoodItem } from '@/models/FoodItem';
-import type { DailyIntakeImpl } from '@/models/DailyIntakeImpl';
 import type { Nutrient } from '@/models/Nutrient';
 
 const emptyDailyIntake: DailyIntake = {
@@ -80,18 +79,17 @@ export const useIntakeStore = defineStore('intake', () => {
       dailyIntake.totalCalories += foodItem.calories;
 
 
-      foodItem.macros.forEach((value, key) => {
-          if (!dailyIntake.totalMacros.find(m => m.name.toLowerCase() === key.toLowerCase())) {
+      foodItem.macros.forEach( macro => {
+          if (!dailyIntake.totalMacros.find(m => m.name.toLowerCase() === macro.name.toLowerCase())) {
             dailyIntake.totalMacros.push({
-              name: key.charAt(0).toUpperCase() + key.slice(1),
+              name: macro.name.charAt(0).toUpperCase() + macro.name.slice(1),
               unit: 'g',
-              totalAmount: 0,
-              amount100g: 0,
-              amountPerServing: 0} as Nutrient);
+              totalAmount: macro.totalAmount,
+              amount100g: macro.amount100g,
+              amountPerServing: macro.amountPerServing} as Nutrient);
           } else {
-              let macroToUpdate = dailyIntake.totalMacros.find(m => m.name.toLowerCase() === key.toLowerCase())!;
-              let valueNum = parseFloat(value.match(/[\d.]+/)?.[0] || '0');
-              macroToUpdate.totalAmount += valueNum;
+              let macroToUpdate = dailyIntake.totalMacros.find(m => m.name.toLowerCase() === macro.name.toLowerCase())!;
+              macroToUpdate.totalAmount += macro.totalAmount;
           }
       });
       console.log('Updated daily intake locally:', dailyIntake);

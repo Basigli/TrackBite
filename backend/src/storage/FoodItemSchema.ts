@@ -1,5 +1,6 @@
 import mongoose, { Schema, Model } from "mongoose";
 import { FoodItem } from "../models/FoodItem";
+import { NutrientSchema } from "./NutrientSchema";
 
 export const FoodItemSchema: Schema<FoodItem> = new Schema({
   name: { type: String, required: true },
@@ -7,8 +8,8 @@ export const FoodItemSchema: Schema<FoodItem> = new Schema({
   calories: { type: Number, required: true },
   allergens: { type: [String], default: [] },
   ingredients: { type: [String], default: [] },
-  nutrients: { type: Map, of: String },
-  macros: { type: Map, of: String },
+  nutrients: { type: [NutrientSchema], default: [] },
+  macros: { type: [NutrientSchema], default: [] },
   score: { type: Number },
   grade: { type: String },
   nutrientLevels: { type: Map, of: String }

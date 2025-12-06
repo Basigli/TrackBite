@@ -230,7 +230,6 @@ export default {
     // Generate preview
     const preview = computed(() => {
       if (!isValid.value) return null
-
       try {
         let foodItem
         if (conversionType.value === 'servings') {

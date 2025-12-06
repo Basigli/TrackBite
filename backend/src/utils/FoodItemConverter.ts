@@ -58,21 +58,35 @@ export class FoodItemBuilder {
         } as Nutrient));
     }
 
+    private polishNutrients(nutrients: Array<Nutrient>): Array<Nutrient> {
+        let filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy'));
+        return filtered;
+    }
+
+
     /**
      * Build the FoodItem with calculated values
      */
     build(): FoodItem {
+        const macroNames = ['proteins', 'carbohydrates', 'fat'];
         this.percentage = this.calculatePercentage();
-
-        const scaledNutrients = this.scaleNutrients(
-            this.scannedItem.nutrients,
-            this.percentage
-        );
-        const macroNames = ['protein', 'carbohydrates', 'fat'];
+        const calories_nutrient = this.scannedItem.nutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
+        
+        
+        const scaledQuantity = this.scannedItem.quantity * (this.percentage / 100);
+        let calories = 0;
+        if (calories_nutrient?.amount100g == calories_nutrient?.totalAmount) {
+            // If the calories nutrient is per 100g, we need to scale it again
+            calories = parseInt(((calories_nutrient?.totalAmount ?? 0) * (scaledQuantity / 100)).toString());
+        } else {
+            calories = parseInt(((calories_nutrient?.totalAmount ?? 0) * (this.percentage / 100)).toString());
+        }
+        let scaledNutrients = this.scaleNutrients(this.scannedItem.nutrients, this.percentage);
+        scaledNutrients = this.polishNutrients(scaledNutrients);
         return {
             name: this.scannedItem.name,
-            quantity: `${(this.scannedItem.quantity * (this.percentage / 100)).toFixed(2)} g`,
-            calories: parseFloat(scaledNutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy')?.totalAmount.toString() ?? '0'),
+            quantity: `${scaledQuantity.toFixed(2)} g`,
+            calories: calories,
             allergens: this.scannedItem.allergens,
             ingredients: this.scannedItem.ingredients,
             nutrients: scaledNutrients.filter(nutrient => !macroNames.includes(nutrient.name.toLowerCase())),

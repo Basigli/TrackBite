@@ -2,12 +2,13 @@
   <div class="recipes-page max-w-4xl mx-auto p-6">
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Recipes</h1>
     
-    <!-- Add Recipe Form (moved to top) -->
+    <!-- Add Recipe Form -->
     <div class="mb-6">
-      <AddRecipe @recipe-added="fetchRecipes" />
+      <!-- Listen to 'recipe-added' event -->
+      <AddRecipe @recipe-added="onRecipeAdded" />
     </div>
 
-    <!-- Recipe List (with proper conditional) -->
+    <!-- Recipe List -->
     <div v-if="recipes.length > 0">
       <RecipeList
         :recipes="recipes"
@@ -34,12 +35,24 @@ const store = useRecipeStore();
 const userStore = useUserStore();
 const userId = userStore.user?._id;
 
-const recipes = computed(() => store.recipes || []);
+// Computed directly from store – reactive
+const recipes = computed(() => store.recipes);
 
+// Actions
 const fetchRecipes = () => store.fetchRecipes(userId);
 const deleteRecipe = (recipeId) => store.deleteRecipe(recipeId, userId);
 const updateRecipe = (recipeId, data) => store.updateRecipe(recipeId, userId, data);
 
+// Event handler for newly added recipe
+const onRecipeAdded = (recipe) => {
+  // Optional: if the store already pushes the recipe in addRecipe(), this is redundant
+  // store.recipes.push(recipe);
+  
+  // But can refetch if you want to ensure backend sync
+  // fetchRecipes();
+};
+
+// Initial fetch
 onMounted(() => {
   fetchRecipes();
 });

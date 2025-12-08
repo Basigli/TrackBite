@@ -7,15 +7,13 @@
     <ul>
       <li
         v-for="recipe in editableRecipes"
-        :key="recipe.id"
+        :key="recipe._id"
         class="mb-3"
       >
         <!-- VIEW MODE -->
         <div v-if="!recipe.isEditing">
-          <!-- Use Recipe component for display -->
           <Recipe :recipe="recipe" />
-          
-          <!-- Action buttons below the recipe card -->
+
           <div class="flex justify-end gap-3 mt-2">
             <button
               @click="startEdit(recipe)"
@@ -25,7 +23,7 @@
             </button>
 
             <button
-              @click="emit('delete-recipe', recipe._id)"
+              @click="deleteRecipe(recipe._id)"
               class="text-red-500 hover:text-red-700 font-medium text-sm"
             >
               Delete
@@ -59,37 +57,32 @@
               </li>
             </ul>
 
-            <!-- Add Ingredient Form -->
+            <!-- Add Ingredient: ONLY FROM SCANNED ITEMS -->
             <div class="border-t pt-3 mt-3">
               <p class="text-sm font-medium text-gray-700 mb-2">Add Ingredient</p>
-              
-              <input
-                v-model="newIngredient.name"
-                class="w-full border p-2 rounded mb-2"
-                placeholder="Ingredient name"
-              />
 
-              <input
-                v-model.number="newIngredient.percentage"
-                type="number"
-                class="w-full border p-2 rounded mb-2"
-                placeholder="Percentage"
-                min="0"
-                max="100"
-              />
+              <ScannedItemList @add="handleScannedItem(recipe)" />
 
-              <input
-                v-model="newIngredient.allergens"
-                class="w-full border p-2 rounded mb-2"
-                placeholder="Allergens (comma separated, optional)"
-              />
+              <div v-if="selectedIngredient?.recipeId === recipe._id" class="mt-2 bg-gray-50 p-3 rounded">
+                <p class="text-sm mb-1 font-medium">{{ selectedIngredient.item.name }}</p>
 
-              <button
-                @click="addIngredient(recipe)"
-                class="w-full bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
-              >
-                Add Ingredient
-              </button>
+                <input
+                  v-model.number="selectedIngredient.percentage"
+                  type="number"
+                  class="w-full border p-2 rounded mb-2"
+                  placeholder="Percentage"
+                  min="0"
+                  max="100"
+                />
+
+                <button
+                  @click="confirmAddIngredient()"
+                  class="w-full bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600"
+                  :disabled="!selectedIngredient.percentage || selectedIngredient.percentage <= 0"
+                >
+                  Add to Recipe
+                </button>
+              </div>
             </div>
           </div>
 
@@ -115,48 +108,36 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive } from 'vue';
-import Recipe from './Recipe.vue'; // Update path as needed
+import { ref, reactive, computed } from 'vue';
+import { useRecipeStore } from '../store/recipeStore';
+import Recipe from './Recipe.vue';
+import ScannedItemList from './ScannedItemList.vue';
 
-const props = defineProps({
-  recipes: {
-    type: Array,
-    default: () => [],
-  },
-});
+const store = useRecipeStore();
+const recipes = computed(() => store.recipes);
+
+const editableRecipes = computed(() =>
+  recipes.value.map(r => ({
+    ...r,
+    isEditing: r.isEditing || false,
+    edit: r.edit || { ...r, ingredients: r.ingredients ? [...r.ingredients] : [] },
+  }))
+);
 
 const emit = defineEmits(['delete-recipe', 'save-recipe']);
 
-const editableRecipes = ref([]);
-
-const newIngredient = reactive({
-  name: '',
-  percentage: null,
-  allergens: '',
+// Track the currently selected scanned item before adding to recipe
+const selectedIngredient = reactive({
+  recipeId: null,
+  item: null,
+  percentage: null
 });
-
-// Watch for changes in recipes prop
-watch(
-  () => props.recipes,
-  (list) => {
-    editableRecipes.value = list.map((r) => ({
-      ...r,
-      isEditing: false,
-      edit: { 
-        ...r,
-        ingredients: r.ingredients ? [...r.ingredients] : [],
-      },
-    }));
-  },
-  { immediate: true }
-);
 
 const startEdit = (recipe) => {
   recipe.isEditing = true;
-  // Reset new ingredient form
-  newIngredient.name = '';
-  newIngredient.percentage = null;
-  newIngredient.allergens = '';
+  selectedIngredient.recipeId = null;
+  selectedIngredient.item = null;
+  selectedIngredient.percentage = null;
 };
 
 const cancelEdit = (recipe) => {
@@ -165,31 +146,35 @@ const cancelEdit = (recipe) => {
     ingredients: recipe.ingredients ? [...recipe.ingredients] : [],
   };
   recipe.isEditing = false;
+  selectedIngredient.recipeId = null;
+  selectedIngredient.item = null;
+  selectedIngredient.percentage = null;
 };
 
-const addIngredient = (recipe) => {
-  if (!newIngredient.name || newIngredient.percentage === null) {
-    alert('Please enter ingredient name and percentage');
-    return;
-  }
+const handleScannedItem = (recipe) => (item) => {
+  selectedIngredient.recipeId = recipe._id;
+  selectedIngredient.item = item;
+  selectedIngredient.percentage = null;
+};
+
+const confirmAddIngredient = () => {
+  if (!selectedIngredient.item || !selectedIngredient.percentage) return;
+
+  const recipe = editableRecipes.value.find(r => r._id === selectedIngredient.recipeId);
+  if (!recipe) return;
 
   const ingredient = {
-    _id: Date.now().toString(), // Temporary ID
-    percentage: newIngredient.percentage,
-    scannedItem: {
-      name: newIngredient.name,
-      allergens: newIngredient.allergens 
-        ? newIngredient.allergens.split(',').map(a => a.trim()).filter(Boolean)
-        : [],
-    },
+    _id: Date.now().toString(),
+    percentage: selectedIngredient.percentage,
+    scannedItem: selectedIngredient.item
   };
 
   recipe.edit.ingredients.push(ingredient);
 
-  // Reset form
-  newIngredient.name = '';
-  newIngredient.percentage = null;
-  newIngredient.allergens = '';
+  // Reset selection
+  selectedIngredient.recipeId = null;
+  selectedIngredient.item = null;
+  selectedIngredient.percentage = null;
 };
 
 const removeIngredient = (recipe, index) => {
@@ -199,5 +184,9 @@ const removeIngredient = (recipe, index) => {
 const saveEdit = (recipe) => {
   emit('save-recipe', recipe._id, { ...recipe.edit });
   recipe.isEditing = false;
+};
+
+const deleteRecipe = (recipeId) => {
+  emit('delete-recipe', recipeId);
 };
 </script>

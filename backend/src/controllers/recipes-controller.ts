@@ -15,6 +15,7 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 // POST /recipes - Create a new recipe
  const createRecipe = async (req: Request, res: Response) => {
   try {
+    console.log("Creating recipe with data:", req.body);
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Invalid recipe data", error: parsed.error });
@@ -24,6 +25,7 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
     await newRecipe.save();
     res.status(201).json(newRecipe);
   } catch (err) {
+    console.log("Error in createRecipe:", err);
     res.status(500).json({ message: "Error creating recipe", error: err });
   }
 };

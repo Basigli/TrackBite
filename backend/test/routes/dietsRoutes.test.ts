@@ -27,6 +27,7 @@ describe("Diet Routes", () => {
   const sampleDiet = {
     name: "Low Carb",
     caloriesAmount: 1500,
+    macros: [],
     userId: "test-user-id"
   };
 
@@ -135,9 +136,9 @@ describe("Diet Routes", () => {
       const otherUserId = "user-456";
 
       await DietModel.create([
-        { name: "Diet A", caloriesAmount: 1200, userId },
-        { name: "Diet B", caloriesAmount: 1500, userId },
-        { name: "Diet C", caloriesAmount: 1800, userId: otherUserId }
+        { name: "Diet A", caloriesAmount: 1200, macros: [], userId },
+        { name: "Diet B", caloriesAmount: 1500, macros: [], userId },
+        { name: "Diet C", caloriesAmount: 1800, macros: [], userId: otherUserId }
       ]);
 
       const res = await request(app)

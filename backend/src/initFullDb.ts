@@ -8,6 +8,7 @@ import { ScannedItemModel } from "./storage/ScannedItemSchema";
 import { NutrientModel } from "./storage/NutrientSchema";
 import { FoodItemModel } from "./storage/FoodItemSchema";
 import { FoodItemConverter } from "./utils/FoodItemConverter";
+import { Nutrient } from "./models/Nutrient";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/trackbite";
 
@@ -413,33 +414,44 @@ const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
   console.log("Inserted daily intakes");
 
   // ===== DIETS =====
+  const baseMacros: Array<Nutrient> = [
+    { name: "Protein", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 } as Nutrient,
+    { name: "Fat", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 } as Nutrient,
+    { name: "Carbohydrates", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 } as Nutrient
+  ];
+
   const dietLowCarb = await DietModel.create({
     name: "Low Carb Weight Loss",
     caloriesAmount: 1600,
+    macros: baseMacros,
     userId: userAlice._id.toString()
   });
 
   const dietHighProtein = await DietModel.create({
     name: "High Protein Muscle Building",
     caloriesAmount: 2400,
+    macros: baseMacros,
     userId: userAlice._id.toString()
   });
 
   const dietBalanced = await DietModel.create({
     name: "Balanced Mediterranean",
     caloriesAmount: 2000,
+    macros: baseMacros,
     userId: userBob._id.toString()
   });
 
   const dietVegan = await DietModel.create({
     name: "Plant-Based Vegan",
     caloriesAmount: 1800,
+    macros: baseMacros,
     userId: userCharlie._id.toString()
   });
 
   const dietKeto = await DietModel.create({
     name: "Ketogenic Diet",
     caloriesAmount: 1500,
+    macros: baseMacros,
     userId: userCharlie._id.toString()
   });
 

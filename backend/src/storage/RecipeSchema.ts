@@ -9,7 +9,7 @@ const RecipeSchema = new Schema<Recipe>({
     type: [FoodItemSchema],
     required: true
   },
-  ownerId: { type: String, required: true },
+  userId: { type: String, required: true },
   description: { type: String, required: true },
   // image: { type: Buffer, required: false },
   createdAt: { type: Date, required: true },

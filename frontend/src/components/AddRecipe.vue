@@ -46,54 +46,8 @@
         </div>
 
         <!-- Add Ingredient Section -->
-        <div v-if="showAddIngredient" class="bg-gray-50 rounded-lg p-4 mb-4 space-y-4">
-          <!-- Scanned Items List -->
+        <div v-if="showAddIngredient" class="bg-gray-50 rounded-lg p-4 mb-4">
           <ScannedItemList @add="handleScannedItemSelected" />
-
-          <!-- Selected Item Preview (before adding) -->
-          <div v-if="selectedFoodItem" class="bg-white border-2 border-green-300 rounded-lg p-4">
-            <div class="flex justify-between items-start mb-3">
-              <div>
-                <h4 class="font-bold text-gray-800">{{ selectedFoodItem.name }}</h4>
-                <p class="text-sm text-gray-600">
-                  {{ selectedFoodItem.calories?.toFixed(0) || 0 }} kcal per {{ selectedFoodItem.quantity }}
-                </p>
-              </div>
-              <button
-                type="button"
-                @click="selectedFoodItem = null"
-                class="text-gray-400 hover:text-gray-600"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-
-            <div class="space-y-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                  Quantity for Recipe (grams) *
-                </label>
-                <input
-                  v-model.number="ingredientQuantity"
-                  type="number"
-                  min="1"
-                  placeholder="e.g., 150"
-                  class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-400"
-                />
-              </div>
-
-              <button
-                type="button"
-                @click="addIngredientToRecipe"
-                :disabled="!ingredientQuantity || ingredientQuantity <= 0"
-                class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg px-4 py-2 transition shadow-md disabled:bg-gray-300 disabled:cursor-not-allowed"
-              >
-                Add to Recipe
-              </button>
-            </div>
-          </div>
         </div>
 
         <!-- Ingredients List -->
@@ -138,6 +92,29 @@
 
       <!-- Recipe Summary -->
       <div v-if="ingredients.length > 0" class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4 border border-green-200">
+        <h4 class="font-semibold text-gray-800 mb-3">Recipe Summary</h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-600 mb-1">Total Calories</div>
+            <div class="font-bold text-green-600 text-lg">{{ totalCalories.toFixed(0) }}</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-600 mb-1">Ingredients</div>
+            <div class="font-bold text-blue-600 text-lg">{{ ingredients.length }}</div>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-600 mb-1">Grade</div>
+            <div class="font-bold text-lg" :class="getGradeColorText(recipeGrade)">
+              {{ recipeGrade.toUpperCase() }}
+            </div>
+          </div>
+          <div class="bg-white rounded-lg p-3 text-center">
+            <div class="text-xs text-gray-600 mb-1">Protein</div>
+            <div class="font-bold text-purple-600 text-lg">
+              {{ getMainMacro('protein')?.totalAmount.toFixed(1) || '0' }}g
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Error Message -->
@@ -188,31 +165,37 @@ export default {
     const description = ref('');
     const ingredients = ref([]);
     const showAddIngredient = ref(false);
-    const selectedFoodItem = ref(null);
-    const ingredientQuantity = ref(100);
     const error = ref('');
 
-    const totalCalories = computed(() => ingredients.value.reduce((sum, ing) => sum + (ing.calories || 0), 0));
+    // Simply sum all calories from ingredients
+    const totalCalories = computed(() => {
+      return ingredients.value.reduce((sum, ing) => sum + (ing.calories || 0), 0);
+    });
 
+    // Calculate average grade
     const recipeGrade = computed(() => {
       if (!ingredients.value.length) return 'c';
       const gradeValues = { a: 5, b: 4, c: 3, d: 2, e: 1 };
       const reverseGrades = { 5: 'a', 4: 'b', 3: 'c', 2: 'd', 1: 'e' };
-      const avgValue = ingredients.value.reduce((sum, ing) => sum + (gradeValues[ing.grade?.toLowerCase()] || 3), 0) / ingredients.value.length;
+      const avgValue = ingredients.value.reduce((sum, ing) => {
+        return sum + (gradeValues[ing.grade?.toLowerCase()] || 3);
+      }, 0) / ingredients.value.length;
       return reverseGrades[Math.round(avgValue)] || 'c';
     });
 
+    // Sum all macros from all ingredients
     const recipeMacros = computed(() => {
       if (!ingredients.value.length) return [];
+      
       const macroMap = new Map();
-      const totalWeight = ingredients.value.reduce((sum, ing) => sum + parseFloat(ing.quantity), 0);
 
       ingredients.value.forEach(ingredient => {
-        const weight = parseFloat(ingredient.quantity);
-        ingredient.nutrients?.forEach(nutrient => {
+        if (!ingredient.nutrients || !Array.isArray(ingredient.nutrients)) return;
+        
+        ingredient.nutrients.forEach(nutrient => {
           if (!macroMap.has(nutrient.name)) {
             macroMap.set(nutrient.name, {
-              _id: nutrient._id,
+              _id: nutrient._id || `nutrient_${nutrient.name}`,
               name: nutrient.name,
               unit: nutrient.unit,
               totalAmount: 0,
@@ -220,78 +203,33 @@ export default {
               amountPerServing: 0
             });
           }
+          
           const macro = macroMap.get(nutrient.name);
-          macro.totalAmount += (nutrient.amount100g || 0) * weight / 100;
+          macro.totalAmount += (nutrient.totalAmount || 0);
         });
       });
 
-      const macros = Array.from(macroMap.values()).map(macro => ({
-        ...macro,
-        amount100g: (macro.totalAmount / totalWeight) * 100,
-        amountPerServing: 0
-      }));
-
-      const mainMacros = ['protein', 'carbohydrates', 'fat', 'energy'];
-      return macros.filter(m => mainMacros.includes(m.name.toLowerCase()));
+      return Array.from(macroMap.values());
     });
 
-    const isValid = computed(() => name.value.trim() && ingredients.value.length > 0);
+    const isValid = computed(() => {
+      return name.value.trim() && ingredients.value.length > 0;
+    });
 
-    const handleScannedItemSelected = food => {
-      selectedFoodItem.value = food;
-      ingredientQuantity.value = parseFloat(food.quantity) || 100;
-    };
-
-    const scaleNutrients = (nutrients, originalQuantity, newQuantity) => {
-      if (!nutrients || !Array.isArray(nutrients)) return [];
-      const scale = newQuantity / originalQuantity;
-      return nutrients.map(nutrient => ({
-        name: nutrient.name,
-        unit: nutrient.unit,
-        totalAmount: (nutrient.totalAmount || 0) * scale,
-        amount100g: nutrient.amount100g || 0,
-        amountPerServing: (nutrient.amountPerServing || 0) * scale
-      }));
-    };
-
-    const addIngredientToRecipe = () => {
-      if (!selectedFoodItem.value || !ingredientQuantity.value || ingredientQuantity.value <= 0) {
-        error.value = 'Please select a food item and enter a valid quantity';
-        return;
-      }
-
-      const originalQuantity = parseFloat(selectedFoodItem.value.quantity) || 100;
-      const scale = ingredientQuantity.value / originalQuantity;
-
-      const foodItem = {
-        _id: selectedFoodItem.value._id,
-        name: selectedFoodItem.value.name,
-        quantity: `${ingredientQuantity.value}g`,
-        calories: (selectedFoodItem.value.calories || 0) * scale,
-        allergens: selectedFoodItem.value.allergens || [],
-        ingredients: selectedFoodItem.value.ingredients || [],
-        nutrients: scaleNutrients(selectedFoodItem.value.nutrients || [], originalQuantity, ingredientQuantity.value),
-        macros: scaleNutrients(selectedFoodItem.value.macros || [], originalQuantity, ingredientQuantity.value),
-        score: selectedFoodItem.value.score || 50,
-        grade: selectedFoodItem.value.grade || 'c',
-        nutrientLevels: selectedFoodItem.value.nutrientLevels || new Map()
-      };
-
+    const handleScannedItemSelected = (foodItem) => {
       ingredients.value.push(foodItem);
-      selectedFoodItem.value = null;
-      ingredientQuantity.value = 100;
       error.value = '';
       showAddIngredient.value = false;
     };
 
-    const removeIngredient = index => ingredients.value.splice(index, 1);
+    const removeIngredient = (index) => {
+      ingredients.value.splice(index, 1);
+    };
 
     const resetForm = () => {
       name.value = '';
       description.value = '';
       ingredients.value = [];
-      selectedFoodItem.value = null;
-      ingredientQuantity.value = 100;
       showAddIngredient.value = false;
       error.value = '';
     };
@@ -318,8 +256,6 @@ export default {
           createdAt: new Date()
         };
 
-
-
         await store.addRecipe(recipe);
         emit('recipe-added', recipe);
         resetForm();
@@ -329,13 +265,29 @@ export default {
       }
     };
 
-    const getGradeColor = grade => {
-      const colors = { a: 'bg-green-100 text-green-800', b: 'bg-lime-100 text-lime-800', c: 'bg-yellow-100 text-yellow-800', d: 'bg-orange-100 text-orange-800', e: 'bg-red-100 text-red-800' };
+    const getMainMacro = (macroName) => {
+      return recipeMacros.value.find(m => m.name.toLowerCase() === macroName.toLowerCase());
+    };
+
+    const getGradeColor = (grade) => {
+      const colors = {
+        a: 'bg-green-100 text-green-800',
+        b: 'bg-lime-100 text-lime-800',
+        c: 'bg-yellow-100 text-yellow-800',
+        d: 'bg-orange-100 text-orange-800',
+        e: 'bg-red-100 text-red-800'
+      };
       return colors[grade?.toLowerCase()] || 'bg-gray-100 text-gray-800';
     };
 
-    const getGradeColorText = grade => {
-      const colors = { a: 'text-green-600', b: 'text-lime-600', c: 'text-yellow-600', d: 'text-orange-600', e: 'text-red-600' };
+    const getGradeColorText = (grade) => {
+      const colors = {
+        a: 'text-green-600',
+        b: 'text-lime-600',
+        c: 'text-yellow-600',
+        d: 'text-orange-600',
+        e: 'text-red-600'
+      };
       return colors[grade?.toLowerCase()] || 'text-gray-600';
     };
 
@@ -344,18 +296,16 @@ export default {
       description,
       ingredients,
       showAddIngredient,
-      selectedFoodItem,
-      ingredientQuantity,
       error,
       totalCalories,
       recipeGrade,
       recipeMacros,
       isValid,
       handleScannedItemSelected,
-      addIngredientToRecipe,
       removeIngredient,
       resetForm,
       submitRecipe,
+      getMainMacro,
       getGradeColor,
       getGradeColorText
     };

@@ -33,6 +33,10 @@
         <li v-for="nutrient in recipe.macros" :key="nutrient._id">
           {{ nutrient.name }}: {{ nutrient.amountPerServing }} {{ nutrient.unit }} per serving
         </li>
+
+        <li class="mt-2 font-bold">
+          Total Calories: {{ recipe.totalCalories }} kcal
+        </li>
       </ul>
     </div>
   </div>

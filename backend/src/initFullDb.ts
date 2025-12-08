@@ -317,6 +317,7 @@ async function seed() {
       proteinNutrient,
       fatNutrient
     ],
+    totalCalories: 550
   });
 
   const recipeSalmonBowl = await RecipeModel.create({
@@ -335,6 +336,7 @@ async function seed() {
       proteinNutrient,
       fatNutrient
     ],
+    totalCalories: 700
   });
 
   const recipeBreakfastToast = await RecipeModel.create({
@@ -352,7 +354,7 @@ async function seed() {
       proteinNutrient,
       fatNutrient
     ],
-
+    totalCalories: 300
   });
 
   console.log("Inserted recipes");

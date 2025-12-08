@@ -11,7 +11,8 @@ export interface Recipe {
   // image?: Buffer,
   createdAt: Date,
   grade: string,
-  macros: Array<Nutrient>
+  macros: Array<Nutrient>, 
+  totalCalories: number
 }
 
 export const RecipeSchemaZ = z.object({
@@ -23,5 +24,6 @@ export const RecipeSchemaZ = z.object({
   // image: z.any().optional(),
   createdAt: z.coerce.date(),
   grade: z.string(),
-  macros: z.array(NutrientSchemaZ)
+  macros: z.array(NutrientSchemaZ),
+  totalCalories: z.number()
 });

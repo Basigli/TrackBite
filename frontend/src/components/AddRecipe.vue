@@ -195,7 +195,6 @@ export default {
         ingredient.nutrients.forEach(nutrient => {
           if (!macroMap.has(nutrient.name)) {
             macroMap.set(nutrient.name, {
-              _id: nutrient._id || `nutrient_${nutrient.name}`,
               name: nutrient.name,
               unit: nutrient.unit,
               totalAmount: 0,
@@ -253,7 +252,8 @@ export default {
           userId: userStore.user._id,
           grade: recipeGrade.value,
           macros: recipeMacros.value,
-          createdAt: new Date()
+          createdAt: new Date(),
+          totalCalories: totalCalories.value, 
         };
 
         await store.addRecipe(recipe);

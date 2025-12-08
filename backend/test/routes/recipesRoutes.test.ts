@@ -188,7 +188,8 @@ describe("Recipe Routes", () => {
       { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 24.7, amount100g: 5.9, amountPerServing: 24.7 },
       { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 11.5, amount100g: 2.8, amountPerServing: 11.5 },
       { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 35, amount100g: 8.4, amountPerServing: 35 }
-    ]
+    ],
+    totalCalories: 437
   };
 
   const anotherRecipe = {
@@ -202,7 +203,8 @@ describe("Recipe Routes", () => {
       { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 2.7, amount100g: 1.1, amountPerServing: 2.7 },
       { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 11.4, amount100g: 4.8, amountPerServing: 11.4 },
       { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 13.65, amount100g: 5.7, amountPerServing: 13.65 }
-    ]
+    ], 
+    totalCalories: 200
   };
 
   const multiIngredientRecipe = {
@@ -250,7 +252,8 @@ describe("Recipe Routes", () => {
       { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 48.7, amount100g: 6.8, amountPerServing: 48.7 },
       { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 176.5, amount100g: 24.6, amountPerServing: 176.5 },
       { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 41, amount100g: 5.7, amountPerServing: 41 }
-    ]
+    ], 
+    totalCalories: 1280
   };
 
   describe("POST /recipes", () => {
@@ -347,7 +350,8 @@ describe("Recipe Routes", () => {
           { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 24.4, amount100g: 7.8, amountPerServing: 24.4 },
           { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 11.2, amount100g: 3.6, amountPerServing: 11.2 },
           { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 21.5, amount100g: 6.9, amountPerServing: 21.5 }
-        ]
+        ], 
+        totalCalories: 317
       };
 
       const res = await request(app)
@@ -377,7 +381,8 @@ describe("Recipe Routes", () => {
           { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 1.8, amount100g: 0.8, amountPerServing: 1.8 },
           { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 7.8, amount100g: 3.6, amountPerServing: 7.8 },
           { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 13.9, amount100g: 6.5, amountPerServing: 13.9 }
-        ]
+        ], 
+        totalCalories: 155
       };
 
       const res = await request(app)
@@ -401,7 +406,8 @@ describe("Recipe Routes", () => {
         grade: "A",
         macros: [
           { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 1.8, amount100g: 0.9, amountPerServing: 1.8 }
-        ]
+        ], 
+        totalCalories: 36
       };
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)

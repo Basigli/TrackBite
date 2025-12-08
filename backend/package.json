@@ -7,6 +7,7 @@
     "predev": "node -r ts-node/register src/initFullDb.ts",
     "dev": "npx tsc && node dist/index.js",
     "test": "npx jest",
+    "test:dietBuilder": "node -r ts-node/register test/TestDietBuilder.ts",
     "test:parser": "node -r ts-node/register test/TestParser.ts",
     "test:schemas": "node -r ts-node/register test/TestSchemas.ts",
     "test:usersRoutes": "npx jest test/routes/userRoutes.test.ts",

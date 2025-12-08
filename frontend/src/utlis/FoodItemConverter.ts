@@ -48,11 +48,12 @@ export class FoodItemBuilder {
     /**
      * Scale nutrients based on the percentage
      */
-    private scaleNutrients(nutrients: Array<Nutrient>, percentage: number): Array<Nutrient> {
-        return nutrients.map(nutrient => ({
+    private scaleNutrients(nutrients: Array<Nutrient>, percentage: number, scaledQuantity: number): Array<Nutrient> {
+        return nutrients.map(nutrient => (
+        {
             name: nutrient.name,
             unit: nutrient.unit,
-            totalAmount: parseFloat((nutrient.totalAmount * (percentage / 100)).toFixed(2)),
+            totalAmount: nutrient?.amount100g == nutrient?.totalAmount ? parseFloat((nutrient.totalAmount * (scaledQuantity / 100)).toFixed(2)) : parseFloat((nutrient.totalAmount * (percentage / 100)).toFixed(2)),
             amount100g: nutrient.amount100g,
             amountPerServing: nutrient.amountPerServing
         } as Nutrient));
@@ -70,23 +71,16 @@ export class FoodItemBuilder {
     build(): FoodItem {
         const macroNames = ['proteins', 'carbohydrates', 'fat'];
         this.percentage = this.calculatePercentage();
-        const calories_nutrient = this.scannedItem.nutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
-        
         
         const scaledQuantity = this.scannedItem.quantity * (this.percentage / 100);
-        let calories = 0;
-        if (calories_nutrient?.amount100g == calories_nutrient?.totalAmount) {
-            // If the calories nutrient is per 100g, we need to scale it again
-            calories = parseInt(((calories_nutrient?.totalAmount ?? 0) * (scaledQuantity / 100)).toString());
-        } else {
-            calories = parseInt(((calories_nutrient?.totalAmount ?? 0) * (this.percentage / 100)).toString());
-        }
-        let scaledNutrients = this.scaleNutrients(this.scannedItem.nutrients, this.percentage);
+        let scaledNutrients = this.scaleNutrients(this.scannedItem.nutrients, this.percentage, scaledQuantity);
+        const calories_nutrient = this.scannedItem.nutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
         scaledNutrients = this.polishNutrients(scaledNutrients);
+
         return {
             name: this.scannedItem.name,
             quantity: `${scaledQuantity.toFixed(2)} g`,
-            calories: calories,
+            calories: calories_nutrient?.totalAmount ?? 0,
             allergens: this.scannedItem.allergens,
             ingredients: this.scannedItem.ingredients,
             nutrients: scaledNutrients.filter(nutrient => !macroNames.includes(nutrient.name.toLowerCase())),

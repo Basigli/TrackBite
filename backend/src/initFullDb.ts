@@ -309,7 +309,15 @@ async function seed() {
       foodItemRice,
       foodItemSpinach
     ],
-    userId: userAlice._id.toString()
+    description: "A healthy and delicious grilled chicken recipe served with brown rice and fresh spinach.",
+    userId: userAlice._id.toString(),
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      carbsNutrient,
+      proteinNutrient,
+      fatNutrient
+    ],
   });
 
   const recipeSalmonBowl = await RecipeModel.create({
@@ -319,7 +327,15 @@ async function seed() {
       foodItemRice,
       foodItemSpinach
     ],
-    userId: userBob._id.toString()
+    userId: userBob._id.toString(),
+    description: "A nutritious salmon power bowl with rice and spinach.",
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      carbsNutrient,
+      proteinNutrient,
+      fatNutrient
+    ],
   });
 
   const recipeBreakfastToast = await RecipeModel.create({
@@ -328,7 +344,16 @@ async function seed() {
       foodItemWholeWheatBread,
       foodItemAlmondMilk
     ],
-    userId: userCharlie._id.toString()
+    userId: userCharlie._id.toString(),
+    description: "A protein-packed breakfast toast with whole wheat bread and almond milk.",
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      carbsNutrient,
+      proteinNutrient,
+      fatNutrient
+    ],
+
   });
 
   console.log("Inserted recipes");

@@ -17,7 +17,8 @@ const RecipeSchema = new Schema<Recipe>({
   macros: {
     type: [NutrientSchema],
     required: true
-  }
+  },
+  totalCalories: { type: Number, required: true }
 });
 
 export const RecipeModel: Model<Recipe> = mongoose.model<Recipe>("Recipe", RecipeSchema);

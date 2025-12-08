@@ -7,7 +7,7 @@ export interface Recipe {
   name: string,
   ingredients: Array<FoodItem>,
   description: string,
-  ownerId: string,
+  userId: string,
   // image?: Buffer,
   createdAt: Date,
   grade: string,
@@ -18,10 +18,10 @@ export const RecipeSchemaZ = z.object({
   _id: z.string().optional(),
   name: z.string(),
   ingredients: z.array(FoodItemSchemaZ),
-  ownerId: z.string(),
+  userId: z.string(),
   description: z.string(),
   // image: z.any().optional(),
-  createdAt: z.date(),
+  createdAt: z.coerce.date(),
   grade: z.string(),
   macros: z.array(NutrientSchemaZ)
 });

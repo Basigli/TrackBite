@@ -385,12 +385,12 @@ export default {
     }
 
     const updateDiet = async (dietId, updates) => {
-      await dietStore.updateDiet(dietId, updates)
+      await dietStore.updateDiet(dietId, userStore.user._id, updates)
     }
 
     const deleteDiet = async (dietId) => {
       if (confirm('Are you sure you want to delete this diet?')) {
-        await dietStore.deleteDiet(dietId)
+        await dietStore.deleteDiet(dietId, userStore.user._id)
         if (selectedDiet.value && selectedDiet.value._id === dietId) {
           selectedDiet.value = null
         }

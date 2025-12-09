@@ -107,9 +107,10 @@ export const useRecipeStore = defineStore('recipe', () => {
   // Save a community recipe to user's own recipes
   const saveCommunityRecipeToOwn = async (recipe: CommunityRecipe) => {
     try {
-
       userStore.user.savedRecipesIds.push(recipe._id);
       await userStore.updateUser({ savedRecipesIds: userStore.user.savedRecipesIds });
+      const { authorName, authorId, receivedAt, ...recipeData } = recipe;
+      recipes.value.push(recipeData as Recipe);
     } catch (err) {
       console.error('Error saving community recipe:', err);
       throw err;

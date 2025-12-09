@@ -395,6 +395,10 @@ export default {
           foodItem = converter.toFoodItemDefault(props.item)
         }
 
+        console.log(props.item)
+        console.log('Adding food item:', foodItem)
+
+
         emit('add', foodItem)
         closeModal()
       } catch (err) {

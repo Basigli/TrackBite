@@ -1,5 +1,5 @@
 <template>
-  <div class="food-search mb-4 max-w-md mx-auto">
+  <div class="food-search mb-4">
     <input
       type="text"
       v-model="query"
@@ -8,25 +8,53 @@
       class="w-full px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-300 shadow-sm"
     />
 
-    <ul
-      v-if="results.length"
-      class="border border-gray-200 rounded-lg mt-2 max-h-48 overflow-y-auto shadow-lg bg-white"
-    >
-      <li
-        v-for="food in results"
-        :key="food.id"
-        @click="selectFood(food)"
-        class="px-4 py-2 hover:bg-green-100 cursor-pointer transition-colors"
-      >
-        <div class="flex justify-between">
-          <span class="font-medium">{{ food.name }}</span>
-          <span class="font-semibold text-gray-700">{{ food.calories }} kcal</span>
+    <!-- Results Container -->
+    <div v-if="results.length" class="mt-4 space-y-3">
+      <!-- Scanned Items Section -->
+      <div v-if="scannedResults.length > 0">
+        <h4 class="text-sm font-semibold text-gray-700 mb-2 px-1">Your Scanned Items</h4>
+        <div class="space-y-2">
+          <ScannedItem
+            v-for="food in scannedResults"
+            :key="food.id"
+            :item="food.originalItem"
+            @add="handleScannedItemAdd"
+          />
         </div>
-        <div v-if="food.source" class="text-xs text-gray-500 mt-1">
-          {{ food.source }}
-        </div>
-      </li>
-    </ul>
+      </div>
+
+      <!-- Recipe Database Section -->
+      <div v-if="recipeResults.length > 0">
+        <h4 class="text-sm font-semibold text-gray-700 mb-2 px-1">Recipe Database</h4>
+        <ul class="border border-gray-200 rounded-lg shadow-sm bg-white divide-y divide-gray-200">
+          <li
+            v-for="food in recipeResults"
+            :key="food.id"
+            @click="selectRecipeFood(food)"
+            class="px-4 py-3 hover:bg-green-50 cursor-pointer transition-colors"
+          >
+            <div class="flex justify-between items-center">
+              <div class="flex-1">
+                <span class="font-medium text-gray-800 block">{{ food.name }}</span>
+                <span class="text-xs text-gray-500">{{ food.source }}</span>
+              </div>
+              <div class="text-right">
+                <span class="font-semibold text-green-600">{{ food.calories }}</span>
+                <span class="text-sm text-gray-600 ml-1">kcal</span>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- No Results Message -->
+    <div v-else-if="query && !results.length" class="mt-4 text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+      <svg class="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+      <p class="text-gray-500 text-sm">No results found for "{{ query }}"</p>
+    </div>
   </div>
 </template>
 
@@ -35,9 +63,11 @@ import { ref, computed } from 'vue';
 import axios from 'axios';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';
+import ScannedItem from './ScannedItem.vue';
 
 export default {
   name: 'FoodSearch',
+  components: { ScannedItem },
   emits: ['select-food'],
   setup(_, { emit }) {
     const query = ref('');
@@ -48,6 +78,15 @@ export default {
     // Get user's scanned items from the store
     const userScannedItems = computed(() => {
       return Array.from(scannedItemStore.scannedItems.values());
+    });
+
+    // Separate scanned items from recipe database results
+    const scannedResults = computed(() => {
+      return results.value.filter(r => r.source === 'Scanned Item');
+    });
+
+    const recipeResults = computed(() => {
+      return results.value.filter(r => r.source === 'Recipe Database');
     });
 
     const searchFood = async () => {
@@ -94,28 +133,37 @@ export default {
       results.value = combinedResults;
     };
 
-    const selectFood = (food) => {
-      // If it's a scanned item, emit the full item data
-      if (food.source === 'Scanned Item' && food.originalItem) {
-        emit('select-food', {
-          ...food.originalItem,
-          quantity: 100 // default quantity
-        });
-      } else {
-        // For recipe database items, emit the basic food data
-        emit('select-food', {
-          id: food.id,
-          name: food.name,
-          calories: food.calories,
-          quantity: 100
-        });
-      }
+    const handleScannedItemAdd = (foodItem) => {
+      // Emit the converted food item from ScannedItem component
+      emit('select-food', foodItem);
+      query.value = '';
+      results.value = [];
+    };
+
+    const selectRecipeFood = (food) => {
+      // For recipe database items, emit the basic food data
+      emit('select-food', {
+        id: food.id,
+        name: food.name,
+        calories: food.calories,
+        quantity: 100,
+        grade: 'c',
+        nutrients: []
+      });
       
       query.value = '';
       results.value = [];
     };
 
-    return { query, results, searchFood, selectFood };
+    return { 
+      query, 
+      results, 
+      scannedResults,
+      recipeResults,
+      searchFood, 
+      handleScannedItemAdd,
+      selectRecipeFood
+    };
   }
 };
 </script>

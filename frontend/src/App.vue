@@ -13,42 +13,47 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { computed, onMounted, onUnmounted } from 'vue';
 import Header from './components/Header.vue';
 import Sidebar from './components/Sidebar.vue';
 import { useUserStore } from './store/userStore';
+import { useSocket } from './useSocket';
 
-export default {
-  name: 'App',
-  components: { Header, Sidebar },
-  computed: {
-    navigationItems() {
-      const userStore = useUserStore();
-      
-      const baseItems = [
-        { path: '/', label: 'Dashboard' },
-        { path: '/history', label: 'History' },
-        { path: '/scan-food', label: 'Scan Food' },
-        { path: '/my-recipes', label: 'My Recipes' },
-        { path: '/find-recipe', label: 'Find Recipe' },
-        { path: '/diet', label: 'Diet' }
-      ];
+const userStore = useUserStore();
+const { connect, disconnect } = useSocket();
 
-      // Admin-specific items if user is admin
-      if (userStore.user?.isAdmin) {
-        return [
-          { path: '/admin', label: 'Dashboard' },
-          { path: '/admin/users', label: 'Manage Users' },
-          { path: '/admin/recipes', label: 'Manage Recipes' },
-          { path: '/settings', label: 'Settings' }
-        ];
-      }
+const navigationItems = computed(() => {
+  const baseItems = [
+    { path: '/', label: 'Dashboard' },
+    { path: '/history', label: 'History' },
+    { path: '/scan-food', label: 'Scan Food' },
+    { path: '/my-recipes', label: 'My Recipes' },
+    { path: '/find-recipe', label: 'Find Recipe' },
+    { path: '/diet', label: 'Diet' }
+  ];
 
-      // Regular user items
-      return [...baseItems, { path: '/settings', label: 'Settings' }];
-    }
+  // Admin-specific items if user is admin
+  if (userStore.user?.isAdmin) {
+    return [
+      { path: '/admin', label: 'Dashboard' },
+      { path: '/admin/users', label: 'Manage Users' },
+      { path: '/admin/recipes', label: 'Manage Recipes' },
+      { path: '/settings', label: 'Settings' }
+    ];
   }
-};
+
+  // Regular user items
+  return [...baseItems, { path: '/settings', label: 'Settings' }];
+});
+
+onMounted(() => {
+  connect();
+});
+
+onUnmounted(() => {
+  disconnect();
+});
 </script>
 
 <style>

@@ -86,15 +86,19 @@ import { UserModel } from "../storage/UserSchema";
  const deleteRecipe = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
-
     const recipe = await RecipeModel.findById(id);
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });
     }
 
     if (recipe.userId.toString() !== userId) {
+        const user = await UserModel.findById(userId);
+        if (user?.savedRecipesIds.includes(id)) {
+            user.savedRecipesIds = user.savedRecipesIds.filter(rId => rId.toString() !== id);
+            await user.save();
+        } else {  
       return res.status(403).json({ message: "Forbidden: not your recipe" });
-    }
+    }}
 
     const deleted = await RecipeModel.findByIdAndDelete(id);
     if (!deleted) return res.status(404).json({ message: "Recipe not found" });

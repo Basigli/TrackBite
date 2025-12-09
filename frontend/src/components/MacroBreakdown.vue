@@ -17,7 +17,8 @@
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
-            class="bg-blue-500 h-4 rounded-full transition-all duration-300"
+            class="h-4 rounded-full transition-all duration-300"
+            :class="colorClassForPercentage(proteinPercentage)"
             :style="{ width: proteinPercentage + '%' }"
           ></div>
         </div>
@@ -36,7 +37,8 @@
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
-            class="bg-green-500 h-4 rounded-full transition-all duration-300"
+            class="h-4 rounded-full transition-all duration-300"
+            :class="colorClassForPercentage(carbsPercentage)"
             :style="{ width: carbsPercentage + '%' }"
           ></div>
         </div>
@@ -55,7 +57,8 @@
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
-            class="bg-yellow-500 h-4 rounded-full transition-all duration-300"
+            class="h-4 rounded-full transition-all duration-300"
+            :class="colorClassForPercentage(fatPercentage)"
             :style="{ width: fatPercentage + '%' }"
           ></div>
         </div>
@@ -97,24 +100,23 @@ const currentFat = computed(() => {
   return fatMacro?.totalAmount || 0;
 });
 
-// Calculate target macros from diet (using standard ratios if not specified)
-// Standard ratios: Protein 30%, Carbs 40%, Fat 30%
+// Calculate target macros from diet
 const targetProtein = computed(() => {
   if (!dietStore.selectedDiet) return 0;
-  const calories = dietStore.selectedDiet.caloriesAmount;
-  return Math.round((calories * 0.30) / 4); // 4 calories per gram of protein
+  const proteinNutrient = dietStore.selectedDiet.macros.find(macro => macro.name.toLowerCase() === 'protein');
+  return proteinNutrient?.totalAmount || 0;
 });
 
 const targetCarbs = computed(() => {
   if (!dietStore.selectedDiet) return 0;
-  const calories = dietStore.selectedDiet.caloriesAmount;
-  return Math.round((calories * 0.40) / 4); // 4 calories per gram of carbs
+  const carbsNutrient = dietStore.selectedDiet.macros.find(macro => macro.name.toLowerCase() === 'carbohydrates');
+  return carbsNutrient?.totalAmount || 0;
 });
 
 const targetFat = computed(() => {
   if (!dietStore.selectedDiet) return 0;
-  const calories = dietStore.selectedDiet.caloriesAmount;
-  return Math.round((calories * 0.30) / 9); // 9 calories per gram of fat
+  const fatNutrient = dietStore.selectedDiet.macros.find(macro => macro.name.toLowerCase() === 'fat');
+  return fatNutrient?.totalAmount || 0;
 });
 
 // Calculate percentages
@@ -133,19 +135,13 @@ const fatPercentage = computed(() => {
   return Math.min((currentFat.value / targetFat.value) * 100, 100);
 });
 
-const caloriesPercentage = computed(() => {
-  if (!dietStore.selectedDiet || dietStore.selectedDiet.caloriesAmount === 0) return 0;
-  return Math.min((intakeStore.dailyIntake.totalCalories / dietStore.selectedDiet.caloriesAmount) * 100, 100);
-});
-
-// Dynamic color based on calories percentage
-const caloriesClass = computed(() => {
-  const percentage = caloriesPercentage.value;
+// Dynamic color based on percentage
+const colorClassForPercentage = (percentage: number): string => {
   if (percentage < 80) return 'bg-blue-500';
   if (percentage < 100) return 'bg-green-500';
   if (percentage < 110) return 'bg-yellow-500';
   return 'bg-red-500';
-});
+};
 </script>
 
 <style scoped>

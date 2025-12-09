@@ -4,28 +4,21 @@
       <h2 class="text-2xl font-bold text-gray-800 mb-2">Community Recipe Feed</h2>
       <p class="text-sm text-gray-600">
         Real-time recipes from other users
-        <span class="inline-flex items-center ml-2">
-          <span 
-            class="h-2 w-2 rounded-full mr-1"
-            :class="isConnected ? 'bg-green-500' : 'bg-red-500'"
-          ></span>
-          {{ isConnected ? 'Connected' : 'Disconnected' }}
-        </span>
       </p>
     </div>
 
-    <!-- New Recipe Notification -->
+    <!-- Show notification when new recipe is detected -->
     <transition name="slide-down">
       <div 
-        v-if="showNewRecipeNotification" 
+        v-if="hasNewRecipes" 
         class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4 flex items-center justify-between"
       >
         <div class="flex items-center gap-2">
           <span class="text-blue-600">🎉</span>
-          <span class="text-blue-800 font-medium">New recipe available!</span>
+          <span class="text-blue-800 font-medium">{{ newRecipeCount }} new recipe(s)!</span>
         </div>
         <button 
-          @click="showNewRecipeNotification = false"
+          @click="acknowledgeNewRecipes"
           class="text-blue-600 hover:text-blue-800"
         >
           ✕
@@ -47,7 +40,6 @@
         >
           <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
             <div class="p-4">
-              <!-- Recipe Header with Author Info -->
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
                   <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
@@ -70,10 +62,8 @@
                 </span>
               </div>
 
-              <!-- Recipe Component -->
               <Recipe :recipe="recipe" />
 
-              <!-- Actions -->
               <div class="flex gap-2 mt-3">
                 <button
                   @click="addRecipeToDailyIntake(recipe)"
@@ -97,8 +87,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { io, Socket } from 'socket.io-client';
+import { ref, computed, watch, onMounted } from 'vue';
 import { useIntakeStore } from '../store/intakeStore';
 import { useUserStore } from '../store/userStore';
 import { useRecipeStore } from '../store/recipeStore';
@@ -108,48 +97,36 @@ const intakeStore = useIntakeStore();
 const userStore = useUserStore();
 const recipeStore = useRecipeStore();
 
-const isConnected = ref(false);
-const showNewRecipeNotification = ref(false);
-let socket: Socket | null = null;
+const lastSeenCount = ref(0);
 
-// Connect to Socket.IO server
-onMounted(() => {
-  socket = io('http://localhost:3001', {
-    transports: ['websocket'],
-  });
-
-  socket.on('connect', () => {
-    console.log('Connected to recipe feed');
-    isConnected.value = true;
-  });
-
-  socket.on('disconnect', () => {
-    console.log('Disconnected from recipe feed');
-    isConnected.value = false;
-  });
-
-  // Listen for new recipes
-  socket.on('recipe:new', (recipe: any) => {
-    console.log('New recipe received:', recipe);
-    
-    // Add to store (which persists across navigation)
-    recipeStore.addCommunityRecipe(recipe);
-    
-    // Show notification
-    showNewRecipeNotification.value = true;
-    setTimeout(() => {
-      showNewRecipeNotification.value = false;
-    }, 3000);
-  });
+// Track new recipes since component mounted
+const hasNewRecipes = computed(() => {
+  return recipeStore.communityRecipes.length > lastSeenCount.value;
 });
 
-onUnmounted(() => {
-  if (socket) {
-    socket.disconnect();
+const newRecipeCount = computed(() => {
+  return recipeStore.communityRecipes.length - lastSeenCount.value;
+});
+
+const acknowledgeNewRecipes = () => {
+  lastSeenCount.value = recipeStore.communityRecipes.length;
+};
+
+onMounted(() => {
+  // Set initial count
+  lastSeenCount.value = recipeStore.communityRecipes.length;
+});
+
+// Watch for new recipes and show notification briefly
+watch(() => recipeStore.communityRecipes.length, (newCount, oldCount) => {
+  if (newCount > oldCount) {
+    // Auto-acknowledge after 5 seconds
+    setTimeout(() => {
+      lastSeenCount.value = recipeStore.communityRecipes.length;
+    }, 5000);
   }
 });
 
-// Get initials from name
 const getInitials = (name: string): string => {
   return name
     .split(' ')
@@ -159,7 +136,6 @@ const getInitials = (name: string): string => {
     .slice(0, 2);
 };
 
-// Format timestamp
 const formatTime = (timestamp: string | Date): string => {
   const date = new Date(timestamp);
   const now = new Date();
@@ -178,7 +154,6 @@ const formatTime = (timestamp: string | Date): string => {
   return date.toLocaleDateString();
 };
 
-// Add recipe to daily intake
 const addRecipeToDailyIntake = async (recipe: any) => {
   if (!userStore.user?._id) {
     alert('Please log in to add to daily intake');
@@ -198,7 +173,6 @@ const addRecipeToDailyIntake = async (recipe: any) => {
   }
 };
 
-// Save recipe to user's personal collection
 const saveToMyRecipes = async (recipe: any) => {
   if (!userStore.user?._id) {
     alert('Please log in to save recipes');
@@ -216,7 +190,6 @@ const saveToMyRecipes = async (recipe: any) => {
 </script>
 
 <style scoped>
-/* Slide down animation for notification */
 .slide-down-enter-active,
 .slide-down-leave-active {
   transition: all 0.3s ease;
@@ -232,7 +205,6 @@ const saveToMyRecipes = async (recipe: any) => {
   opacity: 0;
 }
 
-/* Recipe list animations */
 .recipe-list-enter-active {
   transition: all 0.4s ease;
 }

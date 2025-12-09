@@ -46,8 +46,15 @@
         </div>
 
         <!-- Add Ingredient Section -->
-        <div v-if="showAddIngredient" class="bg-gray-50 rounded-lg p-4 mb-4">
-          <ScannedItemList @add="handleScannedItemSelected" />
+        <div v-if="showAddIngredient" class="bg-gray-50 rounded-lg p-4 mb-4 space-y-4">
+          <div>
+            <h4 class="text-sm font-semibold text-gray-700 mb-3">Search for Food</h4>
+            <FoodSearch @select-food="handleFoodSelected" />
+          </div>
+          <div class="border-t pt-4">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3">Or Select from Scanned Items</h4>
+            <ScannedItemList @add="handleScannedItemSelected" />
+          </div>
         </div>
 
         <!-- Ingredients List -->
@@ -60,7 +67,7 @@
             <div class="flex-1">
               <div class="flex items-center gap-3">
                 <span class="font-semibold text-gray-800">{{ ingredient.name }}</span>
-                <span class="text-sm text-gray-600">{{ ingredient.quantity }}</span>
+                <span class="text-sm text-gray-600">{{ ingredient.quantity }}g</span>
                 <span class="text-xs px-2 py-1 rounded-full" :class="getGradeColor(ingredient.grade)">
                   {{ ingredient.grade.toUpperCase() }}
                 </span>
@@ -152,10 +159,11 @@ import { ref, computed } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
 import { useUserStore } from '../store/userStore';
 import ScannedItemList from './ScannedItemList.vue';
+import FoodSearch from './FoodSearch.vue';
 
 export default {
   name: 'AddRecipe',
-  components: { ScannedItemList },
+  components: { ScannedItemList, FoodSearch },
   emits: ['recipe-added'],
   setup(_, { emit }) {
     const store = useRecipeStore();
@@ -217,6 +225,22 @@ export default {
 
     const handleScannedItemSelected = (foodItem) => {
       ingredients.value.push(foodItem);
+      error.value = '';
+      showAddIngredient.value = false;
+    };
+
+    const handleFoodSelected = (foodItem) => {
+      // Ensure the food item has the required structure
+      const ingredient = {
+        name: foodItem.name,
+        quantity: foodItem.quantity || 100,
+        calories: foodItem.calories || 0,
+        grade: foodItem.grade || 'c',
+        nutrients: foodItem.nutrients || [],
+        ...foodItem // spread any additional properties
+      };
+      
+      ingredients.value.push(ingredient);
       error.value = '';
       showAddIngredient.value = false;
     };
@@ -302,6 +326,7 @@ export default {
       recipeMacros,
       isValid,
       handleScannedItemSelected,
+      handleFoodSelected,
       removeIngredient,
       resetForm,
       submitRecipe,

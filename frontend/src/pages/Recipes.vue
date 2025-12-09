@@ -35,20 +35,15 @@ const store = useRecipeStore();
 const userStore = useUserStore();
 const userId = userStore.user?._id;
 
-// Computed directly from store – reactive
 const recipes = computed(() => store.recipes);
 
-// Actions
 const fetchRecipes = () => store.fetchRecipes(userId);
 const deleteRecipe = (recipeId) => store.deleteRecipe(recipeId, userId);
 const updateRecipe = (recipeId, data) => store.updateRecipe(recipeId, userId, data);
 
 // Event handler for newly added recipe
 const onRecipeAdded = (recipe) => {
-  // Optional: if the store already pushes the recipe in addRecipe(), this is redundant
   // store.recipes.push(recipe);
-  
-  // But can refetch if you want to ensure backend sync
   // fetchRecipes();
 };
 

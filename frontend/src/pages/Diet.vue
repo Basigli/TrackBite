@@ -376,6 +376,7 @@ export default {
 
     const selectDiet = (diet) => {
       selectedDiet.value = diet
+      dietStore.selectDiet(selectedDiet.value)
     }
 
     const editDiet = (diet) => {

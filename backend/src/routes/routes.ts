@@ -88,6 +88,9 @@ router.route("/recipes/:id/user/:userId")
   .put(recipesController.updateRecipe)
   .delete(recipesController.deleteRecipe);
 
+router.route("/recipes/community/:userId")
+  .get(recipesController.getCommunityRecipes);
+
 // Scanned Items Routes
 router.route("/scanned-items")
   .get(scannedItemsController.getAllScannedItems)

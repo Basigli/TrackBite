@@ -109,8 +109,10 @@ const acknowledgeNewRecipes = () => {
   lastSeenCount.value = recipeStore.communityRecipes.length;
 };
 
-onMounted(() => {
-  // Set initial count
+onMounted(async () => {
+  if (userStore.user?._id) {
+    await recipeStore.fetchRecentCommunityRecipes(userStore.user._id);
+  }
   lastSeenCount.value = recipeStore.communityRecipes.length;
 });
 

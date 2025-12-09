@@ -79,7 +79,7 @@ async function seed() {
   });
 
   const energyNutrient = await NutrientModel.create({
-    name: "energy",
+    name: "energy-kcal",
     unit: "kcal",
     totalAmount: 250,
     amount100g: 250,

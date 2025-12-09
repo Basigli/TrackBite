@@ -4,6 +4,9 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
 import { DietModel } from "../../src/storage/DietSchema";
+import { DietBuilder} from "../../src/utils/DietBuilder";
+
+
 
 let mongoServer: MongoMemoryServer;
 
@@ -24,12 +27,13 @@ beforeEach(async () => {
 });
 
 describe("Diet Routes", () => {
-  const sampleDiet = {
-    name: "Low Carb",
-    caloriesAmount: 1500,
-    macros: [],
-    userId: "test-user-id"
-  };
+  const dietBuilder = new DietBuilder("Test Diet", 2000, new Map<string, number>([
+    ["Protein", 30],
+    ["Fat", 25],
+    ["Carbohydrates", 45]
+  ]), "test-user-id");
+
+  const sampleDiet = dietBuilder.build();
 
   describe("POST /diets", () => {
     it("should create a new diet and return 201", async () => {

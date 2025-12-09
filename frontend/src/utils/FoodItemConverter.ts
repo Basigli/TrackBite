@@ -74,7 +74,7 @@ export class FoodItemBuilder {
         
         const scaledQuantity = this.scannedItem.quantity * (this.percentage / 100);
         let scaledNutrients = this.scaleNutrients(this.scannedItem.nutrients, this.percentage, scaledQuantity);
-        const calories_nutrient = this.scannedItem.nutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
+        const calories_nutrient = scaledNutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
         scaledNutrients = this.polishNutrients(scaledNutrients);
 
         return {

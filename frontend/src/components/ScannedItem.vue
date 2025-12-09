@@ -285,7 +285,7 @@
 
 <script>
 import { ref, computed, watch } from 'vue'
-import { FoodItemConverter } from '../utlis/FoodItemConverter'
+import { FoodItemConverter } from '../utils/FoodItemConverter'
 
 export default {
   name: 'ScannedItem',

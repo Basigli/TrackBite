@@ -20,7 +20,7 @@ export const useDietStore = defineStore('diet', () => {
     }
   }
 
-  const createDiet = async (diet: Partial<Diet>) => {
+  const createDiet = async (diet: Diet) => {
     try {
       const res = await api.post<Diet>('/diets', diet)
       diets.value.push(res.data)

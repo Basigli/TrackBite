@@ -7,12 +7,18 @@ import {
   it,
   expect,
 } from "@jest/globals";
+
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
 import { RecipeModel } from "../../src/storage/RecipeSchema";
+import { UserModel } from "../../src/storage/UserSchema";
 
 let mongoServer: MongoMemoryServer;
+
+let userId1 = new mongoose.Types.ObjectId().toString();
+let userId2 = new mongoose.Types.ObjectId().toString();
+const nonExistentUserId = new mongoose.Types.ObjectId().toString();
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -28,6 +34,25 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await RecipeModel.deleteMany({});
+  await UserModel.deleteMany({});
+
+  await UserModel.create({
+    _id: userId1,
+    nickname: "Test User 1",
+    mail: "user1@example.com",
+    savedRecipesIds: [],
+    savedScannedItemsIds: [],
+    isAdmin: false
+  });
+
+  await UserModel.create({
+    _id: userId2,
+    nickname: "Test User 2",
+    mail: "user2@example.com",
+    savedRecipesIds: [],
+    savedScannedItemsIds: [],
+    isAdmin: false
+  });
 });
 
 describe("Recipe Routes", () => {
@@ -180,7 +205,8 @@ describe("Recipe Routes", () => {
   const sampleRecipe = {
     name: "Caprese Salad",
     ingredients: [tomatoFoodItem, cheeseFoodItem, basilFoodItem, oliveOilFoodItem],
-    userId: "test-user-id",
+    userId: userId1,
+    userName: "test-user",
     description: "A classic Italian salad with fresh tomatoes, mozzarella, and basil",
     createdAt: new Date(),
     grade: "A",
@@ -195,7 +221,8 @@ describe("Recipe Routes", () => {
   const anotherRecipe = {
     name: "Tomato Garlic Pasta Sauce",
     ingredients: [tomatoFoodItem, garlicFoodItem, oliveOilFoodItem, basilFoodItem],
-    userId: "another-user-id",
+    userId: userId2,
+    userName: "another-user",
     description: "A simple and flavorful pasta sauce with fresh tomatoes and garlic",
     createdAt: new Date(),
     grade: "A",
@@ -244,7 +271,8 @@ describe("Recipe Routes", () => {
         }
       }
     ],
-    userId: "test-user-id",
+    userId: userId1,
+    userName: "test-user",
     description: "Authentic Italian-style pizza with fresh ingredients",
     createdAt: new Date(),
     grade: "B",
@@ -343,6 +371,7 @@ describe("Recipe Routes", () => {
         name: "Updated Caprese Salad",
         ingredients: [tomatoFoodItem, cheeseFoodItem, basilFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
         description: "Updated description for Caprese Salad",
         createdAt: sampleRecipe.createdAt,
         grade: "A",
@@ -374,6 +403,7 @@ describe("Recipe Routes", () => {
         name: "Simple Tomato Salad",
         ingredients: [tomatoFoodItem, oliveOilFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
         description: "A simple salad with tomato and olive oil",
         createdAt: sampleRecipe.createdAt,
         grade: "A",
@@ -401,6 +431,7 @@ describe("Recipe Routes", () => {
         name: "Updated Recipe",
         ingredients: [tomatoFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
         description: "Updated description",
         createdAt: new Date(),
         grade: "A",
@@ -457,7 +488,7 @@ describe("Recipe Routes", () => {
       await RecipeModel.create(anotherRecipe);
 
       const res = await request(app)
-        .get(`/recipes/user/non-existent-user`)
+        .get(`/recipes/user/${userId1}`)
         .expect("Content-Type", /json/)
         .expect(200);
 

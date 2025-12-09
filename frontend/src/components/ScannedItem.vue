@@ -1,10 +1,10 @@
 <template>
   <div class="scanned-item bg-white rounded-xl shadow-sm p-4 mb-4 max-w-md mx-auto">
-    <h3 class="font-bold text-gray-800 text-lg mb-3">Scanned Item</h3>
+    <!-- <h3 class="font-bold text-gray-800 text-lg mb-3">Scanned Item</h3> -->
     
     <div class="flex justify-between items-center mb-3">
       <div>
-        <span class="text-gray-700 font-medium block">{{ item.name }}</span>
+        <span class="text-gray-700 font-bold block ">{{ item.name }}</span>
         <span class="text-sm text-gray-500">{{ item.quantity }}{{ item.quantityUnit }}</span>
       </div>
       <button

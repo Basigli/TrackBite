@@ -269,7 +269,7 @@ async function seed() {
     nickname: "bob",
     mail: "bob@example.com",
     savedRecipesIds: [],
-    savedScannedItemsIds: [spinach.id.toString()],
+    savedScannedItemsIds: [spinach.id.toString(), brownRice.id.toString(), chickenBreast.id.toString()],
     isAdmin: false
   });
 

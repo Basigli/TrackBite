@@ -29,7 +29,8 @@ export default {
         { path: '/', label: 'Dashboard' },
         { path: '/history', label: 'History' },
         { path: '/scan-food', label: 'Scan Food' },
-        { path: '/recipes', label: 'Recipes' },
+        { path: '/my-recipes', label: 'My Recipes' },
+        { path: '/find-recipe', label: 'Find Recipe' },
         { path: '/diet', label: 'Diet' }
       ];
 

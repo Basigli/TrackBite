@@ -2,10 +2,26 @@ import { defineStore } from 'pinia';
 import { ref, type Ref } from 'vue';
 import api from '../api';
 import type { Recipe } from '../models/Recipe';
+import { useUserStore } from './userStore';
+
+interface CommunityRecipe extends Recipe {
+  authorName?: string;
+  authorId?: string;
+  receivedAt?: number;
+}
 
 export const useRecipeStore = defineStore('recipe', () => {
+  // User's own recipes
   const recipes: Ref<Recipe[]> = ref([]);
   const selectedRecipe: Ref<Recipe | null> = ref(null);
+  const userStore = useUserStore();
+  
+  // Community recipes from other users
+  const communityRecipes: Ref<CommunityRecipe[]> = ref([]);
+
+  // ============================================
+  // USER'S OWN RECIPES
+  // ============================================
 
   const fetchRecipes = async (userId: string) => {
     try {
@@ -49,7 +65,6 @@ export const useRecipeStore = defineStore('recipe', () => {
       if (index !== -1) {
         recipes.value[index] = res.data;
       }
-
     } catch (err) {
       console.error('Error updating recipe:', err);
     }
@@ -59,7 +74,50 @@ export const useRecipeStore = defineStore('recipe', () => {
     selectedRecipe.value = recipe;
   };
 
+  // ============================================
+  // COMMUNITY RECIPES
+  // ============================================
+
+  const addCommunityRecipe = (recipe: CommunityRecipe) => {
+    recipe.receivedAt = Date.now();
+
+    const exists = communityRecipes.value.some(r => r._id === recipe._id);
+    if (exists) return;
+    
+    communityRecipes.value.unshift(recipe);
+    if (communityRecipes.value.length > 50) {
+      communityRecipes.value = communityRecipes.value.slice(0, 50);
+    }
+  };
+
+  const removeCommunityRecipe = (recipeId: string) => {
+    communityRecipes.value = communityRecipes.value.filter(r => r._id !== recipeId);
+  };
+
+  const clearCommunityRecipes = () => {
+    communityRecipes.value = [];
+  };
+
+  
+  const isRecipeNew = (recipe: CommunityRecipe): boolean => {
+    if (!recipe.receivedAt) return false;
+    return Date.now() - recipe.receivedAt < 30000; // 30 seconds
+  };
+
+  // Save a community recipe to user's own recipes
+  const saveCommunityRecipeToOwn = async (recipe: CommunityRecipe) => {
+    try {
+
+      userStore.user.savedRecipesIds.push(recipe._id);
+      await userStore.updateUser({ savedRecipesIds: userStore.user.savedRecipesIds });
+    } catch (err) {
+      console.error('Error saving community recipe:', err);
+      throw err;
+    }
+  };
+
   return {
+    // User's own recipes
     recipes,
     selectedRecipe,
     fetchRecipes,
@@ -67,5 +125,13 @@ export const useRecipeStore = defineStore('recipe', () => {
     deleteRecipe,
     updateRecipe,
     selectRecipe,
+    
+    // Community recipes
+    communityRecipes,
+    addCommunityRecipe,
+    removeCommunityRecipe,
+    clearCommunityRecipes,
+    isRecipeNew,
+    saveCommunityRecipeToOwn,
   };
 });

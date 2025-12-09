@@ -42,24 +42,18 @@
             <div class="p-4">
               <div class="flex items-center justify-between mb-3">
                 <div class="flex items-center gap-2">
-                  <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
-                    {{ getInitials(recipe.authorName || 'Unknown') }}
+                  <div class="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                    {{ getInitials(recipe.userName || 'Unknown') }}
                   </div>
                   <div>
                     <p class="text-xs text-gray-500">
-                      {{ recipe.authorName || 'Anonymous User' }}
+                      {{ recipe.userName || 'Anonymous User' }}
                     </p>
                     <p class="text-xs text-gray-400">
                       {{ formatTime(recipe.createdAt) }}
                     </p>
                   </div>
                 </div>
-                <span 
-                  v-if="recipeStore.isRecipeNew(recipe)"
-                  class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-1 rounded"
-                >
-                  NEW
-                </span>
               </div>
 
               <Recipe :recipe="recipe" />
@@ -74,8 +68,10 @@
                 <button
                   @click="saveToMyRecipes(recipe)"
                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm px-4 py-2 rounded transition"
+                  :disabled="isRecipeSaved(recipe)"
+                  :class="{ 'opacity-50 cursor-not-allowed': isRecipeSaved(recipe) }"
                 >
-                  Save
+                  {{ isRecipeSaved(recipe) ? 'Saved' : 'Save' }}
                 </button>
               </div>
             </div>
@@ -92,6 +88,7 @@ import { useIntakeStore } from '../store/intakeStore';
 import { useUserStore } from '../store/userStore';
 import { useRecipeStore } from '../store/recipeStore';
 import Recipe from '../components/Recipe.vue';
+import type { Recipe as RecipeType } from '../models/Recipe';
 
 const intakeStore = useIntakeStore();
 const userStore = useUserStore();
@@ -154,7 +151,12 @@ const formatTime = (timestamp: string | Date): string => {
   return date.toLocaleDateString();
 };
 
-const addRecipeToDailyIntake = async (recipe: any) => {
+// Check if recipe is already saved
+const isRecipeSaved = (recipe: RecipeType): boolean => {
+  return userStore.user?.savedRecipesIds.includes(recipe._id) || false;
+};
+
+const addRecipeToDailyIntake = async (recipe: RecipeType) => {
   if (!userStore.user?._id) {
     alert('Please log in to add to daily intake');
     return;
@@ -173,9 +175,13 @@ const addRecipeToDailyIntake = async (recipe: any) => {
   }
 };
 
-const saveToMyRecipes = async (recipe: any) => {
+const saveToMyRecipes = async (recipe: RecipeType) => {
   if (!userStore.user?._id) {
     alert('Please log in to save recipes');
+    return;
+  }
+
+  if (isRecipeSaved(recipe)) {
     return;
   }
 

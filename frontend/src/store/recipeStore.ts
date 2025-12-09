@@ -4,23 +4,17 @@ import api from '../api';
 import type { Recipe } from '../models/Recipe';
 import { useUserStore } from './userStore';
 
-interface CommunityRecipe extends Recipe {
-  authorName?: string;
-  authorId?: string;
-  receivedAt?: number;
-}
-
 export const useRecipeStore = defineStore('recipe', () => {
-  // User's own recipes
+  // User's own recipes (created + saved)
   const recipes: Ref<Recipe[]> = ref([]);
   const selectedRecipe: Ref<Recipe | null> = ref(null);
   const userStore = useUserStore();
   
-  // Community recipes from other users
-  const communityRecipes: Ref<CommunityRecipe[]> = ref([]);
+  // Community recipes from other users (for real-time feed)
+  const communityRecipes: Ref<Recipe[]> = ref([]);
 
   // ============================================
-  // USER'S OWN RECIPES
+  // USER'S OWN RECIPES (CREATED + SAVED)
   // ============================================
 
   const fetchRecipes = async (userId: string) => {
@@ -75,16 +69,16 @@ export const useRecipeStore = defineStore('recipe', () => {
   };
 
   // ============================================
-  // COMMUNITY RECIPES
+  // COMMUNITY RECIPES (REAL-TIME FEED)
   // ============================================
 
-  const addCommunityRecipe = (recipe: CommunityRecipe) => {
-    recipe.receivedAt = Date.now();
-
+  const addCommunityRecipe = (recipe: Recipe) => {
     const exists = communityRecipes.value.some(r => r._id === recipe._id);
     if (exists) return;
     
     communityRecipes.value.unshift(recipe);
+    
+    // Keep only the 50 most recent
     if (communityRecipes.value.length > 50) {
       communityRecipes.value = communityRecipes.value.slice(0, 50);
     }
@@ -98,19 +92,21 @@ export const useRecipeStore = defineStore('recipe', () => {
     communityRecipes.value = [];
   };
 
-  
-  const isRecipeNew = (recipe: CommunityRecipe): boolean => {
-    if (!recipe.receivedAt) return false;
-    return Date.now() - recipe.receivedAt < 30000; // 30 seconds
-  };
-
-  // Save a community recipe to user's own recipes
-  const saveCommunityRecipeToOwn = async (recipe: CommunityRecipe) => {
+  // Save a community recipe to user's saved list
+  const saveCommunityRecipeToOwn = async (recipe: Recipe) => {
     try {
+      // Check if already saved
+      if (userStore.user.savedRecipesIds.includes(recipe._id)) {
+        console.log('Recipe already saved');
+        return;
+      }
+
+      // Add recipe ID to user's saved list
       userStore.user.savedRecipesIds.push(recipe._id);
       await userStore.updateUser({ savedRecipesIds: userStore.user.savedRecipesIds });
-      const { authorName, authorId, receivedAt, ...recipeData } = recipe;
-      recipes.value.push(recipeData as Recipe);
+      
+      // Refetch recipes to include the newly saved recipe
+      await fetchRecipes(userStore.user._id);
     } catch (err) {
       console.error('Error saving community recipe:', err);
       throw err;
@@ -118,7 +114,7 @@ export const useRecipeStore = defineStore('recipe', () => {
   };
 
   return {
-    // User's own recipes
+    // User's own recipes (created + saved)
     recipes,
     selectedRecipe,
     fetchRecipes,
@@ -127,12 +123,11 @@ export const useRecipeStore = defineStore('recipe', () => {
     updateRecipe,
     selectRecipe,
     
-    // Community recipes
+    // Community recipes (real-time feed)
     communityRecipes,
     addCommunityRecipe,
     removeCommunityRecipe,
     clearCommunityRecipes,
-    isRecipeNew,
     saveCommunityRecipeToOwn,
   };
 });

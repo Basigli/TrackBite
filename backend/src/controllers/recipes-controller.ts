@@ -17,7 +17,7 @@ import { UserModel } from "../storage/UserSchema";
 // POST /recipes - Create a new recipe
  const createRecipe = async (req: Request, res: Response) => {
   try {
-    console.log("Creating recipe with data:", req.body);
+    // console.log("Creating recipe with data:", req.body);
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Invalid recipe data", error: parsed.error });
@@ -115,6 +115,7 @@ const getRecipesByUserId = async (req: Request, res: Response) => {
     const { userId } = req.params;
     const user = await UserModel.findById(userId);
     if (!user) {
+      console.log("Not found user:", userId);
       return res.status(404).json({ message: "User not found" });
     }
     
@@ -128,6 +129,7 @@ const getRecipesByUserId = async (req: Request, res: Response) => {
     
     res.status(200).json(recipes);
   } catch (err) {
+    console.log("Error in getRecipesByUserId:", err);
     res.status(500).json({ message: "Error fetching recipes for user", error: err });
   }
 };

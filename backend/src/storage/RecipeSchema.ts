@@ -10,6 +10,7 @@ const RecipeSchema = new Schema<Recipe>({
     required: true
   },
   userId: { type: String, required: true },
+  userName: { type: String, required: true },
   description: { type: String, required: true },
   // image: { type: Buffer, required: false },
   createdAt: { type: Date, required: true },

@@ -10,6 +10,7 @@ const io = new Server(server, {
   },
 });
 
+if (process.env.NODE_ENV !== "test") {
 io.on("connection", (socket) => {
   console.log("Client connected:", socket.id);
 
@@ -18,6 +19,7 @@ io.on("connection", (socket) => {
   });
 });
 
-export default io;
-
 server.listen(3001, () => console.log("Server running on port 3001"));
+}
+
+export default io;

@@ -274,6 +274,7 @@ export default {
           description: description.value.trim(),
           ingredients: ingredients.value,
           userId: userStore.user._id,
+          userName: userStore.user.nickname || 'Anonymous',
           grade: recipeGrade.value,
           macros: recipeMacros.value,
           createdAt: new Date(),

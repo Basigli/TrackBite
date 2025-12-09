@@ -277,7 +277,7 @@ async function seed() {
     nickname: "charlie",
     mail: "charlie@fitlife.com",
     savedRecipesIds: [],
-    savedScannedItemsIds: [],
+    savedScannedItemsIds: [ almondMilk.id.toString(), wholeWheatBread.id.toString() ],
     isAdmin: false
   });
 

@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { RecipeModel } from "../storage/RecipeSchema";
 import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 import io from "../ws-server";
+import { UserModel } from "../storage/UserSchema";
 
 // GET /recipes - List all recipes
  const getAllRecipes = async (_req: Request, res: Response) => {
@@ -105,10 +106,22 @@ import io from "../ws-server";
 };
 
 // GET /recipes/user/:userId - Get recipes by User ID
- const getRecipesByUserId = async (req: Request, res: Response) => {
+const getRecipesByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const recipes = await RecipeModel.find({ userId });
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Created by this user OR Saved by this user 
+    const recipes = await RecipeModel.find({
+      $or: [
+        { userId: userId },
+        { _id: { $in: user.savedRecipesIds } }
+      ]
+    });
+    
     res.status(200).json(recipes);
   } catch (err) {
     res.status(500).json({ message: "Error fetching recipes for user", error: err });

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { RecipeModel } from "../storage/RecipeSchema";
 import { Recipe, RecipeSchemaZ} from "../models/Recipe";
+import io from "../ws-server";
 
 // GET /recipes - List all recipes
  const getAllRecipes = async (_req: Request, res: Response) => {
@@ -23,6 +24,7 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
     const recipeData= parsed.data;
     const newRecipe = new RecipeModel(recipeData);
     await newRecipe.save();
+    io.emit("recipe:new", newRecipe);
     res.status(201).json(newRecipe);
   } catch (err) {
     console.log("Error in createRecipe:", err);

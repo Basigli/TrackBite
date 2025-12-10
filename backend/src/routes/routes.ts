@@ -78,8 +78,8 @@ router.route("/recipes")
 router.route("/recipes/user/:userId")
   .get(recipesController.getRecipesByUserId);
 
-router.route("/recipes/search/ingredient/:ingredient")
-  .get(recipesController.getRecipesByIngredient);
+router.route("/recipes/search/:query")
+  .get(recipesController.queryRecipes);
 
 router.route("/recipes/:id")
   .get(recipesController.getRecipeById)

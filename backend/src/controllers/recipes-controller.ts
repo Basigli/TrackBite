@@ -134,17 +134,41 @@ const getRecipesByUserId = async (req: Request, res: Response) => {
   }
 };
 
-// GET /recipes/search/ingredient/:ingredient - Get recipes by Ingredient
- const getRecipesByIngredient = async (req: Request, res: Response) => {
+// GET /recipes/search/:query - Search by ingredient → name → username
+const queryRecipes = async (req: Request, res: Response) => {
   try {
-    const ingredientName: string = req.params.ingredient;
-    const recipes = await RecipeModel.find({ "ingredients.ingredients": { $regex: ingredientName, $options: 'i' } });
+    const query: string = req.params.query;
+
+    // 1️⃣ Search by ingredient (in FoodItem objects)
+    let recipes = await RecipeModel.find({
+      "ingredients.ingredients": { $regex: query, $options: "i" }
+    });
+
+    // If not found, try recipe name
+    if (recipes.length === 0) {
+      recipes = await RecipeModel.find({
+        name: { $regex: query, $options: "i" }
+      });
+    }
+
+    // If still not found, try username
+    if (recipes.length === 0) {
+      recipes = await RecipeModel.find({
+        userName: { $regex: query, $options: "i" }
+      });
+    }
+
     res.status(200).json(recipes);
+
   } catch (err) {
     console.log("Error in getRecipesByIngredient:", err);
-    res.status(500).json({ message: "Error fetching recipes by ingredient", error: err });
+    res.status(500).json({
+      message: "Error searching recipes",
+      error: err
+    });
   }
 };
+
 
 // GET /recipes/community/:userId?limit - Get recipes from other users
 const getCommunityRecipes = async (req: Request, res: Response) => {
@@ -170,6 +194,6 @@ export default {
   updateRecipe,
   deleteRecipe,
   getRecipesByUserId,
-  getRecipesByIngredient,
+  queryRecipes,
   getCommunityRecipes
 };  

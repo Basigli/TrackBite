@@ -120,12 +120,12 @@ export const useRecipeStore = defineStore('recipe', () => {
   }
 };
 
-  const searchRecipesByIngredient = async (ingredient: string) => {
+  const searchRecipesByQuery = async (query: string) => {
     try {
-      const res = await api.get<Recipe[]>(`/recipes/search/ingredient/${encodeURIComponent(ingredient)}`);
+      const res = await api.get<Recipe[]>(`/recipes/search/${encodeURIComponent(query)}`);
       searchResults.value = res.data;
     } catch (err) {
-      console.error('Error searching recipes by ingredient:', err);
+      console.error('Error searching recipes by query:', err);
       throw err;
     }
   };
@@ -155,7 +155,7 @@ export const useRecipeStore = defineStore('recipe', () => {
     
     // Search results
     searchResults,
-    searchRecipesByIngredient,
+    searchRecipesByQuery,
     clearSearchResults
   };
 });

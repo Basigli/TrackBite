@@ -109,7 +109,7 @@ const performSearch = async () => {
   hasSearched.value = true;
 
   try {
-    await recipeStore.searchRecipesByIngredient(query);
+    await recipeStore.searchRecipesByQuery(query);
     searchResults.value = recipeStore.searchResults;
   } catch (error) {
     console.error('Error searching recipes:', error);

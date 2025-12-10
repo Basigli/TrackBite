@@ -47,6 +47,7 @@ import ScannedItemList from '../components/ScannedItemList.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';
+import { notifySuccess } from '@/utils/Notifications';
 
 export default {
   name: 'AddFood',
@@ -112,6 +113,7 @@ export default {
         intakeStore.createDailyIntake(userStore.user._id, new Date().toISOString().substr(0, 10));
       }
       intakeStore.addToDailyIntake(userStore.user._id, food, new Date().toISOString().substr(0, 10));
+      notifySuccess('Food item added to daily intake!');
     };
 
 

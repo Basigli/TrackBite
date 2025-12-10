@@ -286,6 +286,7 @@
 <script>
 import { ref, computed, watch } from 'vue'
 import { FoodItemConverter } from '../utils/FoodItemConverter'
+import {notifySuccess, notifyError} from '@/utils/Notifications'
 
 export default {
   name: 'ScannedItem',

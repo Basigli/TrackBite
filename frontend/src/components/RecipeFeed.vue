@@ -1,4 +1,5 @@
 <template>
+<Toast ref="toastRef" />
   <div class="space-y-3">
     <!-- Show notification when new recipe is detected -->
     <transition name="slide-down">
@@ -82,13 +83,14 @@ import { useUserStore } from '../store/userStore';
 import { useRecipeStore } from '../store/recipeStore';
 import Recipe from './Recipe.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
+import Toast from "../components/Toast.vue";
 
+const toastRef = ref<InstanceType<typeof Toast> | null>(null);
 const intakeStore = useIntakeStore();
 const userStore = useUserStore();
 const recipeStore = useRecipeStore();
 
 const lastSeenCount = ref(0);
-
 const recipes = computed(() => recipeStore.communityRecipes);
 
 // Track new recipes since component mounted
@@ -165,7 +167,7 @@ const addRecipeToDailyIntake = async (recipe: RecipeType) => {
     for (const ingredient of recipe.ingredients) {
       await intakeStore.addToDailyIntake(userStore.user._id, ingredient, date);
     }
-    alert(`Added "${recipe.name}" to your daily intake!`);
+    toastRef.value?.show(`Added "${recipe.name}" to your daily intake!`);
   } catch (error) {
     console.error('Error adding to daily intake:', error);
     alert('Failed to add recipe to daily intake');
@@ -184,7 +186,7 @@ const saveToMyRecipes = async (recipe: RecipeType) => {
 
   try {
     await recipeStore.saveCommunityRecipeToOwn(recipe);
-    alert(`"${recipe.name}" saved to your recipes!`);
+    toastRef.value?.show(`"${recipe.name}" saved to your recipes!`);
   } catch (error) {
     console.error('Error saving recipe:', error);
     alert('Failed to save recipe');

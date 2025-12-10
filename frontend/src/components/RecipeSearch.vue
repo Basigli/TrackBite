@@ -1,5 +1,6 @@
 <template>
   <div class="recipe-search">
+    <Toast ref="toastRef" />
     <!-- Search Bar -->
     <div class="bg-white rounded-lg shadow p-4 mb-4">
       <div class="flex gap-2">
@@ -41,12 +42,14 @@
 
     <!-- Search Results -->
     <div v-if="hasSearched" class="space-y-3">
+      <!-- No Results State -->
       <div v-if="searchResults.length === 0" class="bg-white rounded-lg shadow p-8 text-center">
         <div class="text-gray-400 text-5xl mb-4">🔍</div>
         <p class="text-gray-600 text-lg mb-2">No recipes found</p>
         <p class="text-gray-500 text-sm">Try searching for a different ingredient</p>
       </div>
 
+      <!-- Results List -->
       <ul v-else class="space-y-3">
         <transition-group name="recipe-list">
           <li
@@ -54,49 +57,19 @@
             :key="recipe._id"
             class="recipe-item"
           >
-            <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
-              <div class="p-4">
-                <div class="flex items-center justify-between mb-3">
-                  <div class="flex items-center gap-2">
-                    <div class="h-8 w-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-white font-bold">
-                      {{ getInitials(recipe.userName || 'Unknown') }}
-                    </div>
-                    <div>
-                      <p class="text-xs text-gray-500">
-                        {{ recipe.userName || 'Anonymous User' }}
-                      </p>
-                      <p v-if="recipe.createdAt" class="text-xs text-gray-400">
-                        {{ formatDate(recipe.createdAt) }}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <!-- Highlight matched ingredient -->
-                  <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                    Contains: {{ lastSearchQuery }}
-                  </div>
+            <RecipeCard
+              :recipe="recipe"
+              :show-user-info="true"
+              :show-save="true"
+              @save="saveToMyRecipes"
+              @added-to-intake="onAddedToIntake"
+            >
+              <template #badge>
+                <div class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
+                  Contains: {{ lastSearchQuery }}
                 </div>
-
-                <Recipe :recipe="recipe" />
-
-                <div class="flex gap-2 mt-3">
-                  <button
-                    @click="addRecipeToDailyIntake(recipe)"
-                    class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm px-4 py-2 rounded transition"
-                  >
-                    Add to My Daily Intake
-                  </button>
-                  <button
-                    @click="saveToMyRecipes(recipe)"
-                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium text-sm px-4 py-2 rounded transition"
-                    :disabled="isRecipeSaved(recipe)"
-                    :class="{ 'opacity-50 cursor-not-allowed': isRecipeSaved(recipe) }"
-                  >
-                    {{ isRecipeSaved(recipe) ? 'Saved' : 'Save' }}
-                  </button>
-                </div>
-              </div>
-            </div>
+              </template>
+            </RecipeCard>
           </li>
         </transition-group>
       </ul>
@@ -114,14 +87,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
-import { useIntakeStore } from '../store/intakeStore';
-import { useUserStore } from '../store/userStore';
-import Recipe from './Recipe.vue';
+import RecipeCard from './RecipeCard.vue';
+import Toast from './Toast.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
 
+const toastRef = ref<InstanceType<typeof Toast> | null>(null);
 const recipeStore = useRecipeStore();
-const intakeStore = useIntakeStore();
-const userStore = useUserStore();
 
 const searchQuery = ref('');
 const lastSearchQuery = ref('');
@@ -142,7 +113,7 @@ const performSearch = async () => {
     searchResults.value = recipeStore.searchResults;
   } catch (error) {
     console.error('Error searching recipes:', error);
-    alert('Failed to search recipes');
+    toastRef.value?.show('Failed to search recipes', 'error');
   } finally {
     isSearching.value = false;
   }
@@ -155,60 +126,18 @@ const clearSearch = () => {
   lastSearchQuery.value = '';
 };
 
-const getInitials = (name: string): string => {
-  return name
-    .split(' ')
-    .map(word => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-};
-
-const formatDate = (timestamp: string | Date): string => {
-  const date = new Date(timestamp);
-  return date.toLocaleDateString();
-};
-
-const isRecipeSaved = (recipe: RecipeType): boolean => {
-  return userStore.user?.savedRecipesIds.includes(recipe._id) || false;
-};
-
-const addRecipeToDailyIntake = async (recipe: RecipeType) => {
-  if (!userStore.user?._id) {
-    alert('Please log in to add to daily intake');
-    return;
-  }
-
-  const date = intakeStore.selectedDate;
-
-  try {
-    for (const ingredient of recipe.ingredients) {
-      await intakeStore.addToDailyIntake(userStore.user._id, ingredient, date);
-    }
-    alert(`Added "${recipe.name}" to your daily intake!`);
-  } catch (error) {
-    console.error('Error adding to daily intake:', error);
-    alert('Failed to add recipe to daily intake');
-  }
-};
-
 const saveToMyRecipes = async (recipe: RecipeType) => {
-  if (!userStore.user?._id) {
-    alert('Please log in to save recipes');
-    return;
-  }
-
-  if (isRecipeSaved(recipe)) {
-    return;
-  }
-
   try {
     await recipeStore.saveCommunityRecipeToOwn(recipe);
-    alert(`"${recipe.name}" saved to your recipes!`);
+    toastRef.value?.show(`"${recipe.name}" saved to your recipes!`);
   } catch (error) {
     console.error('Error saving recipe:', error);
-    alert('Failed to save recipe');
+    toastRef.value?.show('Failed to save recipe', 'error');
   }
+};
+
+const onAddedToIntake = (recipe: RecipeType) => {
+  toastRef.value?.show(`Added "${recipe.name}" to your daily intake!`);
 };
 </script>
 

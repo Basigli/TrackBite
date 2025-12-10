@@ -12,6 +12,7 @@ export const useRecipeStore = defineStore('recipe', () => {
   
   // Community recipes from other users, not yet saved (real-time feed)
   const communityRecipes: Ref<Recipe[]> = ref([]);
+  const searchResults: Ref<Recipe[]> = ref([]);
 
   // ============================================
   // USER'S OWN RECIPES (CREATED + SAVED)
@@ -119,6 +120,21 @@ export const useRecipeStore = defineStore('recipe', () => {
   }
 };
 
+  const searchRecipesByIngredient = async (ingredient: string) => {
+    try {
+      const res = await api.get<Recipe[]>(`/recipes/search/ingredient/${encodeURIComponent(ingredient)}`);
+      searchResults.value = res.data;
+    } catch (err) {
+      console.error('Error searching recipes by ingredient:', err);
+      throw err;
+    }
+  };
+
+  const clearSearchResults = () => {
+    searchResults.value = [];
+  };
+
+
   return {
     // User's own recipes (created + saved)
     recipes,
@@ -135,6 +151,11 @@ export const useRecipeStore = defineStore('recipe', () => {
     removeCommunityRecipe,
     clearCommunityRecipes,
     saveCommunityRecipeToOwn,
-    fetchRecentCommunityRecipes
+    fetchRecentCommunityRecipes,
+    
+    // Search results
+    searchResults,
+    searchRecipesByIngredient,
+    clearSearchResults
   };
 });

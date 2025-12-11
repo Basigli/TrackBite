@@ -5,6 +5,7 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
 import { UserModel } from "../../src/storage/UserSchema";
 import UserCredentialsModel from "../../src/storage/UserCredentialsSchema";
+import { is } from "zod/v4/locales";
 
 let mongoServer: MongoMemoryServer;
 let authToken: string;
@@ -34,6 +35,7 @@ describe("User Routes", () => {
         mail: "test@example.com", 
         savedRecipesIds: [], 
         savedScannedItemsIds: [],
+        activeDietId: "",
         passwordHash: "securepassword123" 
       };
       const res = await request(app)
@@ -47,6 +49,7 @@ describe("User Routes", () => {
       expect(res.body.mail).toBe(newUser.mail);
       expect(res.body.savedRecipesIds).toEqual([]);
       expect(res.body.savedScannedItemsIds).toEqual([]);
+      expect(res.body.activeDietId).toBe("");
       
       // verify in DB
       const userInDb = await UserModel.findOne({ mail: newUser.mail });
@@ -59,19 +62,25 @@ describe("User Routes", () => {
       const user = { 
         nickname: "u1", 
         mail: "dup@example.com", 
-        savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedRecipesIds: [],
+        savedScannedItemsIds: [],
+        activeDietId: "",
+        isAdmin: false
       };
       await UserModel.create(user);
+      console.log('Created user:', user);
+      console.log('Attempting to create another user with same mail');
 
       const res = await request(app)
         .post("/users")
         .send({ 
-          nickname: "u2", 
-          mail: "dup@example.com", 
-          savedRecipesIds: [], 
+          nickname: "u2",
+          mail: "dup@example.com",
+          savedRecipesIds: [],
           savedScannedItemsIds: [],
-          passwordHash: "password123" 
+          activeDietId: "",
+          isAdmin: false,
+          passwordHash: "password123"
         })
         .expect("Content-Type", /json/)
         .expect(400);
@@ -87,7 +96,8 @@ describe("User Routes", () => {
         nickname: "alice", 
         mail: "alice@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       };
       await UserModel.create(user);
       await UserCredentialsModel.create({ nickname: user.nickname, passwordHash: password });
@@ -120,7 +130,8 @@ describe("User Routes", () => {
         nickname: "alice", 
         mail: "alice@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       };
       await UserModel.create(user);
       await UserCredentialsModel.create({ nickname: user.nickname, passwordHash: password });
@@ -141,7 +152,8 @@ describe("User Routes", () => {
         nickname: "a", 
         mail: "a@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
       const res = await request(app)
         .get(`/users/${created._id}`)
@@ -168,14 +180,16 @@ describe("User Routes", () => {
         nickname: "old", 
         mail: "old@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
       const update = { 
         _id: created._id, 
         nickname: "newnick", 
         mail: "old@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       };
       const res = await request(app)
         .put(`/users/${created._id}`)
@@ -195,13 +209,15 @@ describe("User Routes", () => {
         nickname: "u1", 
         mail: "m1@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
       const created2 = await UserModel.create({ 
         nickname: "u2", 
         mail: "m2@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
 
       await request(app)
@@ -211,7 +227,8 @@ describe("User Routes", () => {
           nickname: "u2", 
           mail: "m1@example.com", 
           savedRecipesIds: [], 
-          savedScannedItemsIds: [] 
+          savedScannedItemsIds: [],
+          activeDietId: "" 
         })
         .expect(400);
     });
@@ -223,7 +240,8 @@ describe("User Routes", () => {
         nickname: "toDelete", 
         mail: "td@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
 
       await request(app)
@@ -250,7 +268,8 @@ describe("User Routes", () => {
         nickname: "user1", 
         mail: "user1@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
       const recipeId = new mongoose.Types.ObjectId().toString();
 
@@ -273,7 +292,8 @@ describe("User Routes", () => {
         nickname: "user1", 
         mail: "user1@example.com", 
         savedRecipesIds: [recipeId], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
 
       const res = await request(app)
@@ -303,7 +323,8 @@ describe("User Routes", () => {
         nickname: "user1", 
         mail: "user1@example.com", 
         savedRecipesIds: [recipeId], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: "" 
       });
 
       const res = await request(app)
@@ -336,7 +357,8 @@ describe("User Routes", () => {
         nickname: "user1", 
         mail: "user1@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [] 
+        savedScannedItemsIds: [],
+        activeDietId: ""
       });
       const itemId = new mongoose.Types.ObjectId().toString();
 
@@ -359,7 +381,8 @@ describe("User Routes", () => {
         nickname: "user1", 
         mail: "user1@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [itemId] 
+        savedScannedItemsIds: [itemId],
+        activeDietId: ""
       });
 
       const res = await request(app)
@@ -389,7 +412,8 @@ describe("User Routes", () => {
         nickname: "user1", 
         mail: "user1@example.com", 
         savedRecipesIds: [], 
-        savedScannedItemsIds: [itemId] 
+        savedScannedItemsIds: [itemId],
+        activeDietId: ""
       });
 
       const res = await request(app)

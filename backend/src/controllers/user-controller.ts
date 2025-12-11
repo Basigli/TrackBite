@@ -22,6 +22,7 @@ const createUser = async (req: Request, res: Response) => {
     if (!parsed.success) {
       return res.status(400).json({ error: "Invalid user data", details: parsed.error });
     }
+
     const newUser = new UserModel(parsed.data);
     const savedUser = await newUser.save();
     const userCredentials = new UserCredentialsModel({

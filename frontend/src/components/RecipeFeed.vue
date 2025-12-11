@@ -1,6 +1,5 @@
 <template>
   <div class="space-y-3">
-    <Toast ref="toastRef" />
     <!-- Show notification when new recipe is detected -->
     <transition name="slide-down">
       <div 
@@ -53,10 +52,8 @@ import { useIntakeStore } from '../store/intakeStore';
 import { useUserStore } from '../store/userStore';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
-import Toast from './Toast.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
 
-const toastRef = ref<InstanceType<typeof Toast> | null>(null);
 const intakeStore = useIntakeStore();
 const userStore = useUserStore();
 const recipeStore = useRecipeStore();
@@ -96,21 +93,21 @@ watch(() => recipes.value.length, (newCount, oldCount) => {
 
 const saveToMyRecipes = async (recipe: RecipeType) => {
   if (!userStore.user?._id) {
-    toastRef.value?.show('Please log in to save recipes', 'error');
+    alert('Please log in to save recipes');
     return;
   }
 
   try {
     await recipeStore.saveCommunityRecipeToOwn(recipe);
-    toastRef.value?.show(`"${recipe.name}" saved to your recipes!`);
+    alert(`"${recipe.name}" saved to your recipes!`);
   } catch (error) {
     console.error('Error saving recipe:', error);
-    toastRef.value?.show('Failed to save recipe', 'error');
+    alert('Failed to save recipe');
   }
 };
 
 const onAddedToIntake = (recipe: RecipeType) => {
-  toastRef.value?.show(`Added "${recipe.name}" to your daily intake!`);
+  alert(`Added "${recipe.name}" to your daily intake!`);
 };
 </script>
 

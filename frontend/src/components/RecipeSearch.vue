@@ -1,6 +1,5 @@
 <template>
   <div class="recipe-search">
-    <Toast ref="toastRef" />
     <!-- Search Bar -->
     <div class="bg-white rounded-lg shadow p-4 mb-4">
       <div class="flex gap-2">
@@ -88,10 +87,8 @@
 import { ref } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
-import Toast from './Toast.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
 
-const toastRef = ref<InstanceType<typeof Toast> | null>(null);
 const recipeStore = useRecipeStore();
 
 const searchQuery = ref('');
@@ -113,7 +110,7 @@ const performSearch = async () => {
     searchResults.value = recipeStore.searchResults;
   } catch (error) {
     console.error('Error searching recipes:', error);
-    toastRef.value?.show('Failed to search recipes', 'error');
+    alert('Failed to search recipes');
   } finally {
     isSearching.value = false;
   }

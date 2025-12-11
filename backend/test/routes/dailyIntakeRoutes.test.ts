@@ -1,5 +1,12 @@
 import request from "supertest";
-import { beforeAll, afterAll, beforeEach, describe, it, expect } from '@jest/globals';
+import {
+  beforeAll,
+  afterAll,
+  beforeEach,
+  describe,
+  it,
+  expect,
+} from "@jest/globals";
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
@@ -31,27 +38,97 @@ describe("DailyIntake Routes", () => {
     calories: 165,
     allergens: ["soy"],
     ingredients: ["chicken breast", "olive oil", "salt", "pepper", "garlic"],
-    nutrients: {
-      "vitamin-a": "2% DV",
-      "vitamin-c": "0% DV",
-      "calcium": "1% DV",
-      "iron": "4% DV",
-      "fiber": "0g",
-      "sodium": "74mg"
-    },
-    macros: {
-      "protein": "31g",
-      "carbohydrates": "0g",
-      "fat": "3.6g",
-      "saturated-fat": "1g"
-    },
+    nutrients: [
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "vitamin-a",
+        unit: "% DV",
+        totalAmount: 2,
+        amount100g: 1.33,
+        amountPerServing: 2,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "vitamin-c",
+        unit: "% DV",
+        totalAmount: 0,
+        amount100g: 0,
+        amountPerServing: 0,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "calcium",
+        unit: "% DV",
+        totalAmount: 1,
+        amount100g: 0.67,
+        amountPerServing: 1,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "iron",
+        unit: "% DV",
+        totalAmount: 4,
+        amount100g: 2.67,
+        amountPerServing: 4,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "fiber",
+        unit: "g",
+        totalAmount: 0,
+        amount100g: 0,
+        amountPerServing: 0,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "sodium",
+        unit: "mg",
+        totalAmount: 74,
+        amount100g: 49.33,
+        amountPerServing: 74,
+      },
+    ],
+    macros: [
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "protein",
+        unit: "g",
+        totalAmount: 31,
+        amount100g: 20.67,
+        amountPerServing: 31,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "carbohydrates",
+        unit: "g",
+        totalAmount: 0,
+        amount100g: 0,
+        amountPerServing: 0,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "fat",
+        unit: "g",
+        totalAmount: 3.6,
+        amount100g: 2.4,
+        amountPerServing: 3.6,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "saturated-fat",
+        unit: "g",
+        totalAmount: 1,
+        amount100g: 0.67,
+        amountPerServing: 1,
+      },
+    ],
     score: 85,
     grade: "A",
-    nutrientLevels: {
-      "sodium": "low",
-      "saturated-fat": "low",
-      "sugar": "low"
-    }
+    nutrientLevels: new Map([
+      ["sodium", "low"],
+      ["saturated-fat", "low"],
+      ["sugar", "low"],
+    ]),
   };
 
   const sampleFoodItem2 = {
@@ -61,27 +138,97 @@ describe("DailyIntake Routes", () => {
     calories: 218,
     allergens: [],
     ingredients: ["brown rice", "water"],
-    nutrients: {
-      "vitamin-a": "0% DV",
-      "vitamin-c": "0% DV",
-      "calcium": "2% DV",
-      "iron": "5% DV",
-      "fiber": "3.5g",
-      "sodium": "10mg"
-    },
-    macros: {
-      "protein": "4.5g",
-      "carbohydrates": "45.8g",
-      "fat": "1.6g",
-      "saturated-fat": "0.3g"
-    },
+    nutrients: [
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "vitamin-a",
+        unit: "% DV",
+        totalAmount: 0,
+        amount100g: 0,
+        amountPerServing: 0,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "vitamin-c",
+        unit: "% DV",
+        totalAmount: 0,
+        amount100g: 0,
+        amountPerServing: 0,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "calcium",
+        unit: "% DV",
+        totalAmount: 2,
+        amount100g: 1.03,
+        amountPerServing: 2,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "iron",
+        unit: "% DV",
+        totalAmount: 5,
+        amount100g: 2.56,
+        amountPerServing: 5,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "fiber",
+        unit: "g",
+        totalAmount: 3.5,
+        amount100g: 1.79,
+        amountPerServing: 3.5,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "sodium",
+        unit: "mg",
+        totalAmount: 10,
+        amount100g: 5.13,
+        amountPerServing: 10,
+      },
+    ],
+    macros: [
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "protein",
+        unit: "g",
+        totalAmount: 4.5,
+        amount100g: 2.31,
+        amountPerServing: 4.5,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "carbohydrates",
+        unit: "g",
+        totalAmount: 45.8,
+        amount100g: 23.49,
+        amountPerServing: 45.8,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "fat",
+        unit: "g",
+        totalAmount: 1.6,
+        amount100g: 0.82,
+        amountPerServing: 1.6,
+      },
+      {
+        _id: new mongoose.Types.ObjectId().toString(),
+        name: "saturated-fat",
+        unit: "g",
+        totalAmount: 0.3,
+        amount100g: 0.15,
+        amountPerServing: 0.3,
+      },
+    ],
     score: 78,
     grade: "B",
-    nutrientLevels: {
-      "sodium": "low",
-      "saturated-fat": "low",
-      "sugar": "low"
-    }
+    nutrientLevels: new Map([
+      ["sodium", "low"],
+      ["saturated-fat", "low"],
+      ["sugar", "low"],
+    ]),
   };
 
   const sampleTotalMacros = [
@@ -91,7 +238,7 @@ describe("DailyIntake Routes", () => {
       unit: "g",
       totalAmount: 35.5,
       amount100g: 23.7,
-      amountPerServing: 35.5
+      amountPerServing: 35.5,
     },
     {
       _id: new mongoose.Types.ObjectId().toString(),
@@ -99,7 +246,7 @@ describe("DailyIntake Routes", () => {
       unit: "g",
       totalAmount: 45.8,
       amount100g: 13.3,
-      amountPerServing: 45.8
+      amountPerServing: 45.8,
     },
     {
       _id: new mongoose.Types.ObjectId().toString(),
@@ -107,7 +254,7 @@ describe("DailyIntake Routes", () => {
       unit: "g",
       totalAmount: 5.2,
       amount100g: 1.5,
-      amountPerServing: 5.2
+      amountPerServing: 5.2,
     },
     {
       _id: new mongoose.Types.ObjectId().toString(),
@@ -115,8 +262,8 @@ describe("DailyIntake Routes", () => {
       unit: "g",
       totalAmount: 1.3,
       amount100g: 0.4,
-      amountPerServing: 1.3
-    }
+      amountPerServing: 1.3,
+    },
   ];
 
   const sampleDailyIntake = {
@@ -124,7 +271,7 @@ describe("DailyIntake Routes", () => {
     totalMacros: sampleTotalMacros,
     foodItems: [sampleFoodItem, sampleFoodItem2],
     date: new Date().toISOString(),
-    userId: "test-user-1"
+    userId: "test-user-1",
   };
 
   const emptyDailyIntake = {
@@ -132,7 +279,7 @@ describe("DailyIntake Routes", () => {
     totalMacros: [],
     foodItems: [],
     date: new Date().toISOString(),
-    userId: "test-user-1"
+    userId: "test-user-1",
   };
 
   describe("POST /daily-intakes", () => {
@@ -206,9 +353,7 @@ describe("DailyIntake Routes", () => {
 
     it("should return 404 if daily intake not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
-      await request(app)
-        .get(`/daily-intakes/${fakeId}`)
-        .expect(404);
+      await request(app).get(`/daily-intakes/${fakeId}`).expect(404);
     });
   });
 
@@ -222,7 +367,7 @@ describe("DailyIntake Routes", () => {
           unit: "g",
           totalAmount: 120,
           amount100g: 30,
-          amountPerServing: 120
+          amountPerServing: 120,
         },
         {
           _id: new mongoose.Types.ObjectId().toString(),
@@ -230,7 +375,7 @@ describe("DailyIntake Routes", () => {
           unit: "g",
           totalAmount: 200,
           amount100g: 50,
-          amountPerServing: 200
+          amountPerServing: 200,
         },
         {
           _id: new mongoose.Types.ObjectId().toString(),
@@ -238,16 +383,16 @@ describe("DailyIntake Routes", () => {
           unit: "g",
           totalAmount: 60,
           amount100g: 15,
-          amountPerServing: 60
-        }
+          amountPerServing: 60,
+        },
       ];
-      
-      const update = { 
-        totalCalories: 1800, 
-        totalMacros: updateMacros, 
-        foodItems: [sampleFoodItem], 
-        date: new Date().toISOString(), 
-        userId: created.userId 
+
+      const update = {
+        totalCalories: 1800,
+        totalMacros: updateMacros,
+        foodItems: [sampleFoodItem],
+        date: new Date().toISOString(),
+        userId: created.userId,
       };
 
       const res = await request(app)
@@ -260,19 +405,19 @@ describe("DailyIntake Routes", () => {
       expect(res.body.foodItems.length).toBe(1);
       expect(res.body.totalMacros.length).toBe(3);
       expect(res.body.totalMacros[0].totalAmount).toBe(120);
-      
+
       const intakeInDb = await DailyIntakeModel.findById(created._id);
       expect(intakeInDb?.totalCalories).toBe(update.totalCalories);
     });
 
     it("should return 404 if daily intake not found", async () => {
       const fakeId = new mongoose.Types.ObjectId();
-      const update = { 
-        totalCalories: 1800, 
-        totalMacros: [], 
-        foodItems: [], 
-        date: new Date().toISOString(), 
-        userId: "test-user-1" 
+      const update = {
+        totalCalories: 1800,
+        totalMacros: [],
+        foodItems: [],
+        date: new Date().toISOString(),
+        userId: "test-user-1",
       };
       await request(app)
         .put(`/daily-intakes/${fakeId}`)
@@ -342,9 +487,12 @@ describe("DailyIntake Routes", () => {
       expect(res.body.calories).toBe(sampleFoodItem.calories);
 
       const intakeInDb = await DailyIntakeModel.findById(created._id);
-      expect(intakeInDb?.foodItems.length).toBe(1);
-      expect(intakeInDb?.foodItems[0]._id.toString()).toBe(sampleFoodItem._id);
-      expect(intakeInDb?.foodItems[0].name).toBe(sampleFoodItem.name);
+      expect(intakeInDb).not.toBeNull();
+      expect(intakeInDb!.foodItems.length).toBe(1);
+
+      const [firstFoodItem] = intakeInDb!.foodItems;
+      expect(firstFoodItem._id!.toString()).toBe(sampleFoodItem._id);
+      expect(firstFoodItem.name).toBe(sampleFoodItem.name);
     });
 
     it("should return 404 when adding a food item to non-existent daily intake", async () => {
@@ -361,9 +509,17 @@ describe("DailyIntake Routes", () => {
       const today = new Date();
       const yesterday = new Date(today);
       yesterday.setDate(yesterday.getDate() - 1);
-      
-      await DailyIntakeModel.create({ ...sampleDailyIntake, userId: "test-user-1", date: today.toISOString() });
-      await DailyIntakeModel.create({ ...emptyDailyIntake, userId: "test-user-1", date: yesterday.toISOString() });
+
+      await DailyIntakeModel.create({
+        ...sampleDailyIntake,
+        userId: "test-user-1",
+        date: today.toISOString(),
+      });
+      await DailyIntakeModel.create({
+        ...emptyDailyIntake,
+        userId: "test-user-1",
+        date: yesterday.toISOString(),
+      });
 
       const res = await request(app)
         .get(`/daily-intakes/history/user/test-user-1`)
@@ -381,8 +537,14 @@ describe("DailyIntake Routes", () => {
     });
 
     it("should only return daily intakes for the specified user", async () => {
-      await DailyIntakeModel.create({ ...sampleDailyIntake, userId: "test-user-1" });
-      await DailyIntakeModel.create({ ...emptyDailyIntake, userId: "test-user-2" });
+      await DailyIntakeModel.create({
+        ...sampleDailyIntake,
+        userId: "test-user-1",
+      });
+      await DailyIntakeModel.create({
+        ...emptyDailyIntake,
+        userId: "test-user-2",
+      });
 
       const res = await request(app)
         .get(`/daily-intakes/history/user/test-user-1`)
@@ -394,7 +556,10 @@ describe("DailyIntake Routes", () => {
     });
 
     it("should include macro details in history", async () => {
-      await DailyIntakeModel.create({ ...sampleDailyIntake, userId: "test-user-1" });
+      await DailyIntakeModel.create({
+        ...sampleDailyIntake,
+        userId: "test-user-1",
+      });
 
       const res = await request(app)
         .get(`/daily-intakes/history/user/test-user-1`)

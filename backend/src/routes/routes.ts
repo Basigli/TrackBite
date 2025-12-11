@@ -78,8 +78,8 @@ router.route("/recipes")
 router.route("/recipes/user/:userId")
   .get(recipesController.getRecipesByUserId);
 
-router.route("/recipes/search/ingredient/:ingredient")
-  .get(recipesController.getRecipesByIngredient);
+router.route("/recipes/search/:query")
+  .get(recipesController.queryRecipes);
 
 router.route("/recipes/:id")
   .get(recipesController.getRecipeById)
@@ -87,6 +87,9 @@ router.route("/recipes/:id")
 router.route("/recipes/:id/user/:userId")
   .put(recipesController.updateRecipe)
   .delete(recipesController.deleteRecipe);
+
+router.route("/recipes/community/:userId")
+  .get(recipesController.getCommunityRecipes);
 
 // Scanned Items Routes
 router.route("/scanned-items")

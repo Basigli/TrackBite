@@ -2,11 +2,12 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Dashboard from '../pages/Dashboard.vue';
 import DailyIntakes from '../pages/DailyIntakes.vue';
 import AddFood from '../pages/ScanFood.vue';
-import Recipes from '../pages/Recipes.vue';
+import MyRecipes from '../pages/MyRecipes.vue';
 import Diet from '../pages/Diet.vue';
 import UserSettings from '../pages/UserSettings.vue';
 import Register from '../pages/Register.vue';
 import Login from '../pages/Login.vue';
+import FindRecipe from '../pages/FindRecipe.vue';
 
 import AdminDashboard from '../pages/AdminDashboard.vue';
 import AdminRecipesPage from '../pages/AdminRecipesPage.vue';
@@ -21,7 +22,8 @@ const routes = [
   { path: '/', component: Dashboard, meta: { requiresAuth: true } },
   { path: '/history', component: DailyIntakes, meta: { requiresAuth: true } },
   { path: '/scan-food', component: AddFood, meta: { requiresAuth: true } },
-  { path: '/recipes', component: Recipes, meta: { requiresAuth: true } },
+  { path: '/my-recipes', component: MyRecipes, meta: { requiresAuth: true } },
+  { path: '/find-recipe', component: FindRecipe, meta: { requiresAuth: true } },
   { path: '/diet', component: Diet, meta: { requiresAuth: true } },
   { path: '/settings', component: UserSettings, meta: { requiresAuth: true } },
   { path: '/admin', component: AdminDashboard, meta: { requiresAuth: true } },
@@ -38,12 +40,12 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
 
-  // No auth required → continue
+  // No auth required, continue
   if (!to.meta.requiresAuth) {
     return next()
   }
 
-  // No token → redirect to login
+  // No token, redirect to login
   if (!userStore.authToken.value) {
     return next({
       name: 'Login',
@@ -72,7 +74,6 @@ router.beforeEach((to, from, next) => {
     })
   }
 
-  // Everything OK → continue
   next()
 })
 

@@ -43,8 +43,8 @@ const updateRecipe = (recipeId, data) => store.updateRecipe(recipeId, userId, da
 
 // Event handler for newly added recipe
 const onRecipeAdded = (recipe) => {
-  // store.recipes.push(recipe);
-  // fetchRecipes();
+  store.recipes.push(recipe);
+  fetchRecipes();
 };
 
 // Initial fetch

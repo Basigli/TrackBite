@@ -7,12 +7,18 @@ import {
   it,
   expect,
 } from "@jest/globals";
+
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
 import { RecipeModel } from "../../src/storage/RecipeSchema";
+import { UserModel } from "../../src/storage/UserSchema";
 
 let mongoServer: MongoMemoryServer;
+
+let userId1 = new mongoose.Types.ObjectId().toString();
+let userId2 = new mongoose.Types.ObjectId().toString();
+const nonExistentUserId = new mongoose.Types.ObjectId().toString();
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -28,6 +34,25 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await RecipeModel.deleteMany({});
+  await UserModel.deleteMany({});
+
+  await UserModel.create({
+    _id: userId1,
+    nickname: "Test User 1",
+    mail: "user1@example.com",
+    savedRecipesIds: [],
+    savedScannedItemsIds: [],
+    isAdmin: false
+  });
+
+  await UserModel.create({
+    _id: userId2,
+    nickname: "Test User 2",
+    mail: "user2@example.com",
+    savedRecipesIds: [],
+    savedScannedItemsIds: [],
+    isAdmin: false
+  });
 });
 
 describe("Recipe Routes", () => {
@@ -180,7 +205,8 @@ describe("Recipe Routes", () => {
   const sampleRecipe = {
     name: "Caprese Salad",
     ingredients: [tomatoFoodItem, cheeseFoodItem, basilFoodItem, oliveOilFoodItem],
-    userId: "test-user-id",
+    userId: userId1,
+    userName: "test-user",
     description: "A classic Italian salad with fresh tomatoes, mozzarella, and basil",
     createdAt: new Date(),
     grade: "A",
@@ -195,7 +221,8 @@ describe("Recipe Routes", () => {
   const anotherRecipe = {
     name: "Tomato Garlic Pasta Sauce",
     ingredients: [tomatoFoodItem, garlicFoodItem, oliveOilFoodItem, basilFoodItem],
-    userId: "another-user-id",
+    userId: userId2,
+    userName: "another-user",
     description: "A simple and flavorful pasta sauce with fresh tomatoes and garlic",
     createdAt: new Date(),
     grade: "A",
@@ -244,7 +271,8 @@ describe("Recipe Routes", () => {
         }
       }
     ],
-    userId: "test-user-id",
+    userId: userId1,
+    userName: "test-user",
     description: "Authentic Italian-style pizza with fresh ingredients",
     createdAt: new Date(),
     grade: "B",
@@ -343,6 +371,7 @@ describe("Recipe Routes", () => {
         name: "Updated Caprese Salad",
         ingredients: [tomatoFoodItem, cheeseFoodItem, basilFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
         description: "Updated description for Caprese Salad",
         createdAt: sampleRecipe.createdAt,
         grade: "A",
@@ -374,6 +403,7 @@ describe("Recipe Routes", () => {
         name: "Simple Tomato Salad",
         ingredients: [tomatoFoodItem, oliveOilFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
         description: "A simple salad with tomato and olive oil",
         createdAt: sampleRecipe.createdAt,
         grade: "A",
@@ -401,6 +431,7 @@ describe("Recipe Routes", () => {
         name: "Updated Recipe",
         ingredients: [tomatoFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
         description: "Updated description",
         createdAt: new Date(),
         grade: "A",
@@ -457,7 +488,7 @@ describe("Recipe Routes", () => {
       await RecipeModel.create(anotherRecipe);
 
       const res = await request(app)
-        .get(`/recipes/user/non-existent-user`)
+        .get(`/recipes/user/${userId1}`)
         .expect("Content-Type", /json/)
         .expect(200);
 
@@ -481,59 +512,75 @@ describe("Recipe Routes", () => {
     });
   });
 
-  describe("GET /recipes/search/ingredient/:ingredient", () => {
-    it("should return recipes containing the specified ingredient", async () => {
-      await RecipeModel.create(sampleRecipe);
-      await RecipeModel.create(anotherRecipe);
-      await RecipeModel.create(multiIngredientRecipe);
-
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/tomato`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBe(3);
-      res.body.forEach((recipe: any) => {
-        const hasIngredient = recipe.ingredients.some(
-          (ing: any) => ing.ingredients.includes("tomato")
-        );
-        expect(hasIngredient).toBe(true);
-      });
+  describe("GET /recipes/search/:query", () => {
+  it("should return recipes matching an ingredient", async () => {
+    await RecipeModel.create({
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Tomato Pasta",
+      ingredients: [tomatoFoodItem, basilFoodItem],
+      description: "Fresh pasta with tomato",
+      userId: userId1,
+      userName: "Test User 1",
+      createdAt: new Date(),
+      grade: "A",
+      macros: [],
+      totalCalories: 300
     });
 
-    it("should return recipes containing cheese", async () => {
-      await RecipeModel.create(sampleRecipe);
-      await RecipeModel.create(anotherRecipe);
-      await RecipeModel.create(multiIngredientRecipe);
+    const res = await request(app).get("/recipes/search/tomato");
 
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/milk`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBe(2);
-    });
-
-    it("should return empty array if no recipes contain the ingredient", async () => {
-      await RecipeModel.create(sampleRecipe);
-
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/peanuts`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBe(0);
-    });
-
-    it("should search case-insensitively", async () => {
-      await RecipeModel.create(sampleRecipe);
-
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/BASIL`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBeGreaterThan(0);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].name).toBe("Tomato Pasta");
   });
+
+  it("should fallback to recipe name if ingredient returns empty", async () => {
+    await RecipeModel.create({
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Cheese Pizza",
+      ingredients: [cheeseFoodItem],
+      description: "Pizza with mozzarella",
+      userId: userId1,
+      userName: "Test User 1",
+      createdAt: new Date(),
+      grade: "B",
+      macros: [],
+      totalCalories: 700
+    });
+
+    const res = await request(app).get("/recipes/search/pizza");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].name).toBe("Cheese Pizza");
+  });
+
+  it("should fallback to username if no ingredient nor recipe name matches", async () => {
+    await RecipeModel.create({
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Basil Salad",
+      ingredients: [basilFoodItem],
+      description: "Fresh basil salad",
+      userId: userId2,
+      userName: "Test User 2",
+      createdAt: new Date(),
+      grade: "A",
+      macros: [],
+      totalCalories: 120
+    });
+
+    const res = await request(app).get("/recipes/search/Test User 2");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].userName).toBe("Test User 2");
+  });
+
+  it("should return an empty array if no ingredient, name or username match", async () => {
+    const res = await request(app).get("/recipes/search/nope");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(0);
+  });
+});
 });

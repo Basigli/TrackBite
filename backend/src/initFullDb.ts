@@ -277,7 +277,7 @@ async function seed() {
     nickname: "charlie",
     mail: "charlie@fitlife.com",
     savedRecipesIds: [],
-    savedScannedItemsIds: [],
+    savedScannedItemsIds: [ almondMilk.id.toString(), wholeWheatBread.id.toString() ],
     isAdmin: false
   });
 
@@ -311,6 +311,7 @@ async function seed() {
     ],
     description: "A healthy and delicious grilled chicken recipe served with brown rice and fresh spinach.",
     userId: userAlice._id.toString(),
+    userName: userAlice.nickname,
     createdAt: new Date(),
     grade: "A",
     macros: [
@@ -329,6 +330,7 @@ async function seed() {
       foodItemSpinach
     ],
     userId: userBob._id.toString(),
+    userName: userBob.nickname,
     description: "A nutritious salmon power bowl with rice and spinach.",
     createdAt: new Date(),
     grade: "A",
@@ -347,6 +349,7 @@ async function seed() {
       foodItemAlmondMilk
     ],
     userId: userCharlie._id.toString(),
+    userName: userCharlie.nickname,
     description: "A protein-packed breakfast toast with whole wheat bread and almond milk.",
     createdAt: new Date(),
     grade: "A",

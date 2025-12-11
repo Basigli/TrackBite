@@ -3,6 +3,7 @@ import { ref, type Ref, reactive, type Reactive } from 'vue';
 import api from '../api';
 import { jwtDecode } from 'jwt-decode';
 import type { User } from '../models/User';
+import { notifyWarning } from '../utils/Notifications';
 
 export const useUserStore = defineStore('user', () => {
   const user: Reactive<User | null> = reactive({} as User);
@@ -88,7 +89,7 @@ export const useUserStore = defineStore('user', () => {
     if (!decoded || !decoded.exp) return;
     const currentTime = Math.floor(Date.now() / 1000);
     if (decoded.exp < currentTime)
-      alert('Session has expired. Please log in again.');
+      notifyWarning('Session has expired. Please log in again.');
   };
 
   const logout = () => {

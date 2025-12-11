@@ -88,6 +88,7 @@ import { ref } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
+import { notifySuccess, notifyError } from '../utils/Notifications';
 
 const recipeStore = useRecipeStore();
 
@@ -110,7 +111,7 @@ const performSearch = async () => {
     searchResults.value = recipeStore.searchResults;
   } catch (error) {
     console.error('Error searching recipes:', error);
-    alert('Failed to search recipes');
+    notifyError('Failed to search recipes');
   } finally {
     isSearching.value = false;
   }
@@ -126,15 +127,15 @@ const clearSearch = () => {
 const saveToMyRecipes = async (recipe: RecipeType) => {
   try {
     await recipeStore.saveCommunityRecipeToOwn(recipe);
-    toastRef.value?.show(`"${recipe.name}" saved to your recipes!`);
+    notifySuccess(`"${recipe.name}" saved to your recipes!`);
   } catch (error) {
     console.error('Error saving recipe:', error);
-    toastRef.value?.show('Failed to save recipe', 'error');
+    notifyError('Failed to save recipe');
   }
 };
 
 const onAddedToIntake = (recipe: RecipeType) => {
-  toastRef.value?.show(`Added "${recipe.name}" to your daily intake!`);
+  notifySuccess(`Added "${recipe.name}" to your daily intake!`);
 };
 </script>
 

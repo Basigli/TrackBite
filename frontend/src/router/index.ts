@@ -15,6 +15,7 @@ import AdminUsersPage from '../pages/AdminUsersPage.vue';
 
 import NotFound from '../pages/NotFound.vue';
 import { useUserStore } from '../store/userStore';
+import { notifyWarning } from '../utils/Notifications';
 
 const routes = [
   { path: '/register', component: Register, meta: { requiresAuth: false } },
@@ -58,7 +59,7 @@ router.beforeEach((to, from, next) => {
   userStore.isTokenExpired()
 
   if (!decoded?.exp) {
-    alert("Session Expired")
+    notifyWarning("Session Expired")
     userStore.logout()
     return next({ name: 'Login' })
   }

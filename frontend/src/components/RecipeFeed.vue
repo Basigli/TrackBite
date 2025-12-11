@@ -53,6 +53,7 @@ import { useUserStore } from '../store/userStore';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
+import { notifyWarning, notifySuccess, notifyError } from '../utils/Notifications';
 
 const intakeStore = useIntakeStore();
 const userStore = useUserStore();
@@ -93,21 +94,21 @@ watch(() => recipes.value.length, (newCount, oldCount) => {
 
 const saveToMyRecipes = async (recipe: RecipeType) => {
   if (!userStore.user?._id) {
-    alert('Please log in to save recipes');
+    notifyWarning('Please log in to save recipes');
     return;
   }
 
   try {
     await recipeStore.saveCommunityRecipeToOwn(recipe);
-    alert(`"${recipe.name}" saved to your recipes!`);
+    notifySuccess(`"${recipe.name}" saved to your recipes!`);
   } catch (error) {
     console.error('Error saving recipe:', error);
-    alert('Failed to save recipe');
+    notifyError('Failed to save recipe');
   }
 };
 
 const onAddedToIntake = (recipe: RecipeType) => {
-  alert(`Added "${recipe.name}" to your daily intake!`);
+  notifySuccess(`Added "${recipe.name}" to your daily intake!`);
 };
 </script>
 

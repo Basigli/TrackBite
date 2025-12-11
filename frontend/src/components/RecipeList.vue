@@ -28,6 +28,7 @@ import { computed, ref } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
 import type { Recipe as RecipeType } from '../models/Recipe';
+import {notifySuccess} from '../utils/Notifications';
 
 const store = useRecipeStore();
 
@@ -40,6 +41,6 @@ const deleteRecipe = (recipeId: string) => {
 };
 
 const onAddedToIntake = (recipe: RecipeType) => {
-  alert(`Added "${recipe.name}" and its ingredients to daily intake!`);
+  notifySuccess(`Added "${recipe.name}" and its ingredients to daily intake!`);
 };
 </script>

@@ -73,6 +73,7 @@
 <script>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useUserStore } from '../store/userStore'
+import {notifySuccess, notifyError, notifyInfo} from '../utils/Notifications';
 
 export default {
   name: 'UserSettings',
@@ -102,17 +103,17 @@ export default {
 
     const updateProfile = async () => {
       const success = await store.updateUser({ nickname: name.value, mail: email.value })
-      if (success) alert('Profile updated!')
+      if (success) notifyInfo('Profile updated!')
     }
 
     const updatePassword = async () => {
       const success = await store.changePassword(currentPassword.value, newPassword.value)
       if (success) {
-        alert('Password changed!')
+        notifySuccess('Password changed!')
         currentPassword.value = ''
         newPassword.value = ''
       } else {
-        alert('Failed to change password')
+        notifyError('Failed to change password')
       }
     }
 

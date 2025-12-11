@@ -1,0 +1,58 @@
+services:
+  # MongoDB database
+  mongodb:
+    image: mongo:latest
+    container_name: trackbite-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: trackbite
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: trackbite-backend
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      MONGO_URI: mongodb://root:password@mongodb:27017/trackbite?authSource=admin
+      PORT: 3000
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+    restart: unless-stopped
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: trackbite-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://trackbite-backend:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+    driver: local

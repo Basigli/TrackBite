@@ -1,11 +1,9 @@
 <template>
   <div class="community-recipes mt-4 max-w-2xl mx-auto">
-    <div class="bg-white rounded-lg shadow p-4 mb-4">
       <h2 class="text-2xl font-bold text-gray-800 mb-2">Community Recipes</h2>
       <p class="text-sm text-gray-600">
         Discover and share recipes with the community
       </p>
-    </div>
 
     <!-- Tab Navigation -->
     <div class="bg-white rounded-lg shadow mb-4">
@@ -33,7 +31,7 @@
           ]"
         >
           <span class="flex items-center justify-center gap-2">
-            <span>Search by Ingredient</span>
+            <span>Search</span>
           </span>
         </button>
       </div>

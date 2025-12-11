@@ -6,6 +6,7 @@
   "scripts": {
     "predev": "node -r ts-node/register src/initFullDb.ts",
     "dev": "npx tsc && node dist/index.js",
+    "build": "tsc",
     "test": "npx jest",
     "test:dietBuilder": "node -r ts-node/register test/TestDietBuilder.ts",
     "test:parser": "node -r ts-node/register test/TestParser.ts",

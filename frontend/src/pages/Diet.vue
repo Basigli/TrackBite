@@ -263,6 +263,7 @@
 
 <script>
 import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { DietBuilder } from '../utils/DietBuilder'
 import DietSelector from '../components/DietSelector.vue'
 import DietPlan from '../components/DietPlan.vue'
@@ -279,8 +280,10 @@ export default {
     const dietStore = useDietStore()
     const userStore = useUserStore()
     
+    // Use storeToRefs to maintain reactivity with the store
+    const { selectedDiet } = storeToRefs(dietStore)
+    
     const showCreateForm = ref(false)
-    const selectedDiet = ref(null)
     const error = ref('')
 
     const newDiet = ref({
@@ -375,8 +378,8 @@ export default {
     }
 
     const selectDiet = (diet) => {
-      selectedDiet.value = diet
-      dietStore.selectDiet(selectedDiet.value)
+      console.log('Parent - selectDiet called with:', diet)
+      dietStore.selectDiet(diet)
       userStore.updateUser({ activeDietId: diet._id })
     }
 
@@ -400,14 +403,12 @@ export default {
 
     onMounted(async () => {
       await dietStore.fetchDiets(userStore.user._id)
-      if (diets.value.length > 0) {
-        selectedDiet.value = diets.value[0]
-      }
+      // Remove the manual selection - let DietSelector handle it
     })
 
     return {
       showCreateForm,
-      selectedDiet,
+      selectedDiet, // This is now reactive!
       newDiet,
       error,
       diets,

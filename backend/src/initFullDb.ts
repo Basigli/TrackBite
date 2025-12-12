@@ -8,6 +8,7 @@ import { ScannedItemModel } from "./storage/ScannedItemSchema";
 import { NutrientModel } from "./storage/NutrientSchema";
 import { FoodItemModel } from "./storage/FoodItemSchema";
 import { FoodItemConverter } from "./utils/FoodItemConverter";
+import { DietBuilder } from "./utils/DietBuilder";
 import { Nutrient } from "./models/Nutrient";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/trackbite";
@@ -444,46 +445,52 @@ const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
   console.log("Inserted daily intakes");
 
   // ===== DIETS =====
-  const baseMacros: Array<Nutrient> = [
-    { name: "Protein", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 } as Nutrient,
-    { name: "Fat", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 } as Nutrient,
-    { name: "Carbohydrates", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 } as Nutrient
-  ];
+  // Low Carb Diet: High protein, high fat, low carbs
+  const lowCarbMacros = new Map<string, number>([
+    ["protein", 35],      // 35% protein
+    ["fat", 50],          // 50% fat
+    ["carbohydrates", 15] // 15% carbs (low)
+  ]);
 
-  const dietLowCarb = await DietModel.create({
-    name: "Low Carb Weight Loss",
-    caloriesAmount: 1600,
-    macros: baseMacros,
-    userId: userAlice._id.toString()
-  });
+  // High Protein Diet: Very high protein, moderate carbs, low fat
+  const highProteinMacros = new Map<string, number>([
+    ["protein", 40],      // 40% protein (high)
+    ["fat", 20],          // 20% fat
+    ["carbohydrates", 40] // 40% carbs
+  ]);
 
-  const dietHighProtein = await DietModel.create({
-    name: "High Protein Muscle Building",
-    caloriesAmount: 2400,
-    macros: baseMacros,
-    userId: userAlice._id.toString()
-  });
+  // Balanced Mediterranean Diet: Balanced macros with moderate fat
+  const balancedMacros = new Map<string, number>([
+    ["protein", 25],      // 25% protein
+    ["fat", 35],          // 35% fat (healthy fats from olive oil, nuts)
+    ["carbohydrates", 40] // 40% carbs
+  ]);
 
-  const dietBalanced = await DietModel.create({
-    name: "Balanced Mediterranean",
-    caloriesAmount: 2000,
-    macros: baseMacros,
-    userId: userBob._id.toString()
-  });
+  // Vegan Plant-Based Diet: Lower protein, moderate fat, higher carbs
+  const veganMacros = new Map<string, number>([
+    ["protein", 20],      // 20% protein (plant-based)
+    ["fat", 30],          // 30% fat
+    ["carbohydrates", 50] // 50% carbs (from whole grains, legumes)
+  ]);
 
-  const dietVegan = await DietModel.create({
-    name: "Plant-Based Vegan",
-    caloriesAmount: 1800,
-    macros: baseMacros,
-    userId: userCharlie._id.toString()
-  });
+  // Ketogenic Diet: Very high fat, adequate protein, very low carbs
+  const ketoMacros = new Map<string, number>([
+    ["protein", 20],      // 20% protein
+    ["fat", 75],          // 75% fat (very high)
+    ["carbohydrates", 5]  // 5% carbs (very low, ketosis)
+  ]);
 
-  const dietKeto = await DietModel.create({
-    name: "Ketogenic Diet",
-    caloriesAmount: 1500,
-    macros: baseMacros,
-    userId: userCharlie._id.toString()
-  });
+  const dietLowCarb = new DietBuilder("Low Carb Weight Loss", 1600, lowCarbMacros, userAlice._id.toString()).build();
+  const dietHighProtein = new DietBuilder("High Protein Muscle Building", 2400, highProteinMacros, userAlice._id.toString()).build();
+  const dietBalanced = new DietBuilder("Balanced Mediterranean", 2000, balancedMacros, userBob._id.toString()).build();
+  const dietVegan = new DietBuilder("Plant-Based Vegan", 1800, veganMacros, userCharlie._id.toString()).build();
+  const dietKeto = new DietBuilder("Ketogenic Diet", 1500, ketoMacros, userCharlie._id.toString()).build();
+
+  await DietModel.create(dietLowCarb);
+  await DietModel.create(dietHighProtein);
+  await DietModel.create(dietBalanced);
+  await DietModel.create(dietVegan);
+  await DietModel.create(dietKeto); 
 
   console.log("Inserted diets");
 

@@ -377,6 +377,7 @@ export default {
     const selectDiet = (diet) => {
       selectedDiet.value = diet
       dietStore.selectDiet(selectedDiet.value)
+      userStore.updateUser({ activeDietId: diet._id })
     }
 
     const editDiet = (diet) => {

@@ -6,7 +6,8 @@ export interface User {
   mail: string,
   savedRecipesIds: Array<string>,
   savedScannedItemsIds: Array<string>,
-  isAdmin: boolean,
+  activeDietId: string,
+  isAdmin: boolean, 
 }
 
 export const UserSchemaZ = z.object({
@@ -15,5 +16,6 @@ export const UserSchemaZ = z.object({
   mail: z.string().email(),
   savedRecipesIds: z.array(z.string()),
   savedScannedItemsIds: z.array(z.string()),
+  activeDietId: z.string(),
   isAdmin: z.boolean(),
 }).partial();

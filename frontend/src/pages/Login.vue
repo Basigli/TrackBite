@@ -141,6 +141,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../store/userStore';
+import { useDietStore } from '../store/dietStore';
 
 export default {
   name: 'LoginPage',
@@ -195,10 +196,13 @@ export default {
 
       try {
         const userStore = useUserStore();
+        const dietStore = useDietStore();
         await userStore.login(formData.username, formData.password);
         const decoded = userStore.decodeToken();
         console.log('Decoded token:', decoded);
         await userStore.fetchUser(decoded.id);
+        await dietStore.fetchDiets(decoded.id);
+        dietStore.selectDiet(dietStore.diets.find(diet => diet._id === userStore.user.activeDietId) || null);
         
         successMessage.value = 'Login successful! Redirecting...';
         

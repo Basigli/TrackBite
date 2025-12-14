@@ -35,7 +35,7 @@
 import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useIntakeStore } from '../store/intakeStore';
-import DailyIntake from '../components/DailyIntake.vue';
+import DailyIntake from '../components/food/DailyIntake.vue';
 import { useUserStore } from '@/store/userStore';
 
 export default {

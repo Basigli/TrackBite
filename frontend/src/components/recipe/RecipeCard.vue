@@ -58,10 +58,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useIntakeStore } from '../store/intakeStore';
-import { useUserStore } from '../store/userStore';
+import { useIntakeStore } from '../../store/intakeStore';
+import { useUserStore } from '../../store/userStore';
 import Recipe from './Recipe.vue';
-import type { Recipe as RecipeType } from '../models/Recipe';
+import type { Recipe as RecipeType } from '../../models/Recipe';
 
 interface Props {
   recipe: RecipeType;

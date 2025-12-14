@@ -25,10 +25,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useRecipeStore } from '../store/recipeStore';
+import { useRecipeStore } from '../../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
-import type { Recipe as RecipeType } from '../models/Recipe';
-import {notifySuccess} from '../utils/Notifications';
+import type { Recipe as RecipeType } from '../../models/Recipe';
+import {notifySuccess} from '../../utils/Notifications';
 
 const store = useRecipeStore();
 

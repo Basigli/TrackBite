@@ -47,8 +47,8 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import RecipeFeed from '../components/RecipeFeed.vue';
-import RecipeSearch from '../components/RecipeSearch.vue';
+import RecipeFeed from '../components/recipe/RecipeFeed.vue';
+import RecipeSearch from '../components/recipe/RecipeSearch.vue';
 
 const activeTab = ref<'feed' | 'search'>('feed');
 </script>

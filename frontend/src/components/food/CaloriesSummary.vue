@@ -12,7 +12,7 @@
 <script>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useDietStore } from '../store/dietStore'
+import { useDietStore } from '../../store/dietStore'
 import CircularProgress from './CircularProgress.vue'
 
 export default {

@@ -72,8 +72,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useIntakeStore } from '../store/intakeStore';
-import { useDietStore } from '../store/dietStore';
+import { useIntakeStore } from '../../store/intakeStore';
+import { useDietStore } from '../../store/dietStore';
 
 const intakeStore = useIntakeStore();
 const dietStore = useDietStore();

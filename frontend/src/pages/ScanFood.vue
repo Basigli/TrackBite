@@ -41,9 +41,9 @@
 <script>
 import { ref } from 'vue';
 import { useIntakeStore } from '@/store/intakeStore';
-import FoodSearch from '../components/FoodSearch.vue';
-import ScannedItem from '../components/ScannedItem.vue';
-import ScannedItemList from '../components/ScannedItemList.vue';
+import FoodSearch from '../components/food/FoodSearch.vue';
+import ScannedItem from '../components/food/ScannedItem.vue';
+import ScannedItemList from '../components/food/ScannedItemList.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';

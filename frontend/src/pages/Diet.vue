@@ -265,8 +265,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { DietBuilder } from '../utils/DietBuilder'
-import DietSelector from '../components/DietSelector.vue'
-import DietPlan from '../components/DietPlan.vue'
+import DietSelector from '../components/diet/DietSelector.vue'
+import DietPlan from '../components/diet/DietPlan.vue'
 import { useDietStore } from '../store/dietStore'
 import { useUserStore } from '../store/userStore'
 

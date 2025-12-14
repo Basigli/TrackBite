@@ -20,9 +20,9 @@ import { onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useIntakeStore } from '../store/intakeStore'
 import { useDietStore } from '../store/dietStore'
-import DailyIntake from '../components/DailyIntake.vue'
-import CaloriesSummary from '../components/CaloriesSummary.vue'
-import MacroBreakdown from '../components/MacroBreakdown.vue'
+import DailyIntake from '../components/food/DailyIntake.vue'
+import CaloriesSummary from '../components/food/CaloriesSummary.vue'
+import MacroBreakdown from '../components/food/MacroBreakdown.vue'
 import { useUserStore } from '@/store/userStore'
 
 export default {

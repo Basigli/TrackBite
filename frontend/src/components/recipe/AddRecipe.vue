@@ -156,10 +156,10 @@
 
 <script>
 import { ref, computed } from 'vue';
-import { useRecipeStore } from '../store/recipeStore';
-import { useUserStore } from '../store/userStore';
-import ScannedItemList from './ScannedItemList.vue';
-import FoodSearch from './FoodSearch.vue';
+import { useRecipeStore } from '../../store/recipeStore';
+import { useUserStore } from '../../store/userStore';
+import ScannedItemList from '../food/ScannedItemList.vue';
+import FoodSearch from '../food/FoodSearch.vue';
 
 export default {
   name: 'AddRecipe',

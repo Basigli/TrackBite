@@ -48,12 +48,12 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
-import { useIntakeStore } from '../store/intakeStore';
-import { useUserStore } from '../store/userStore';
-import { useRecipeStore } from '../store/recipeStore';
+import { useIntakeStore } from '../../store/intakeStore';
+import { useUserStore } from '../../store/userStore';
+import { useRecipeStore } from '../../store/recipeStore';
 import RecipeCard from './RecipeCard.vue';
-import type { Recipe as RecipeType } from '../models/Recipe';
-import { notifyWarning, notifySuccess, notifyError } from '../utils/Notifications';
+import type { Recipe as RecipeType } from '../../models/Recipe';
+import { notifyWarning, notifySuccess, notifyError } from '../../utils/Notifications';
 
 const intakeStore = useIntakeStore();
 const userStore = useUserStore();

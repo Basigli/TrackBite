@@ -27,8 +27,8 @@
 <script setup>
 import { onMounted, computed } from 'vue';
 import { useRecipeStore } from '../store/recipeStore';
-import RecipeList from '../components/RecipeList.vue';
-import AddRecipe from '../components/AddRecipe.vue';
+import RecipeList from '../components/recipe/RecipeList.vue';
+import AddRecipe from '../components/recipe/AddRecipe.vue';
 import { useUserStore } from '@/store/userStore';
 
 const store = useRecipeStore();

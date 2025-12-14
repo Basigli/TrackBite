@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { Nutrient, NutrientSchemaZ } from "./Nutrient";
 
 export interface FoodItem {
   _id?: string, 
@@ -7,8 +8,8 @@ export interface FoodItem {
   calories: number,
   allergens: Array<string>,
   ingredients: Array<string>,
-  nutrients:  Map<string, string>,
-  macros: Map<string, string>,
+  nutrients:  Array<Nutrient>,
+  macros: Array<Nutrient>,
   score: number,
   grade: string,
   nutrientLevels: Map<string, string>
@@ -21,8 +22,8 @@ export const FoodItemSchemaZ = z.object({
   calories: z.number(),
   allergens: z.array(z.string()),
   ingredients: z.array(z.string()),
-  nutrients: z.record(z.string(), z.string()),
-  macros: z.record(z.string(), z.string()),
+  nutrients: z.array(NutrientSchemaZ),
+  macros: z.array(NutrientSchemaZ),
   score: z.number(),
   grade: z.string(),
   nutrientLevels: z.record(z.string(), z.string())

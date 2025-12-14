@@ -35,19 +35,6 @@
     <div class="mt-6 mb-6">
       <ScannedItemList @add="addFoodToDailyIntake" />
     </div>
-
-    <!-- Display currently selected items to add -->
-    <div v-if="selectedFoods.length" class="mt-4">
-      <h2 class="text-xl font-semibold mb-2">Selected Foods</h2>
-      <ul>
-        <li v-for="(food, index) in selectedFoods" :key="index" class="flex justify-between border p-2 rounded mb-1">
-          <span>{{ food.name }} ({{ food.quantity }}g)</span>
-          <span>{{ food.calories }} kcal</span>
-          <button @click="removeFood(index)" class="text-red-500 hover:underline">Remove</button>
-        </li>
-      </ul>
-      <button @click="submitFoods" class="mt-2 bg-green-500 text-white px-4 py-2 rounded">Add to Daily Intake</button>
-    </div>
   </div>
 </template>
 
@@ -60,6 +47,7 @@ import ScannedItemList from '../components/ScannedItemList.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';
+import { notifySuccess } from '@/utils/Notifications';
 
 export default {
   name: 'AddFood',
@@ -72,7 +60,6 @@ export default {
   setup() {
     const intakeStore = useIntakeStore();
     const userStore = useUserStore();
-    const selectedFoods = ref([]);
     const scannedItem = ref(null);
     const showScanner = ref(false);
     const scannerError = ref(null);
@@ -119,7 +106,6 @@ export default {
     };
 
     const addFoodToDailyIntake = (food) => {
-      selectedFoods.value.push(food);
       // Clear scanned item after adding
       scannedItem.value = null;
       intakeStore.fetchDailyIntake(userStore.user._id);
@@ -127,25 +113,11 @@ export default {
         intakeStore.createDailyIntake(userStore.user._id, new Date().toISOString().substr(0, 10));
       }
       intakeStore.addToDailyIntake(userStore.user._id, food, new Date().toISOString().substr(0, 10));
-      alert(`${food.name} added to daily intake!`);
+      notifySuccess('Food item added to daily intake!');
     };
 
-    const removeFood = (index) => {
-      selectedFoods.value.splice(index, 1);
-    };
 
-    const submitFoods = async () => {
-      if (!selectedFoods.value.length) return;
-      const dailyIntakeId = intakeStore.dailyIntake.id;
-      for (const food of selectedFoods.value) {
-        await intakeStore.addFoodItem(dailyIntakeId, food);
-      }
-      selectedFoods.value = [];
-      alert('Foods added!');
-    };
-
-    return { 
-      selectedFoods, 
+    return {
       scannedItem, 
       showScanner,
       scannerError,
@@ -153,9 +125,7 @@ export default {
       toggleScanner,
       onDecode,
       onLoaded,
-      addFoodToDailyIntake, 
-      removeFood, 
-      submitFoods 
+      addFoodToDailyIntake 
     };
   }
 };

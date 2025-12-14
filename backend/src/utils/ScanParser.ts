@@ -1,6 +1,5 @@
 import { Nutrient } from '../models/Nutrient';
 import { ScannedItem } from '../models/ScannedItem';
-import { NutrientImpl } from '../models/NutrientImpl';  
 import { ScannedItemImpl } from '../models/ScannedItemImpl';
 
 export class ScanParser {
@@ -13,24 +12,24 @@ export class ScanParser {
       throw new Error('Invalid scan data format');
     }
     
-    let name = parsedData.product.product_name || parsedData.product.generic_name || 'unknown';
-    let quantity = parsedData.product.product_quantity || 0;
-    let quantityPerServing = parsedData.product.serving_quantity || quantity;
-    let quantityUnit = parsedData.product.product_quantity_unit || 'g';
-    let score = parsedData.product.nutriscore_score || -1;
-    let grade = parsedData.product.nutriscore_grade || 'unknown';
-    let nutrientLevels = new Map<string, string>(Object.entries(parsedData.product.nutrient_levels || {}));
-    let ingredients = parsedData.product.ingredients_without_ecobalyse_ids?.map((ingredient: string) => ingredient.split(':')[1]) || [];
-    let allergens = ScanParser.parseAllergenNames(parsedData.product.allergens_from_ingredients || '');
-    let nutrients = ScanParser.parseNutrients(parsedData.product.nutriments || {});
+    const name = parsedData.product.product_name || parsedData.product.generic_name || 'unknown';
+    const quantity = parsedData.product.product_quantity || 0;
+    const quantityPerServing = parsedData.product.serving_quantity || quantity;
+    const quantityUnit = parsedData.product.product_quantity_unit || 'g';
+    const score = parsedData.product.nutriscore_score || -1;
+    const grade = parsedData.product.nutriscore_grade || 'unknown';
+    const nutrientLevels = new Map<string, string>(Object.entries(parsedData.product.nutrient_levels || {}));
+    const ingredients = parsedData.product.ingredients_without_ecobalyse_ids?.map((ingredient: string) => ingredient.split(':')[1]) || [];
+    const allergens = ScanParser.parseAllergenNames(parsedData.product.allergens_from_ingredients || '');
+    const nutrients = ScanParser.parseNutrients(parsedData.product.nutriments || {});
     return new ScannedItemImpl( barcode, name, quantity, quantityPerServing, quantityUnit, allergens, nutrients, ingredients, score, grade, nutrientLevels);
   }
 
   static parseNutrients(nutrientData: any): Array<Nutrient> {
-    let nutrients: Array<Nutrient> = [];
-    let seenNutrients = new Set<string>();
+    const nutrients: Array<Nutrient> = [];
+    const seenNutrients = new Set<string>();
 
-    for (let [key, value] of Object.entries(nutrientData)) {
+    for (const [key, value] of Object.entries(nutrientData)) {
       const name = key.split('_')[0];
       
       // Skip if we've already seen this nutrient or if it's not a base nutrient name

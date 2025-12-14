@@ -7,12 +7,18 @@ import {
   it,
   expect,
 } from "@jest/globals";
+
 import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 import { app } from "../../src/app";
 import { RecipeModel } from "../../src/storage/RecipeSchema";
+import { UserModel } from "../../src/storage/UserSchema";
 
 let mongoServer: MongoMemoryServer;
+
+let userId1 = new mongoose.Types.ObjectId().toString();
+let userId2 = new mongoose.Types.ObjectId().toString();
+const nonExistentUserId = new mongoose.Types.ObjectId().toString();
 
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
@@ -28,6 +34,25 @@ afterAll(async () => {
 
 beforeEach(async () => {
   await RecipeModel.deleteMany({});
+  await UserModel.deleteMany({});
+
+  await UserModel.create({
+    _id: userId1,
+    nickname: "Test User 1",
+    mail: "user1@example.com",
+    savedRecipesIds: [],
+    savedScannedItemsIds: [],
+    isAdmin: false
+  });
+
+  await UserModel.create({
+    _id: userId2,
+    nickname: "Test User 2",
+    mail: "user2@example.com",
+    savedRecipesIds: [],
+    savedScannedItemsIds: [],
+    isAdmin: false
+  });
 });
 
 describe("Recipe Routes", () => {
@@ -38,20 +63,20 @@ describe("Recipe Routes", () => {
     calories: 36,
     allergens: [],
     ingredients: ["tomato"],
-    nutrients: {
-      "vitamin-a": "20% DV",
-      "vitamin-c": "28% DV",
-      "vitamin-k": "10% DV",
-      "potassium": "292mg",
-      "fiber": "2.2g",
-      "folate": "8% DV"
-    },
-    macros: {
-      "protein": "1.8g",
-      "carbohydrates": "7.8g",
-      "fat": "0.4g",
-      "sugar": "5.3g"
-    },
+    nutrients: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-a", unit: "% DV", totalAmount: 20, amount100g: 10, amountPerServing: 20 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-c", unit: "% DV", totalAmount: 28, amount100g: 14, amountPerServing: 28 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-k", unit: "% DV", totalAmount: 10, amount100g: 5, amountPerServing: 10 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "potassium", unit: "mg", totalAmount: 292, amount100g: 146, amountPerServing: 292 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fiber", unit: "g", totalAmount: 2.2, amount100g: 1.1, amountPerServing: 2.2 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "folate", unit: "% DV", totalAmount: 8, amount100g: 4, amountPerServing: 8 }
+    ],
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 1.8, amount100g: 0.9, amountPerServing: 1.8 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 7.8, amount100g: 3.9, amountPerServing: 7.8 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 0.4, amount100g: 0.2, amountPerServing: 0.4 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "sugar", unit: "g", totalAmount: 5.3, amount100g: 2.65, amountPerServing: 5.3 }
+    ],
     score: 92,
     grade: "A",
     nutrientLevels: {
@@ -68,20 +93,20 @@ describe("Recipe Routes", () => {
     calories: 280,
     allergens: ["milk", "dairy"],
     ingredients: ["pasteurized milk", "salt", "enzymes", "cultures"],
-    nutrients: {
-      "calcium": "50% DV",
-      "vitamin-a": "10% DV",
-      "vitamin-b12": "15% DV",
-      "phosphorus": "35% DV",
-      "zinc": "18% DV",
-      "selenium": "25% DV"
-    },
-    macros: {
-      "protein": "22g",
-      "carbohydrates": "3.1g",
-      "fat": "21g",
-      "saturated-fat": "13g"
-    },
+    nutrients: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "calcium", unit: "% DV", totalAmount: 50, amount100g: 50, amountPerServing: 50 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-a", unit: "% DV", totalAmount: 10, amount100g: 10, amountPerServing: 10 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-b12", unit: "% DV", totalAmount: 15, amount100g: 15, amountPerServing: 15 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "phosphorus", unit: "% DV", totalAmount: 35, amount100g: 35, amountPerServing: 35 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "zinc", unit: "% DV", totalAmount: 18, amount100g: 18, amountPerServing: 18 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "selenium", unit: "% DV", totalAmount: 25, amount100g: 25, amountPerServing: 25 }
+    ],
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 22, amount100g: 22, amountPerServing: 22 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 3.1, amount100g: 3.1, amountPerServing: 3.1 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 21, amount100g: 21, amountPerServing: 21 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "saturated-fat", unit: "g", totalAmount: 13, amount100g: 13, amountPerServing: 13 }
+    ],
     score: 68,
     grade: "B",
     nutrientLevels: {
@@ -98,19 +123,19 @@ describe("Recipe Routes", () => {
     calories: 2,
     allergens: [],
     ingredients: ["basil"],
-    nutrients: {
-      "vitamin-k": "43% DV",
-      "vitamin-a": "6% DV",
-      "manganese": "8% DV",
-      "iron": "3% DV",
-      "calcium": "2% DV"
-    },
-    macros: {
-      "protein": "0.3g",
-      "carbohydrates": "0.3g",
-      "fat": "0.1g",
-      "fiber": "0.2g"
-    },
+    nutrients: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-k", unit: "% DV", totalAmount: 43, amount100g: 430, amountPerServing: 43 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-a", unit: "% DV", totalAmount: 6, amount100g: 60, amountPerServing: 6 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "manganese", unit: "% DV", totalAmount: 8, amount100g: 80, amountPerServing: 8 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "iron", unit: "% DV", totalAmount: 3, amount100g: 30, amountPerServing: 3 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "calcium", unit: "% DV", totalAmount: 2, amount100g: 20, amountPerServing: 2 }
+    ],
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 0.3, amount100g: 3, amountPerServing: 0.3 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 0.3, amount100g: 3, amountPerServing: 0.3 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 0.1, amount100g: 1, amountPerServing: 0.1 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fiber", unit: "g", totalAmount: 0.2, amount100g: 2, amountPerServing: 0.2 }
+    ],
     score: 95,
     grade: "A",
     nutrientLevels: {
@@ -127,18 +152,18 @@ describe("Recipe Routes", () => {
     calories: 119,
     allergens: [],
     ingredients: ["extra virgin olive oil"],
-    nutrients: {
-      "vitamin-e": "13% DV",
-      "vitamin-k": "8% DV",
-      "iron": "2% DV"
-    },
-    macros: {
-      "protein": "0g",
-      "carbohydrates": "0g",
-      "fat": "13.5g",
-      "saturated-fat": "1.9g",
-      "monounsaturated-fat": "9.9g"
-    },
+    nutrients: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-e", unit: "% DV", totalAmount: 13, amount100g: 87, amountPerServing: 13 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-k", unit: "% DV", totalAmount: 8, amount100g: 53, amountPerServing: 8 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "iron", unit: "% DV", totalAmount: 2, amount100g: 13, amountPerServing: 2 }
+    ],
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 0, amount100g: 0, amountPerServing: 0 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 13.5, amount100g: 90, amountPerServing: 13.5 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "saturated-fat", unit: "g", totalAmount: 1.9, amount100g: 12.7, amountPerServing: 1.9 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "monounsaturated-fat", unit: "g", totalAmount: 9.9, amount100g: 66, amountPerServing: 9.9 }
+    ],
     score: 78,
     grade: "B",
     nutrientLevels: {
@@ -155,22 +180,22 @@ describe("Recipe Routes", () => {
     calories: 13,
     allergens: [],
     ingredients: ["garlic"],
-    nutrients: {
-      "vitamin-c": "5% DV",
-      "vitamin-b6": "6% DV",
-      "manganese": "8% DV",
-      "selenium": "4% DV",
-      "calcium": "2% DV"
-    },
-    macros: {
-      "protein": "0.6g",
-      "carbohydrates": "3g",
-      "fat": "0.05g",
-      "fiber": "0.2g"
-    },
+    nutrients: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-c", unit: "% DV", totalAmount: 5, amount100g: 56, amountPerServing: 5 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "vitamin-b6", unit: "% DV", totalAmount: 6, amount100g: 67, amountPerServing: 6 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "manganese", unit: "% DV", totalAmount: 8, amount100g: 89, amountPerServing: 8 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "selenium", unit: "% DV", totalAmount: 4, amount100g: 44, amountPerServing: 4 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "calcium", unit: "% DV", totalAmount: 2, amount100g: 22, amountPerServing: 2 }
+    ],
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 0.6, amount100g: 6.7, amountPerServing: 0.6 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 3, amount100g: 33.3, amountPerServing: 3 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 0.05, amount100g: 0.56, amountPerServing: 0.05 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fiber", unit: "g", totalAmount: 0.2, amount100g: 2.2, amountPerServing: 0.2 }
+    ],
     score: 88,
     grade: "A",
-    niutrientLevels: {
+    nutrientLevels: {
       "sodium": "low",
       "saturated-fat": "low",
       "sugar": "low"
@@ -180,13 +205,33 @@ describe("Recipe Routes", () => {
   const sampleRecipe = {
     name: "Caprese Salad",
     ingredients: [tomatoFoodItem, cheeseFoodItem, basilFoodItem, oliveOilFoodItem],
-    userId: "test-user-id",
+    userId: userId1,
+    userName: "test-user",
+    description: "A classic Italian salad with fresh tomatoes, mozzarella, and basil",
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 24.7, amount100g: 5.9, amountPerServing: 24.7 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 11.5, amount100g: 2.8, amountPerServing: 11.5 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 35, amount100g: 8.4, amountPerServing: 35 }
+    ],
+    totalCalories: 437
   };
 
   const anotherRecipe = {
     name: "Tomato Garlic Pasta Sauce",
     ingredients: [tomatoFoodItem, garlicFoodItem, oliveOilFoodItem, basilFoodItem],
-    userId: "another-user-id",
+    userId: userId2,
+    userName: "another-user",
+    description: "A simple and flavorful pasta sauce with fresh tomatoes and garlic",
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 2.7, amount100g: 1.1, amountPerServing: 2.7 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 11.4, amount100g: 4.8, amountPerServing: 11.4 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 13.65, amount100g: 5.7, amountPerServing: 13.65 }
+    ], 
+    totalCalories: 200
   };
 
   const multiIngredientRecipe = {
@@ -203,20 +248,20 @@ describe("Recipe Routes", () => {
         calories: 825,
         allergens: ["wheat", "gluten"],
         ingredients: ["flour", "water", "yeast", "salt", "sugar"],
-        nutrients: {
-          "iron": "25% DV",
-          "thiamin": "35% DV",
-          "niacin": "30% DV",
-          "folate": "45% DV",
-          "selenium": "40% DV"
-        },
-        macros: {
-          "protein": "24g",
-          "carbohydrates": "165g",
-          "fat": "6g",
-          "fiber": "6g",
-          "sugar": "3g"
-        },
+        nutrients: [
+          { _id: new mongoose.Types.ObjectId().toString(), name: "iron", unit: "% DV", totalAmount: 25, amount100g: 8.3, amountPerServing: 25 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "thiamin", unit: "% DV", totalAmount: 35, amount100g: 11.7, amountPerServing: 35 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "niacin", unit: "% DV", totalAmount: 30, amount100g: 10, amountPerServing: 30 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "folate", unit: "% DV", totalAmount: 45, amount100g: 15, amountPerServing: 45 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "selenium", unit: "% DV", totalAmount: 40, amount100g: 13.3, amountPerServing: 40 }
+        ],
+        macros: [
+          { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 24, amount100g: 8, amountPerServing: 24 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 165, amount100g: 55, amountPerServing: 165 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 6, amount100g: 2, amountPerServing: 6 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "fiber", unit: "g", totalAmount: 6, amount100g: 2, amountPerServing: 6 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "sugar", unit: "g", totalAmount: 3, amount100g: 1, amountPerServing: 3 }
+        ],
         score: 65,
         grade: "C",
         nutrientLevels: {
@@ -226,7 +271,17 @@ describe("Recipe Routes", () => {
         }
       }
     ],
-    userId: "test-user-id",
+    userId: userId1,
+    userName: "test-user",
+    description: "Authentic Italian-style pizza with fresh ingredients",
+    createdAt: new Date(),
+    grade: "B",
+    macros: [
+      { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 48.7, amount100g: 6.8, amountPerServing: 48.7 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 176.5, amount100g: 24.6, amountPerServing: 176.5 },
+      { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 41, amount100g: 5.7, amountPerServing: 41 }
+    ], 
+    totalCalories: 1280
   };
 
   describe("POST /recipes", () => {
@@ -316,6 +371,16 @@ describe("Recipe Routes", () => {
         name: "Updated Caprese Salad",
         ingredients: [tomatoFoodItem, cheeseFoodItem, basilFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
+        description: "Updated description for Caprese Salad",
+        createdAt: sampleRecipe.createdAt,
+        grade: "A",
+        macros: [
+          { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 24.4, amount100g: 7.8, amountPerServing: 24.4 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 11.2, amount100g: 3.6, amountPerServing: 11.2 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 21.5, amount100g: 6.9, amountPerServing: 21.5 }
+        ], 
+        totalCalories: 317
       };
 
       const res = await request(app)
@@ -338,6 +403,16 @@ describe("Recipe Routes", () => {
         name: "Simple Tomato Salad",
         ingredients: [tomatoFoodItem, oliveOilFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
+        description: "A simple salad with tomato and olive oil",
+        createdAt: sampleRecipe.createdAt,
+        grade: "A",
+        macros: [
+          { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 1.8, amount100g: 0.8, amountPerServing: 1.8 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "carbohydrates", unit: "g", totalAmount: 7.8, amount100g: 3.6, amountPerServing: 7.8 },
+          { _id: new mongoose.Types.ObjectId().toString(), name: "fat", unit: "g", totalAmount: 13.9, amount100g: 6.5, amountPerServing: 13.9 }
+        ], 
+        totalCalories: 155
       };
 
       const res = await request(app)
@@ -356,6 +431,14 @@ describe("Recipe Routes", () => {
         name: "Updated Recipe",
         ingredients: [tomatoFoodItem],
         userId: sampleRecipe.userId,
+        userName: "test-user",
+        description: "Updated description",
+        createdAt: new Date(),
+        grade: "A",
+        macros: [
+          { _id: new mongoose.Types.ObjectId().toString(), name: "protein", unit: "g", totalAmount: 1.8, amount100g: 0.9, amountPerServing: 1.8 }
+        ], 
+        totalCalories: 36
       };
       const fakeId = new mongoose.Types.ObjectId();
       await request(app)
@@ -405,7 +488,7 @@ describe("Recipe Routes", () => {
       await RecipeModel.create(anotherRecipe);
 
       const res = await request(app)
-        .get(`/recipes/user/non-existent-user`)
+        .get(`/recipes/user/${userId1}`)
         .expect("Content-Type", /json/)
         .expect(200);
 
@@ -429,59 +512,75 @@ describe("Recipe Routes", () => {
     });
   });
 
-  describe("GET /recipes/search/ingredient/:ingredient", () => {
-    it("should return recipes containing the specified ingredient", async () => {
-      await RecipeModel.create(sampleRecipe);
-      await RecipeModel.create(anotherRecipe);
-      await RecipeModel.create(multiIngredientRecipe);
-
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/tomato`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBe(3);
-      res.body.forEach((recipe: any) => {
-        const hasIngredient = recipe.ingredients.some(
-          (ing: any) => ing.ingredients.includes("tomato")
-        );
-        expect(hasIngredient).toBe(true);
-      });
+  describe("GET /recipes/search/:query", () => {
+  it("should return recipes matching an ingredient", async () => {
+    await RecipeModel.create({
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Tomato Pasta",
+      ingredients: [tomatoFoodItem, basilFoodItem],
+      description: "Fresh pasta with tomato",
+      userId: userId1,
+      userName: "Test User 1",
+      createdAt: new Date(),
+      grade: "A",
+      macros: [],
+      totalCalories: 300
     });
 
-    it("should return recipes containing cheese", async () => {
-      await RecipeModel.create(sampleRecipe);
-      await RecipeModel.create(anotherRecipe);
-      await RecipeModel.create(multiIngredientRecipe);
+    const res = await request(app).get("/recipes/search/tomato");
 
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/milk`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBe(2);
-    });
-
-    it("should return empty array if no recipes contain the ingredient", async () => {
-      await RecipeModel.create(sampleRecipe);
-
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/peanuts`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBe(0);
-    });
-
-    it("should search case-insensitively", async () => {
-      await RecipeModel.create(sampleRecipe);
-
-      const res = await request(app)
-        .get(`/recipes/search/ingredient/BASIL`)
-        .expect("Content-Type", /json/)
-        .expect(200);
-
-      expect(res.body.length).toBeGreaterThan(0);
-    });
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].name).toBe("Tomato Pasta");
   });
+
+  it("should fallback to recipe name if ingredient returns empty", async () => {
+    await RecipeModel.create({
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Cheese Pizza",
+      ingredients: [cheeseFoodItem],
+      description: "Pizza with mozzarella",
+      userId: userId1,
+      userName: "Test User 1",
+      createdAt: new Date(),
+      grade: "B",
+      macros: [],
+      totalCalories: 700
+    });
+
+    const res = await request(app).get("/recipes/search/pizza");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].name).toBe("Cheese Pizza");
+  });
+
+  it("should fallback to username if no ingredient nor recipe name matches", async () => {
+    await RecipeModel.create({
+      _id: new mongoose.Types.ObjectId().toString(),
+      name: "Basil Salad",
+      ingredients: [basilFoodItem],
+      description: "Fresh basil salad",
+      userId: userId2,
+      userName: "Test User 2",
+      createdAt: new Date(),
+      grade: "A",
+      macros: [],
+      totalCalories: 120
+    });
+
+    const res = await request(app).get("/recipes/search/Test User 2");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(1);
+    expect(res.body[0].userName).toBe("Test User 2");
+  });
+
+  it("should return an empty array if no ingredient, name or username match", async () => {
+    const res = await request(app).get("/recipes/search/nope");
+
+    expect(res.status).toBe(200);
+    expect(res.body.length).toBe(0);
+  });
+});
 });

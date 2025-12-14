@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { RecipeModel } from "../storage/RecipeSchema";
 import { Recipe, RecipeSchemaZ} from "../models/Recipe";
+import io from "../ws-server";
+import { UserModel } from "../storage/UserSchema";
 
 // GET /recipes - List all recipes
  const getAllRecipes = async (_req: Request, res: Response) => {
@@ -15,6 +17,7 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 // POST /recipes - Create a new recipe
  const createRecipe = async (req: Request, res: Response) => {
   try {
+    // console.log("Creating recipe with data:", req.body);
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
       return res.status(400).json({ message: "Invalid recipe data", error: parsed.error });
@@ -22,8 +25,10 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
     const recipeData= parsed.data;
     const newRecipe = new RecipeModel(recipeData);
     await newRecipe.save();
+    io.emit("recipe:new", newRecipe);
     res.status(201).json(newRecipe);
   } catch (err) {
+    console.log("Error in createRecipe:", err);
     res.status(500).json({ message: "Error creating recipe", error: err });
   }
 };
@@ -81,15 +86,19 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
  const deleteRecipe = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
-
     const recipe = await RecipeModel.findById(id);
     if (!recipe) {
       return res.status(404).json({ message: "Recipe not found" });
     }
 
     if (recipe.userId.toString() !== userId) {
+        const user = await UserModel.findById(userId);
+        if (user?.savedRecipesIds.includes(id)) {
+            user.savedRecipesIds = user.savedRecipesIds.filter(rId => rId.toString() !== id);
+            await user.save();
+        } else {  
       return res.status(403).json({ message: "Forbidden: not your recipe" });
-    }
+    }}
 
     const deleted = await RecipeModel.findByIdAndDelete(id);
     if (!deleted) return res.status(404).json({ message: "Recipe not found" });
@@ -101,25 +110,80 @@ import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 };
 
 // GET /recipes/user/:userId - Get recipes by User ID
- const getRecipesByUserId = async (req: Request, res: Response) => {
+const getRecipesByUserId = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const recipes = await RecipeModel.find({ userId });
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      console.log("Not found user:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Created by this user OR Saved by this user 
+    const recipes = await RecipeModel.find({
+      $or: [
+        { userId: userId },
+        { _id: { $in: user.savedRecipesIds } }
+      ]
+    });
+    
     res.status(200).json(recipes);
   } catch (err) {
+    console.log("Error in getRecipesByUserId:", err);
     res.status(500).json({ message: "Error fetching recipes for user", error: err });
   }
 };
 
-// GET /recipes/search/ingredient/:ingredient - Get recipes by Ingredient
- const getRecipesByIngredient = async (req: Request, res: Response) => {
+// GET /recipes/search/:query - Search by ingredient → name → username
+const queryRecipes = async (req: Request, res: Response) => {
   try {
-    const ingredientName: string = req.params.ingredient;
-    const recipes = await RecipeModel.find({ "ingredients.ingredients": { $regex: ingredientName, $options: 'i' } });
+    const query: string = req.params.query;
+
+    // 1️⃣ Search by ingredient (in FoodItem objects)
+    let recipes = await RecipeModel.find({
+      "ingredients.ingredients": { $regex: query, $options: "i" }
+    });
+
+    // If not found, try recipe name
+    if (recipes.length === 0) {
+      recipes = await RecipeModel.find({
+        name: { $regex: query, $options: "i" }
+      });
+    }
+
+    // If still not found, try username
+    if (recipes.length === 0) {
+      recipes = await RecipeModel.find({
+        userName: { $regex: query, $options: "i" }
+      });
+    }
+
     res.status(200).json(recipes);
+
   } catch (err) {
     console.log("Error in getRecipesByIngredient:", err);
-    res.status(500).json({ message: "Error fetching recipes by ingredient", error: err });
+    res.status(500).json({
+      message: "Error searching recipes",
+      error: err
+    });
+  }
+};
+
+
+// GET /recipes/community/:userId?limit - Get recipes from other users
+const getCommunityRecipes = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const limit = parseInt(req.query.limit as string) || 50;
+    
+    const recipes = await RecipeModel
+      .find({ userId: { $ne: userId } }) // Exclude user's own recipes
+      .sort({ createdAt: -1 })
+      .limit(limit);
+    
+    res.status(200).json(recipes);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching community recipes", error: err });
   }
 };
 
@@ -130,5 +194,6 @@ export default {
   updateRecipe,
   deleteRecipe,
   getRecipesByUserId,
-  getRecipesByIngredient
+  queryRecipes,
+  getCommunityRecipes
 };  

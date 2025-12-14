@@ -68,9 +68,9 @@
               Remember me
             </label>
           </div>
-          <router-link to="/forgot-password" class="text-sm text-green-500 hover:underline">
+          <!-- <router-link to="/forgot-password" class="text-sm text-green-500 hover:underline">
             Forgot password?
-          </router-link>
+          </router-link> -->
         </div>
 
         <!-- Submit Button -->
@@ -141,6 +141,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../store/userStore';
+import { useDietStore } from '../store/dietStore';
 
 export default {
   name: 'LoginPage',
@@ -195,10 +196,13 @@ export default {
 
       try {
         const userStore = useUserStore();
+        const dietStore = useDietStore();
         await userStore.login(formData.username, formData.password);
         const decoded = userStore.decodeToken();
         console.log('Decoded token:', decoded);
         await userStore.fetchUser(decoded.id);
+        await dietStore.fetchDiets(decoded.id);
+        dietStore.selectDiet(dietStore.diets.find(diet => diet._id === userStore.user.activeDietId) || null);
         
         successMessage.value = 'Login successful! Redirecting...';
         
@@ -267,5 +271,4 @@ export default {
 </script>
 
 <style scoped>
-/* Add any additional custom styles here */
 </style>

@@ -231,7 +231,7 @@ export default {
       loading.value = true;
 
       try {
-        const res = await api.post('/users', { nickname: formData.name, mail: formData.email, savedRecipesIds: [], passwordHash: formData.password });
+        const res = await api.post('/users', { nickname: formData.name, mail: formData.email, savedRecipesIds: [], passwordHash: formData.password, activeDietId: "" });
 
         if (res.status !== 201) {
           throw new Error('Registration failed. Please try again.');

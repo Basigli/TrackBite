@@ -8,6 +8,8 @@ import { ScannedItemModel } from "./storage/ScannedItemSchema";
 import { NutrientModel } from "./storage/NutrientSchema";
 import { FoodItemModel } from "./storage/FoodItemSchema";
 import { FoodItemConverter } from "./utils/FoodItemConverter";
+import { DietBuilder } from "./utils/DietBuilder";
+import { Nutrient } from "./models/Nutrient";
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/trackbite";
 
@@ -78,7 +80,7 @@ async function seed() {
   });
 
   const energyNutrient = await NutrientModel.create({
-    name: "energy",
+    name: "energy-kcal",
     unit: "kcal",
     totalAmount: 250,
     amount100g: 250,
@@ -268,7 +270,7 @@ async function seed() {
     nickname: "bob",
     mail: "bob@example.com",
     savedRecipesIds: [],
-    savedScannedItemsIds: [spinach.id.toString()],
+    savedScannedItemsIds: [spinach.id.toString(), brownRice.id.toString(), chickenBreast.id.toString()],
     isAdmin: false
   });
 
@@ -276,7 +278,7 @@ async function seed() {
     nickname: "charlie",
     mail: "charlie@fitlife.com",
     savedRecipesIds: [],
-    savedScannedItemsIds: [],
+    savedScannedItemsIds: [ almondMilk.id.toString(), wholeWheatBread.id.toString() ],
     isAdmin: false
   });
 
@@ -308,7 +310,17 @@ async function seed() {
       foodItemRice,
       foodItemSpinach
     ],
-    userId: userAlice._id.toString()
+    description: "A healthy and delicious grilled chicken recipe served with brown rice and fresh spinach.",
+    userId: userAlice._id.toString(),
+    userName: userAlice.nickname,
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      carbsNutrient,
+      proteinNutrient,
+      fatNutrient
+    ],
+    totalCalories: 550
   });
 
   const recipeSalmonBowl = await RecipeModel.create({
@@ -318,7 +330,17 @@ async function seed() {
       foodItemRice,
       foodItemSpinach
     ],
-    userId: userBob._id.toString()
+    userId: userBob._id.toString(),
+    userName: userBob.nickname,
+    description: "A nutritious salmon power bowl with rice and spinach.",
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      carbsNutrient,
+      proteinNutrient,
+      fatNutrient
+    ],
+    totalCalories: 700
   });
 
   const recipeBreakfastToast = await RecipeModel.create({
@@ -327,7 +349,17 @@ async function seed() {
       foodItemWholeWheatBread,
       foodItemAlmondMilk
     ],
-    userId: userCharlie._id.toString()
+    userId: userCharlie._id.toString(),
+    userName: userCharlie.nickname,
+    description: "A protein-packed breakfast toast with whole wheat bread and almond milk.",
+    createdAt: new Date(),
+    grade: "A",
+    macros: [
+      carbsNutrient,
+      proteinNutrient,
+      fatNutrient
+    ],
+    totalCalories: 300
   });
 
   console.log("Inserted recipes");
@@ -359,7 +391,7 @@ async function seed() {
     converter.toFoodItemWithServings(salmonFillet, 1)
   ],
   date: today.toISOString().substring(0, 10),
-  userId: userAlice._id.toString()
+  userId: userBob._id.toString()
 });
 
 const dailyIntakeYesterday = await DailyIntakeModel.create({
@@ -376,7 +408,7 @@ const dailyIntakeYesterday = await DailyIntakeModel.create({
     converter.toFoodItemWithGrams(almondMilk, 100)
   ],
   date: yesterday.toISOString().substring(0, 10)  ,
-  userId: userAlice._id.toString()
+  userId: userBob._id.toString()
 });
 
 const dailyIntakeTwoDaysAgo = await DailyIntakeModel.create({
@@ -391,7 +423,7 @@ const dailyIntakeTwoDaysAgo = await DailyIntakeModel.create({
     converter.toFoodItemWithServings(spinach, 2)
   ],
   date: twoDaysAgo.toISOString().substring(0, 10),
-  userId: userBob._id.toString()
+  userId: userAlice._id.toString()
 });
 
 const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
@@ -413,35 +445,52 @@ const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
   console.log("Inserted daily intakes");
 
   // ===== DIETS =====
-  const dietLowCarb = await DietModel.create({
-    name: "Low Carb Weight Loss",
-    caloriesAmount: 1600,
-    userId: userAlice._id.toString()
-  });
+  // Low Carb Diet: High protein, high fat, low carbs
+  const lowCarbMacros = new Map<string, number>([
+    ["protein", 35],      // 35% protein
+    ["fat", 50],          // 50% fat
+    ["carbohydrates", 15] // 15% carbs (low)
+  ]);
 
-  const dietHighProtein = await DietModel.create({
-    name: "High Protein Muscle Building",
-    caloriesAmount: 2400,
-    userId: userAlice._id.toString()
-  });
+  // High Protein Diet: Very high protein, moderate carbs, low fat
+  const highProteinMacros = new Map<string, number>([
+    ["protein", 40],      // 40% protein (high)
+    ["fat", 20],          // 20% fat
+    ["carbohydrates", 40] // 40% carbs
+  ]);
 
-  const dietBalanced = await DietModel.create({
-    name: "Balanced Mediterranean",
-    caloriesAmount: 2000,
-    userId: userBob._id.toString()
-  });
+  // Balanced Mediterranean Diet: Balanced macros with moderate fat
+  const balancedMacros = new Map<string, number>([
+    ["protein", 25],      // 25% protein
+    ["fat", 35],          // 35% fat (healthy fats from olive oil, nuts)
+    ["carbohydrates", 40] // 40% carbs
+  ]);
 
-  const dietVegan = await DietModel.create({
-    name: "Plant-Based Vegan",
-    caloriesAmount: 1800,
-    userId: userCharlie._id.toString()
-  });
+  // Vegan Plant-Based Diet: Lower protein, moderate fat, higher carbs
+  const veganMacros = new Map<string, number>([
+    ["protein", 20],      // 20% protein (plant-based)
+    ["fat", 30],          // 30% fat
+    ["carbohydrates", 50] // 50% carbs (from whole grains, legumes)
+  ]);
 
-  const dietKeto = await DietModel.create({
-    name: "Ketogenic Diet",
-    caloriesAmount: 1500,
-    userId: userCharlie._id.toString()
-  });
+  // Ketogenic Diet: Very high fat, adequate protein, very low carbs
+  const ketoMacros = new Map<string, number>([
+    ["protein", 20],      // 20% protein
+    ["fat", 75],          // 75% fat (very high)
+    ["carbohydrates", 5]  // 5% carbs (very low, ketosis)
+  ]);
+
+  const dietLowCarb = new DietBuilder("Low Carb Weight Loss", 1600, lowCarbMacros, userAlice._id.toString()).build();
+  const dietHighProtein = new DietBuilder("High Protein Muscle Building", 2400, highProteinMacros, userAlice._id.toString()).build();
+  const dietBalanced = new DietBuilder("Balanced Mediterranean", 2000, balancedMacros, userBob._id.toString()).build();
+  const dietVegan = new DietBuilder("Plant-Based Vegan", 1800, veganMacros, userCharlie._id.toString()).build();
+  const dietKeto = new DietBuilder("Ketogenic Diet", 1500, ketoMacros, userCharlie._id.toString()).build();
+
+  await DietModel.create(dietLowCarb);
+  await DietModel.create(dietHighProtein);
+  await DietModel.create(dietBalanced);
+  await DietModel.create(dietVegan);
+  await DietModel.create(dietKeto); 
 
   console.log("Inserted diets");
 

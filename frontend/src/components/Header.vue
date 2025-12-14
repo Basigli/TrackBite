@@ -3,21 +3,19 @@
     <div class="logo text-xl font-bold lg:hidden">TrackBite</div>
 
     <div class="header-actions flex items-center gap-4">
-      <!-- Date picker -->
-      <input
-        type="date"
-        v-model="selectedDate"
-        @change="dateChanged"
-        class="date-input rounded-md px-3 py-1 text-white placeholder-white border border-white focus:outline-none focus:ring-2 focus:ring-white bg-green-500 appearance-none"
-      />
+      <!-- Date picker - only show when logged in -->
+      <DatePicker v-if="isAuthenticated" />
 
       <!-- User profile dropdown -->
       <div class="user-menu relative">
         <button
           @click="toggleMenu"
-          class="flex items-center gap-2 font-medium hover:text-gray-100 focus:outline-none"
+          class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/30"
         >
-          {{ user.name }}
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span class="font-medium">{{ displayName }}</span>
           <svg
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'rotate-180': menuOpen }"
@@ -30,13 +28,40 @@
         </button>
 
         <!-- Dropdown menu -->
-        <transition name="fade">
+        <transition name="slide-fade">
           <ul
             v-if="menuOpen"
-            class="absolute right-0 mt-2 bg-white text-black rounded-lg shadow-lg w-48 py-1 z-50"
+            class="absolute right-0 mt-2 bg-white text-gray-800 rounded-xl shadow-2xl w-48 py-2 z-50 border border-gray-200"
           >
-            <li @click="goToSettings" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Settings</li>
-            <li @click="handleLogout" class="px-4 py-2 hover:bg-gray-100 cursor-pointer">Logout</li>
+            <template v-if="isAuthenticated">
+              <li @click="goToSettings" class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Settings
+              </li>
+              <li @click="handleLogout" class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors text-red-600 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+              </li>
+            </template>
+            <template v-else>
+              <li @click="goToLogin" class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                </svg>
+                Login
+              </li>
+              <li @click="goToRegister" class="px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                Register
+              </li>
+            </template>
           </ul>
         </transition>
       </div>
@@ -48,27 +73,29 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/userStore'
-import { useIntakeStore } from '@/store/intakeStore'
-import { storeToRefs } from 'pinia'
+import DatePicker from './DatePicker.vue'
 
 export default {
   name: 'Header',
+  components: {
+    DatePicker
+  },
   setup() {
     const router = useRouter()
     const userStore = useUserStore()
-    const intakeStore = useIntakeStore()
-    const { selectedDate } = storeToRefs(intakeStore)
-    
-    const user = computed(() => {
-      console.log(userStore.user);
-      if (!userStore.user) {
-        return {name: 'Guest'};
-      }
-      const nickname = userStore.user.nickname || 'Guest';
-      return {name: nickname};
-    })
     
     const menuOpen = ref(false)
+
+    const isAuthenticated = computed(() => {
+      return !!userStore.authToken.value && !userStore.isTokenExpired()
+    })
+
+    const displayName = computed(() => {
+      if (!isAuthenticated.value || !userStore.user || !userStore.user._id) {
+        return 'Guest'
+      }
+      return userStore.user.nickname || userStore.user.name || 'Guest'
+    })
 
     const toggleMenu = () => {
       menuOpen.value = !menuOpen.value
@@ -79,28 +106,31 @@ export default {
       menuOpen.value = false
     }
 
+    const goToLogin = () => {
+      router.push('/login')
+      menuOpen.value = false
+    }
+
+    const goToRegister = () => {
+      router.push('/register')
+      menuOpen.value = false
+    }
+
     const handleLogout = () => {
       userStore.logout()
       router.push('/login')
       menuOpen.value = false
     }
 
-    const dateChanged = () => {
-      console.log('Selected date:', selectedDate.value)
-      const userId = userStore.user?._id
-      if (userId) {
-        intakeStore.fetchDailyIntake(userId)
-      }
-    }
-
     return { 
-      user, 
-      selectedDate, 
-      menuOpen, 
-      toggleMenu, 
-      goToSettings, 
-      handleLogout, 
-      dateChanged 
+      displayName,
+      isAuthenticated,
+      menuOpen,
+      toggleMenu,
+      goToSettings,
+      goToLogin,
+      goToRegister,
+      handleLogout
     }
   }
 }
@@ -109,5 +139,23 @@ export default {
 <style scoped>
 .app-header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.slide-fade-enter-active {
+  transition: all 0.2s ease-out;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.15s ease-in;
+}
+
+.slide-fade-enter-from {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
 }
 </style>

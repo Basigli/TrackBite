@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "start": "vite --host 0.0.0.0",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
@@ -26,10 +27,13 @@
     "jwt-decode": "^4.0.0",
     "pinia": "^3.0.4",
     "process": "^0.11.10",
+    "socket.io-client": "^4.8.1",
     "tailwind-hamburgers": "^1.3.5",
     "vue": "^3.5.22",
     "vue-barcode-reader": "^1.0.3",
-    "vue-router": "^4.6.3"
+    "vue-router": "^4.6.3",
+    "vue-toastification": "^2.0.0-rc.5",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",

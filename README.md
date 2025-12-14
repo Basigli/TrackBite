@@ -1,3 +1,4 @@
+[![CodeFactor](https://www.codefactor.io/repository/github/basigli/trackbite/badge)](https://www.codefactor.io/repository/github/basigli/trackbite)
 # TrackBite
 
 **TrackBite** is a web app that helps you **track your daily calorie intake** and **analyze your nutrition habits**.  

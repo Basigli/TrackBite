@@ -1,7 +1,16 @@
 <template>
   <div class="recipe">
-    <!-- Recipe Name -->
-    <h2 class="font-bold text-gray-800 text-xl mb-2">{{ recipe.name }}</h2>
+    <!-- Recipe Name with Grade -->
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="font-bold text-gray-800 text-xl">{{ recipe.name }}</h2>
+      <span
+        v-if="recipe.grade" 
+        class="text-xs font-bold px-2 py-1 rounded ml-2"
+        :class="getGradeClass(recipe.grade)"
+      >
+        Grade {{ recipe.grade }}
+      </span>
+    </div>
 
     <!-- Recipe Description (truncated) -->
     <p class="text-gray-700 mb-2 line-clamp-2">{{ recipe.description }}</p>
@@ -42,6 +51,7 @@
 <script>
 import { ref } from 'vue';
 import RecipeDetail from './RecipeDetail.vue';
+import { getGradeClass } from '@/utils/gradeUtils';
 
 export default {
   name: "Recipe",
@@ -59,6 +69,7 @@ export default {
     
     return {
       showDetails,
+      getGradeClass,
     };
   },
 };

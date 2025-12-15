@@ -60,7 +60,7 @@ export class FoodItemBuilder {
     }
 
     private polishNutrients(nutrients: Array<Nutrient>): Array<Nutrient> {
-        let filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy'));
+        const filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy'));
         return filtered;
     }
 

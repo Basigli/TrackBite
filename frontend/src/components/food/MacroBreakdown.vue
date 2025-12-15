@@ -12,7 +12,7 @@
         <div class="flex justify-between items-center mb-2">
           <span class="font-semibold text-gray-700">Protein</span>
           <span class="text-sm text-gray-600">
-            {{ currentProtein }}g / {{ targetProtein }}g
+            {{ currentProtein.toFixed(1) }}g / {{ targetProtein.toFixed(1) }}g
           </span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
@@ -32,7 +32,7 @@
         <div class="flex justify-between items-center mb-2">
           <span class="font-semibold text-gray-700">Carbohydrates</span>
           <span class="text-sm text-gray-600">
-            {{ currentCarbs }}g / {{ targetCarbs }}g
+            {{ currentCarbs.toFixed(1) }}g / {{ targetCarbs.toFixed(1) }}g
           </span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
@@ -52,7 +52,7 @@
         <div class="flex justify-between items-center mb-2">
           <span class="font-semibold text-gray-700">Fat</span>
           <span class="text-sm text-gray-600">
-            {{ currentFat }}g / {{ targetFat }}g
+            {{ currentFat.toFixed(1) }}g / {{ targetFat.toFixed(1) }}g
           </span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">

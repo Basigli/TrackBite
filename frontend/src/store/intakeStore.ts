@@ -88,7 +88,7 @@ export const useIntakeStore = defineStore('intake', () => {
               amount100g: macro.amount100g,
               amountPerServing: macro.amountPerServing} as Nutrient);
           } else {
-              let macroToUpdate = dailyIntake.totalMacros.find(m => m.name.toLowerCase() === macro.name.toLowerCase())!;
+              const macroToUpdate = dailyIntake.totalMacros.find(m => m.name.toLowerCase() === macro.name.toLowerCase())!;
               macroToUpdate.totalAmount += macro.totalAmount;
           }
       });

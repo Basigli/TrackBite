@@ -16,8 +16,8 @@ import { UserModel } from "../../src/storage/UserSchema";
 
 let mongoServer: MongoMemoryServer;
 
-let userId1 = new mongoose.Types.ObjectId().toString();
-let userId2 = new mongoose.Types.ObjectId().toString();
+const userId1 = new mongoose.Types.ObjectId().toString();
+const userId2 = new mongoose.Types.ObjectId().toString();
 const nonExistentUserId = new mongoose.Types.ObjectId().toString();
 
 beforeAll(async () => {

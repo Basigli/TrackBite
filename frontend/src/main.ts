@@ -7,6 +7,7 @@ import App from './App.vue'
 import router from './router'
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import { registerSW } from 'virtual:pwa-register'
 
 
 
@@ -28,6 +29,7 @@ app.use(Toast, {
   rtl: false
 });
 
+registerSW({ immediate: true });
 
 
 app.mount('#app')

@@ -1,5 +1,5 @@
 import { NutrientSchemaZ } from "../models/Nutrient";
-import { Nutrient } from "./Nutrient";
+import type { Nutrient } from "./Nutrient";
 import { z } from "zod";
 
 export interface ScannedItem {

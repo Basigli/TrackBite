@@ -1,4 +1,4 @@
-import { UserCredentials } from "./UserCredentials";
+import type { UserCredentials } from "./UserCredentials";
 
 export class UserCredentialsImpl implements UserCredentials {
   constructor(

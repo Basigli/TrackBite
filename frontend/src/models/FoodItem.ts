@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { Nutrient, NutrientSchemaZ } from "./Nutrient";
+import type { Nutrient } from "./Nutrient";
+import { NutrientSchemaZ } from "./Nutrient";
 
 export interface FoodItem {
   _id?: string, 

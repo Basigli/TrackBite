@@ -1,5 +1,5 @@
-import { ScannedItem } from "./ScannedItem";
-import { Nutrient } from "./Nutrient";
+import type { ScannedItem } from "./ScannedItem";
+import type { Nutrient } from "./Nutrient";
 
 export class ScannedItemImpl implements ScannedItem {
   constructor(

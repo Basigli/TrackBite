@@ -1,4 +1,4 @@
-import { Nutrient } from "./Nutrient";
+import type { Nutrient } from "./Nutrient";
 
 export class NutrientImpl implements Nutrient {
   constructor(

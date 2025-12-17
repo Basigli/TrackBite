@@ -1,7 +1,8 @@
-import { FoodItem, FoodItemSchemaZ } from "./FoodItem";
+import type { FoodItem } from "./FoodItem";
+import { FoodItemSchemaZ } from "./FoodItem";
 import { z } from "zod";
-import { Nutrient, NutrientSchemaZ } from "./Nutrient";
-
+import type { Nutrient } from "./Nutrient";
+import { NutrientSchemaZ } from "./Nutrient";
 export interface Recipe {
   _id: string, 
   name: string,

@@ -1,5 +1,7 @@
-import { FoodItem, FoodItemSchemaZ } from "./FoodItem";
-import { Nutrient, NutrientSchemaZ } from "./Nutrient";
+import type { FoodItem } from "./FoodItem";
+import { FoodItemSchemaZ } from "./FoodItem";
+import type { Nutrient } from "./Nutrient";
+import { NutrientSchemaZ } from "./Nutrient";
 import { z } from "zod";
 
 export interface DailyIntake {

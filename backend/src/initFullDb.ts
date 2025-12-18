@@ -242,6 +242,29 @@ async function seed() {
     }
   });
 
+  const oliveOil = await ScannedItemModel.create({
+    barcode: "0000000000007",
+    name: "Extra Virgin Olive Oil",
+    quantity: 500,
+    quantityPerServing: 15,
+    quantityUnit: "ml",
+    allergens: [],
+    nutrients: [
+      { ...energyNutrient.toObject(), totalAmount: 884, amount100g: 884, amountPerServing: 120 },
+      { ...fatNutrient.toObject(), totalAmount: 100, amount100g: 100, amountPerServing: 14 },
+      { ...carbsNutrient.toObject(), totalAmount: 0, amount100g: 0, amountPerServing: 0 },
+      { ...proteinNutrient.toObject(), totalAmount: 0, amount100g: 0, amountPerServing: 0 }
+    ],
+    ingredients: ["Extra virgin olive oil"],
+    score: 10,
+    grade: "A",
+    nutrientLevels: {
+      "fat": "high",
+      "carbohydrates": "low",
+      "protein": "low"
+    }
+  });
+
   console.log("Inserted scanned items");
 
   // ===== FOOD ITEMS =====
@@ -270,7 +293,7 @@ async function seed() {
     nickname: "bob",
     mail: "bob@example.com",
     savedRecipesIds: [],
-    savedScannedItemsIds: [spinach.id.toString(), brownRice.id.toString(), chickenBreast.id.toString()],
+    savedScannedItemsIds: [oliveOil.id.toString(), spinach.id.toString(), brownRice.id.toString(), chickenBreast.id.toString()],
     isAdmin: false
   });
 
@@ -498,7 +521,7 @@ const dailyIntakeThreeDaysAgo = await DailyIntakeModel.create({
   console.log("SEEDING COMPLETED SUCCESSFULLY");
   console.log("=================================");
   console.log(`Users created: ${[userAlice, userBob, userCharlie].length}`);
-  console.log(`Scanned items: ${[chickenBreast, brownRice, almondMilk, spinach, salmonFillet, wholeWheatBread].length}`);
+  console.log(`Scanned items: ${[oliveOil, chickenBreast, brownRice, almondMilk, spinach, salmonFillet, wholeWheatBread].length}`);
   console.log(`Recipes: ${[recipeGrilledChicken, recipeSalmonBowl, recipeBreakfastToast].length}`);
   console.log(`Daily intakes: ${[dailyIntakeToday, dailyIntakeYesterday, dailyIntakeTwoDaysAgo, dailyIntakeThreeDaysAgo].length}`);
   console.log(`Diets: ${[dietLowCarb, dietHighProtein, dietBalanced, dietVegan, dietKeto].length}`);

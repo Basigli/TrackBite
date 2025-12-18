@@ -43,7 +43,7 @@ const ratingService = new RecipeRatingService(apiKey);
     ratingService.rateRecipe(newRecipe)
       .then(async (rating) => {
         console.log("Received rating for recipe:", newRecipe._id, rating);
-        newRecipe.racipeRating = rating;
+        newRecipe.recipeRating = rating;
         await RecipeModel.findByIdAndUpdate(newRecipe._id, newRecipe,
           { new: true, runValidators: true });
         io.emit("recipe:updated", newRecipe);

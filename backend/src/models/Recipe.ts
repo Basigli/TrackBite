@@ -15,7 +15,7 @@ export interface Recipe {
   grade: string,
   macros: Array<Nutrient>,
   totalCalories: number,
-  racipeRating?: RecipeRating 
+  recipeRating?: RecipeRating 
 }
 
 export const RecipeSchemaZ = z.object({
@@ -30,5 +30,5 @@ export const RecipeSchemaZ = z.object({
   grade: z.string(),
   macros: z.array(NutrientSchemaZ),
   totalCalories: z.number(),
-  racipeRating: RecipeRatingSchemaZ.optional()
+  recipeRating: RecipeRatingSchemaZ.optional()
 });

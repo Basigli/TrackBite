@@ -20,7 +20,7 @@ const RecipeSchema = new Schema<Recipe>({
     required: true
   },
   totalCalories: { type: Number, required: true },
-  racipeRating: { type: RecipeRatingSchema, required: false }
+  recipeRating: { type: RecipeRatingSchema, required: false }
 });
 
 export const RecipeModel: Model<Recipe> = mongoose.model<Recipe>("Recipe", RecipeSchema);

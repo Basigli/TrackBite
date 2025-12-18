@@ -4,7 +4,14 @@
     <div class="flex items-center justify-between mb-2">
       <h2 class="font-bold text-gray-800 text-xl">{{ recipe.name }}</h2>
       <span
-        v-if="recipe.grade" 
+        v-if="recipe.recipeRating"
+        class="text-xs font-bold px-2 py-1 rounded ml-2"
+        :class="getGradeClass(recipe.recipeRating.overallRating)"
+      > 
+        AI Grade: {{recipe.recipeRating.overallRating}}
+      </span>
+      <span
+        v-else
         class="text-xs font-bold px-2 py-1 rounded ml-2"
         :class="getGradeClass(recipe.grade)"
       >

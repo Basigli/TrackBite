@@ -51,6 +51,17 @@ export function useSocket() {
       recipeStore.removeCommunityRecipe(data.recipeId);
     });
 
+    socket.on('recipe:updated', (updatedRecipe: any) => {
+      console.log('Recipe updated:', updatedRecipe);
+      
+      if (updatedRecipe.authorId === userStore.user?._id) {
+        recipeStore.updateOwnRecipe(updatedRecipe);
+      } else {
+        recipeStore.updateCommunityRecipe(updatedRecipe);
+      }
+
+    });
+
     return socket;
   };
 

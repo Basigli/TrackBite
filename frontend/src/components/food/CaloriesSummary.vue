@@ -1,5 +1,5 @@
 <template>
-  <div class="calories-summary p-6 bg-white rounded-2xl shadow-lg flex flex-col items-center max-w-sm mx-auto">
+  <div class="calories-summary p-6 bg-white rounded-xl shadow-lg flex flex-col items-center max-w-sm mx-auto">
     <h3 class="text-lg font-semibold text-gray-700 mb-4">Total Calories</h3>
 
     <CircularProgress :current="totalCalories" :goal="dailyGoal" :size="160" />

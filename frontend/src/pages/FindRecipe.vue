@@ -6,15 +6,15 @@
       </p>
 
     <!-- Tab Navigation -->
-    <div class="bg-white rounded-lg shadow mb-4">
+    <div class="bg-white rounded-xl shadow mb-4">
       <div class="flex border-b border-gray-200">
         <button
           @click="activeTab = 'feed'"
           :class="[
             'flex-1 px-6 py-3 font-medium text-sm transition-colors',
             activeTab === 'feed'
-              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+              ? 'text-blue-600 rounded-xl border-b-2 border-blue-600 bg-blue-50'
+              : 'text-gray-600 rounded-xl hover:text-gray-800 hover:bg-gray-50'
           ]"
         >
           <span class="flex items-center justify-center gap-2">
@@ -26,8 +26,8 @@
           :class="[
             'flex-1 px-6 py-3 font-medium text-sm transition-colors',
             activeTab === 'search'
-              ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-              : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
+              ? 'text-blue-600 rounded-xl border-b-2 border-blue-600 bg-blue-50'
+              : 'text-gray-600 rounded-xl hover:text-gray-800 hover:bg-gray-50'
           ]"
         >
           <span class="flex items-center justify-center gap-2">

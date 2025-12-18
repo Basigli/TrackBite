@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg shadow hover:shadow-md transition-shadow">
+  <div class="bg-white rounded-xl shadow hover:shadow-md transition-shadow">
     <div class="p-4">
       <!-- User Info Header (optional) -->
       <div v-if="showUserInfo" class="flex items-center justify-between mb-3">

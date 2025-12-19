@@ -2,6 +2,7 @@ import { ref, onUnmounted } from 'vue';
 import { io, Socket } from 'socket.io-client';
 import { useRecipeStore } from './store/recipeStore';
 import { useUserStore } from './store/userStore';
+import { notifyInfo } from './utils/Notifications';
 
 let socket: Socket | null = null;
 const isConnected = ref(false);
@@ -65,7 +66,7 @@ export function useSocket() {
 
     socket.on('notification', (notification: any) => {
       console.log('Notification received:', notification);
-      // Here you can integrate with your notification system
+      notifyInfo(`${notification.message}`);
     });
 
     return socket;

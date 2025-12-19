@@ -23,7 +23,14 @@ if (process.env.NODE_ENV !== "test") {
       if (!userSockets.has(userId)) {
         userSockets.set(userId, socket.id);
         console.log(`user:${userId} registered with socket ${socket.id}`);
-      } 
+      } else {
+        if (userSockets.get(userId) !== socket.id) {
+          userSockets.set(userId, socket.id);
+          console.log(`user:${userId} updated with new socket ${socket.id}`);
+        } else {
+          console.log(`user:${userId} already registered with socket ${socket.id}`);
+        }
+      }
     });
 
     socket.on("disconnect", () => {

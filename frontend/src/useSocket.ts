@@ -27,6 +27,7 @@ export function useSocket() {
     socket.on('connect', () => {
       console.log('Connected to recipe feed:', socket?.id);
       isConnected.value = true;
+      socket?.emit('register', userStore.user?._id)
     });
 
     socket.on('disconnect', (reason) => {

@@ -40,8 +40,10 @@ if (process.env.NODE_ENV !== "test") {
 
 export function sendNotification(userId: string, notification: any) {
   const socketId = userSockets.get(userId);
+  console.log(`Attempting to send notification with socket ${socketId}`);
   if (socketId) {
     io.to(socketId).emit("notification", notification);
+    console.log(`Notification sent to user ${userId} with socket ${socketId}`);
   }
 }
 

@@ -4,10 +4,13 @@ import api from '../api';
 import { jwtDecode } from 'jwt-decode';
 import type { User } from '../models/User';
 import { notifyWarning } from '../utils/Notifications';
+import {useSocket} from '../useSocket';
+
 
 export const useUserStore = defineStore('user', () => {
   const user: Reactive<User | null> = reactive({} as User);
   const authToken = reactive({ value: '' });
+  const { emit } = useSocket();
 
   const login = async (nickname: string, password: string) => {
     try {
@@ -17,6 +20,7 @@ export const useUserStore = defineStore('user', () => {
       }
       const token = res.data.token;
       Object.assign(authToken, { value: token }); 
+      emit('register', res.data.user._id);
       return true;
     } catch (err) {
       console.error('Login failed:', err);

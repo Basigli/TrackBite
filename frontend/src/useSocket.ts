@@ -9,6 +9,7 @@ const isConnected = ref(false);
 export function useSocket() {
   const recipeStore = useRecipeStore();
   const userStore = useUserStore();
+  
 
   const connect = () => {
     // Prevent multiple connections
@@ -27,7 +28,6 @@ export function useSocket() {
     socket.on('connect', () => {
       console.log('Connected to recipe feed:', socket?.id);
       isConnected.value = true;
-      socket?.emit('register', userStore.user?._id)
     });
 
     socket.on('disconnect', (reason) => {
@@ -61,6 +61,11 @@ export function useSocket() {
         recipeStore.updateCommunityRecipe(updatedRecipe);
       }
 
+    });
+
+    socket.on('notification', (notification: any) => {
+      console.log('Notification received:', notification);
+      // Here you can integrate with your notification system
     });
 
     return socket;

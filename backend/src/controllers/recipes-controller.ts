@@ -3,8 +3,20 @@ import { RecipeModel } from "../storage/RecipeSchema";
 import { Recipe, RecipeSchemaZ} from "../models/Recipe";
 import io from "../ws-server";
 import { UserModel } from "../storage/UserSchema";
+import { RecipeRatingService } from '../utils/RecipeRatingService';
+import dotenv from 'dotenv';
 
-// GET /recipes - List all recipes
+dotenv.config();
+
+const apiKey = process.env.GEMINI_API_KEY;
+ 
+if (!apiKey) {
+    throw new Error('GEMINI_API_KEY is not set in environment variables');
+}
+console.log('Using GEMINI_API_KEY:', apiKey.substring(0, 10) + '...');
+const ratingService = new RecipeRatingService(apiKey);
+
+    // GET /recipes - List all recipes
  const getAllRecipes = async (_req: Request, res: Response) => {
   try {
     const recipes: Recipe[] = await RecipeModel.find();
@@ -17,6 +29,7 @@ import { UserModel } from "../storage/UserSchema";
 // POST /recipes - Create a new recipe
  const createRecipe = async (req: Request, res: Response) => {
   try {
+
     // console.log("Creating recipe with data:", req.body);
     const parsed = RecipeSchemaZ.safeParse(req.body);
     if (!parsed.success) {
@@ -26,6 +39,20 @@ import { UserModel } from "../storage/UserSchema";
     const newRecipe = new RecipeModel(recipeData);
     await newRecipe.save();
     io.emit("recipe:new", newRecipe);
+    console.log("starting rating for recipe:", newRecipe._id);
+    ratingService.rateRecipe(newRecipe)
+      .then(async (rating) => {
+        console.log("Received rating for recipe:", newRecipe._id, rating);
+        newRecipe.recipeRating = rating;
+        await RecipeModel.findByIdAndUpdate(newRecipe._id, newRecipe,
+          { new: true, runValidators: true });
+        io.emit("recipe:updated", newRecipe);
+      })
+      .catch((err) => {
+        console.error("Error rating recipe:", err);
+      });
+
+
     res.status(201).json(newRecipe);
   } catch (err) {
     console.log("Error in createRecipe:", err);

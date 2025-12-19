@@ -3,6 +3,9 @@ import { FoodItemSchemaZ } from "./FoodItem";
 import { z } from "zod";
 import type { Nutrient } from "./Nutrient";
 import { NutrientSchemaZ } from "./Nutrient";
+import type { RecipeRating} from "./RecipeRating";
+import { RecipeRatingSchemaZ } from "./RecipeRating";
+
 export interface Recipe {
   _id: string, 
   name: string,
@@ -13,8 +16,9 @@ export interface Recipe {
   // image?: Buffer,
   createdAt: Date,
   grade: string,
-  macros: Array<Nutrient>, 
-  totalCalories: number
+  macros: Array<Nutrient>,
+  totalCalories: number,
+  recipeRating?: RecipeRating 
 }
 
 export const RecipeSchemaZ = z.object({
@@ -28,5 +32,6 @@ export const RecipeSchemaZ = z.object({
   createdAt: z.coerce.date(),
   grade: z.string(),
   macros: z.array(NutrientSchemaZ),
-  totalCalories: z.number()
+  totalCalories: z.number(),
+  recipeRating: RecipeRatingSchemaZ.optional()
 });

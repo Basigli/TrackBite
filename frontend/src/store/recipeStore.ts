@@ -65,6 +65,14 @@ export const useRecipeStore = defineStore('recipe', () => {
     }
   };
 
+  const updateOwnRecipe = (updatedRecipe: Recipe) => {
+    const index = recipes.value.findIndex(r => r._id === updatedRecipe._id);
+
+    if (index !== -1) {
+      recipes.value[index] = updatedRecipe;
+    }
+  }
+
   const selectRecipe = (recipe: Recipe | null) => {
     selectedRecipe.value = recipe;
   };
@@ -134,6 +142,13 @@ export const useRecipeStore = defineStore('recipe', () => {
     searchResults.value = [];
   };
 
+  const updateCommunityRecipe = (updatedRecipe: Recipe) => {
+    const index = communityRecipes.value.findIndex(r => r._id === updatedRecipe._id);
+    if (index !== -1) {
+      communityRecipes.value[index] = updatedRecipe;
+    }
+  };
+
 
   return {
     // User's own recipes (created + saved)
@@ -144,14 +159,17 @@ export const useRecipeStore = defineStore('recipe', () => {
     deleteRecipe,
     updateRecipe,
     selectRecipe,
+    updateOwnRecipe,
     
     // Community recipes (real-time feed)
+    
     communityRecipes,
     addCommunityRecipe,
     removeCommunityRecipe,
     clearCommunityRecipes,
     saveCommunityRecipeToOwn,
     fetchRecentCommunityRecipes,
+    updateCommunityRecipe,
     
     // Search results
     searchResults,

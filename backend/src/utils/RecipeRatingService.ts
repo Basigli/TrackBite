@@ -1,15 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { Recipe } from '../models/Recipe';
+import { RecipeRating } from '../models/RecipeRating';
 
-interface RecipeRatingResponse {
-  overallRating: 'A' | 'B' | 'C' | 'D' | 'E';
-  score: number; // 0-100
-  ingredientsScore: number;
-  cookingMethodScore: number;
-  reasoning: string;
-  healthImpact: string;
-  recommendations: string[];
-}
 
 export class RecipeRatingService {
   private genAI: GoogleGenerativeAI;
@@ -23,7 +15,7 @@ export class RecipeRatingService {
   /**
    * Rate a recipe based on ingredients and cooking method
    */
-  async rateRecipe(recipe: Recipe): Promise<RecipeRatingResponse> {
+  async rateRecipe(recipe: Recipe): Promise<RecipeRating> {
     const prompt = this.buildPrompt(recipe);
 
     try {
@@ -103,7 +95,7 @@ Be strict with ratings. Unhealthy cooking methods should significantly impact th
   /**
    * Parse the Gemini response
    */
-  private parseResponse(text: string): RecipeRatingResponse {
+  private parseResponse(text: string): RecipeRating {
     try {
       // Extract JSON from the response (Gemini might wrap it in markdown)
       const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -142,11 +134,9 @@ Be strict with ratings. Unhealthy cooking methods should significantly impact th
   /**
    * Rate multiple recipes in batch
    */
-  async rateRecipes(recipes: Recipe[]): Promise<RecipeRatingResponse[]> {
+  async rateRecipes(recipes: Recipe[]): Promise<RecipeRating[]> {
     const promises = recipes.map(recipe => this.rateRecipe(recipe));
     return Promise.all(promises);
   }
 }
 
-// Export for use in other modules
-export { RecipeRatingResponse };

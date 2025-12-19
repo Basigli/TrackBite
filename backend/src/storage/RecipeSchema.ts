@@ -2,7 +2,7 @@ import mongoose, { Schema, Model } from "mongoose";
 import { FoodItemSchema } from "./FoodItemSchema";
 import { Recipe } from "../models/Recipe";
 import { NutrientSchema } from "./NutrientSchema";
-
+import { RecipeRatingSchema } from "./RecipeRatingSchema";
 const RecipeSchema = new Schema<Recipe>({
   name: { type: String, required: true, unique: true },
   ingredients: {
@@ -19,7 +19,8 @@ const RecipeSchema = new Schema<Recipe>({
     type: [NutrientSchema],
     required: true
   },
-  totalCalories: { type: Number, required: true }
+  totalCalories: { type: Number, required: true },
+  recipeRating: { type: RecipeRatingSchema, required: false }
 });
 
 export const RecipeModel: Model<Recipe> = mongoose.model<Recipe>("Recipe", RecipeSchema);

@@ -28,12 +28,27 @@
             {{ formatDate(recipe.createdAt) }}
           </span>
           <span
-            v-if="recipe.grade" 
-            class="text-xs font-bold px-2 py-1 rounded"
+            v-if="recipe.recipeRating"
+            class="text-xs font-bold px-2 py-1 rounded ml-2"
+            :class="getGradeClass(recipe.recipeRating.overallRating)"
+          > 
+          AI Grade: {{recipe.recipeRating.overallRating}}
+          </span>
+          <span
+            v-else
+            class="text-xs font-bold px-2 py-1 rounded ml-2"
             :class="getGradeClass(recipe.grade)"
           >
-            Grade: {{ recipe.grade }}
+            Grade {{ recipe.grade }}
           </span>
+        </div>
+
+        <!-- Recipe Rating Button (only if recipeRating exists) -->
+        <div v-if="recipe.recipeRating" class="mb-6">
+          <RecipeRating
+            button-text="View Detailed AI Analysis"
+            :recipe-rating="recipe.recipeRating"
+          />
         </div>
 
         <!-- Ingredients -->
@@ -94,9 +109,8 @@
             >
               <div class="text-sm text-gray-600">{{ nutrient.name }}</div>
               <div class="text-lg font-semibold text-gray-800">
-                {{ nutrient.amountPerServing }} <span class="text-sm font-normal text-gray-500">{{ nutrient.unit }}</span>
+                {{ nutrient.totalAmount }} <span class="text-sm font-normal text-gray-500">{{ nutrient.unit }}</span>
               </div>
-              <div class="text-xs text-gray-500">per serving</div>
             </div>
           </div>
         </div>
@@ -107,9 +121,13 @@
 
 <script>
 import { getGradeClass } from '@/utils/gradeUtils';
+import RecipeRating from './RecipeRating.vue';
 
 export default {
   name: 'RecipeDetail',
+  components: {
+    RecipeRating,
+  },
   props: {
     recipe: {
       type: Object,
@@ -125,6 +143,12 @@ export default {
       if (!date) return '-';
       const d = new Date(date);
       return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+    },
+    handleRatingLoaded(rating) {
+      console.log('Rating loaded:', rating);
+    },
+    handleRatingError(error) {
+      console.error('Rating error:', error);
     },
   },
 };

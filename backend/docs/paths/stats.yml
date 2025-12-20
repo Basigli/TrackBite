@@ -1,0 +1,99 @@
+/stats:
+  get:
+    summary: Get system statistics
+    description: Returns system and process-level statistics including uptime, memory usage, CPU usage, and platform information
+    responses:
+      '200':
+        description: OK - System statistics
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uptime:
+                  type: number
+                  description: Process uptime in seconds
+                  example: 3600.5
+                memoryUsage:
+                  type: object
+                  properties:
+                    rss:
+                      type: number
+                      description: Resident Set Size in bytes
+                      example: 50331648
+                    heapTotal:
+                      type: number
+                      description: Total heap size in bytes
+                      example: 20971520
+                    heapUsed:
+                      type: number
+                      description: Used heap size in bytes
+                      example: 15728640
+                    external:
+                      type: number
+                      description: Memory used by C++ objects bound to JavaScript in bytes
+                      example: 1048576
+                    arrayBuffers:
+                      type: number
+                      description: Memory allocated for ArrayBuffers and SharedArrayBuffers in bytes
+                      example: 524288
+                cpuUsage:
+                  type: object
+                  properties:
+                    user:
+                      type: number
+                      description: User CPU time in microseconds
+                      example: 500000
+                    system:
+                      type: number
+                      description: System CPU time in microseconds
+                      example: 200000
+                nodeVersion:
+                  type: string
+                  description: Node.js version
+                  example: "v18.17.0"
+                platform:
+                  type: string
+                  description: Operating system platform
+                  example: "linux"
+                arch:
+                  type: string
+                  description: CPU architecture
+                  example: "x64"
+
+/stats/db:
+  get:
+    summary: Get database statistics
+    description: Returns document counts for various collections in the database
+    responses:
+      '200':
+        description: OK - Database statistics
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: integer
+                  description: Number of users in the database
+                  example: 150
+                diets:
+                  type: integer
+                  description: Number of diets in the database
+                  example: 45
+                recipes:
+                  type: integer
+                  description: Number of recipes in the database
+                  example: 320
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error retrieving database statistics"
+                error:
+                  type: object

@@ -9,7 +9,19 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Diet'
+                $ref: './components/diet.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching diets"
+                error:
+                  type: object
   post:
     summary: Create a new diet
     requestBody:
@@ -17,14 +29,38 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Diet'
+            $ref: './components/diet.yml'
     responses:
       '201':
         description: Created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Diet'
+              $ref: './components/diet.yml'
+      '400':
+        description: Bad Request - Invalid diet data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Invalid diet data"
+                error:
+                  type: object
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error creating diet"
+                error:
+                  type: object
 
 /diets/{id}:
   get:
@@ -34,14 +70,38 @@
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     responses:
       '200':
         description: OK
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Diet'
+              $ref: './components/diet.yml'
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Diet not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching diet"
+                error:
+                  type: object
+
+/diets/{id}/user/{userId}:
   put:
     summary: Update a diet
     parameters:
@@ -49,21 +109,69 @@
         in: path
         required: true
         schema:
-          type: integer
+          type: string
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Diet'
+            $ref: './components/diet.yml'
     responses:
       '200':
         description: Updated diet
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Diet'
-/diets/{id}/user/{userId}:
+              $ref: './components/diet.yml'
+      '400':
+        description: Bad Request - Invalid diet data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Invalid diet data"
+                error:
+                  type: object
+      '403':
+        description: Forbidden - User does not own this diet
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Forbidden: not your diet"
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Diet not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error updating diet"
+                error:
+                  type: object
   delete:
     summary: Delete a diet
     parameters:
@@ -71,10 +179,47 @@
         in: path
         required: true
         schema:
-          type: integer
+          type: string
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
     responses:
       '204':
         description: No Content
+      '403':
+        description: Forbidden - User does not own this diet
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Forbidden: not your diet"
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Diet not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error deleting diet"
+                error:
+                  type: object
 
 /diets/user/{userId}:
   get:
@@ -93,4 +238,16 @@
             schema:
               type: array
               items:            
-                $ref: '#/components/schemas/Diet'
+                $ref: './components/diet.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching diets for user"
+                error:
+                  type: object

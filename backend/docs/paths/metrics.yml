@@ -1,0 +1,27 @@
+/metrics:
+  get:
+    summary: Get Prometheus metrics
+    description: Returns application metrics in Prometheus format, including HTTP request duration, request counts, and default Node.js metrics
+    responses:
+      '200':
+        description: OK - Metrics in Prometheus format
+        content:
+          text/plain:
+            schema:
+              type: string
+              example: |
+                # HELP http_request_duration_seconds Durata delle richieste HTTP in secondi
+                # TYPE http_request_duration_seconds histogram
+                http_request_duration_seconds_bucket{le="0.1",method="GET",route="/users",status_code="200"} 45
+                http_request_duration_seconds_bucket{le="0.3",method="GET",route="/users",status_code="200"} 50
+                http_request_duration_seconds_sum{method="GET",route="/users",status_code="200"} 12.5
+                http_request_duration_seconds_count{method="GET",route="/users",status_code="200"} 50
+                
+                # HELP http_requests_total Numero totale di richieste HTTP
+                # TYPE http_requests_total counter
+                http_requests_total{method="GET",route="/users",status_code="200"} 150
+                http_requests_total{method="POST",route="/recipes",status_code="201"} 42
+                
+                # HELP nodejs_heap_size_total_bytes Process heap size from Node.js in bytes
+                # TYPE nodejs_heap_size_total_bytes gauge
+                nodejs_heap_size_total_bytes 50331648

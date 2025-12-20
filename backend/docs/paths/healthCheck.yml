@@ -1,0 +1,44 @@
+/health/liveness:
+  get:
+    summary: Liveness probe
+    description: Checks if the application is running and responsive
+    responses:
+      '200':
+        description: OK - Application is alive
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "ok"
+
+/health/readiness:
+  get:
+    summary: Readiness probe
+    description: Checks if the application is ready to serve requests (includes database connection check)
+    responses:
+      '200':
+        description: OK - Application is ready
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "ok"
+      '500':
+        description: Internal Server Error - Database connection failed
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "error"
+                db:
+                  type: string
+                  example: "disconnected"

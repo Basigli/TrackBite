@@ -9,7 +9,19 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/DailyIntake'
+                $ref: './components/dailyIntake.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching daily intakes"
+                error:
+                  type: object
   post:
     summary: Create a new daily intake
     requestBody:
@@ -17,14 +29,26 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/DailyIntake'
+            $ref: './components/dailyIntake.yml'
     responses:
       '201':
         description: Created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DailyIntake'
+              $ref: './components/dailyIntake.yml'
+      '400':
+        description: Bad Request - Validation error or error creating daily intake
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Validation error"
+                error:
+                  type: object
 
 /daily-intakes/{id}:
   get:
@@ -41,9 +65,31 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DailyIntake'
+              $ref: './components/dailyIntake.yml'
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Daily intake not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching daily intake"
+                error:
+                  type: object
   put:
-    summary: Update daily intake
+    summary: Update daily intake by ID
     parameters:
       - name: id
         in: path
@@ -55,14 +101,47 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/DailyIntake'
+            $ref: './components/dailyIntake.yml'
     responses:
       '200':
         description: Updated daily intake
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DailyIntake'
+              $ref: './components/dailyIntake.yml'
+      '400':
+        description: Bad Request - Validation error or error updating daily intake
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Validation error"
+                error:
+                  type: object
+      '403':
+        description: Forbidden - User ID mismatch
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Forbidden: User ID mismatch"
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Daily intake not found"
+
 /daily-intakes/{id}/user/{userId}:
   delete:
     summary: Delete daily intake
@@ -80,6 +159,39 @@
     responses:
       '204':
         description: No Content
+      '403':
+        description: Forbidden - User ID mismatch
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Forbidden: User ID mismatch"
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Daily intake not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error deleting daily intake"
+                error:
+                  type: object
+
 /daily-intakes/{dailyIntakeId}/food-items:
   get:
     summary: List food items in a daily intake
@@ -97,7 +209,29 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/FoodItem'
+                $ref: './components/foodItem.yml'
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Daily intake not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching food items"
+                error:
+                  type: object
   post:
     summary: Add a food item to a daily intake
     parameters:
@@ -111,18 +245,40 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/FoodItem'
+            $ref: './components/foodItem.yml'
     responses:
       '201':
         description: Created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FoodItem'
+              $ref: './components/foodItem.yml'
+      '400':
+        description: Bad Request - Invalid food item or error adding food item
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Invalid food item"
+                error:
+                  type: object
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Daily intake not found"
 
 /daily-intakes/history/user/{userId}:
   get:
-    summary: Get daily intake history for a user
+    summary: Get daily intake history for a user (sorted by date descending)
     parameters:
       - name: userId
         in: path
@@ -137,4 +293,26 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/DailyIntake'
+                $ref: './components/dailyIntake.yml'
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "No daily intake history found for this user"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching daily intake history"
+                error:
+                  type: object

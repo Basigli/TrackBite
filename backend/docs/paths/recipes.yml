@@ -9,22 +9,59 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Recipe'
+                $ref: './components/recipe.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching recipes"
+                error:
+                  type: object
   post:
     summary: Create a new recipe
+    description: Creates a new recipe and asynchronously generates an AI rating for it. The recipe is returned immediately with rating pending.
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Recipe'
+            $ref: './components/recipe.yml'
     responses:
       '201':
         description: Created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Recipe'
+              $ref: './components/recipe.yml'
+      '400':
+        description: Bad Request - Invalid recipe data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Invalid recipe data"
+                error:
+                  type: object
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error creating recipe"
+                error:
+                  type: object
 
 /recipes/{id}:
   get:
@@ -34,17 +71,162 @@
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     responses:
       '200':
         description: OK
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Recipe'
+              $ref: './components/recipe.yml'
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Recipe not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching recipe"
+                error:
+                  type: object
+
+/recipes/{id}/user/{userId}:
+  put:
+    summary: Update a recipe
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: './components/recipe.yml'
+    responses:
+      '200':
+        description: Updated recipe
+        content:
+          application/json:
+            schema:
+              $ref: './components/recipe.yml'
+      '400':
+        description: Bad Request - Invalid recipe data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Invalid recipe data"
+                error:
+                  type: object
+      '403':
+        description: Forbidden - User does not own this recipe
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Forbidden: not your recipe"
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Recipe not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error updating recipe"
+                error:
+                  type: object
+  delete:
+    summary: Delete a recipe
+    description: Deletes a recipe. If the recipe is not owned by the user but is in their saved recipes, it will be removed from their saved list instead.
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '204':
+        description: No Content
+      '403':
+        description: Forbidden - User does not own this recipe and it's not in their saved recipes
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Forbidden: not your recipe"
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Recipe not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error deleting recipe"
+                error:
+                  type: object
+
 /recipes/user/{userId}:
   get:
     summary: Get recipes by user ID
+    description: Returns recipes created by the user or saved by the user
     parameters:
       - name: userId
         in: path
@@ -59,45 +241,36 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Recipe'
-/recipes/{id}/user/{userId}:
-  put:
-    summary: Update a recipe
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Recipe'
-    responses:
-      '200':
-        description: Updated recipe
+                $ref: './components/recipe.yml'
+      '404':
+        description: Not Found - User not found
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Recipe'
-  delete:
-    summary: Delete a recipe
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-    responses:
-      '204':
-        description: No Content
-/recipes/search/ingredient/{ingredient}:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching recipes for user"
+                error:
+                  type: object
+
+/recipes/search/{query}:
   get:
-    summary: Search recipes by ingredient
+    summary: Search recipes by ingredient, name, or username
+    description: Searches recipes first by ingredient, then by recipe name, then by username (in that priority order)
     parameters:
-      - name: ingredient
+      - name: query
         in: path
         required: true
         schema:
@@ -110,4 +283,55 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/Recipe'
+                $ref: './components/recipe.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error searching recipes"
+                error:
+                  type: object
+
+/recipes/community/{userId}:
+  get:
+    summary: Get community recipes from other users
+    description: Returns recipes from users other than the specified user, sorted by creation date (newest first)
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 50
+        description: Maximum number of recipes to return (default 50)
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: './components/recipe.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Error fetching community recipes"
+                error:
+                  type: object

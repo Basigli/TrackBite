@@ -9,7 +9,17 @@
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/ScannedItem'
+                $ref: './components/scannedItem.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to fetch scanned items"
   post:
     summary: Add a new scanned item
     requestBody:
@@ -17,60 +27,185 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ScannedItem'
+            $ref: './components/scannedItem.yml'
     responses:
       '201':
         description: Created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ScannedItem'
+              $ref: './components/scannedItem.yml'
+      '400':
+        description: Bad Request - Invalid scanned item data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid scanned item data"
+                details:
+                  type: object
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to create scanned item"
 
-/scanned-items/{id}:
+/scanned-items/{barcode}:
   get:
-    summary: Get scanned item by ID
+    summary: Get scanned item by barcode
+    description: Retrieves a scanned item by barcode. If not found locally, fetches from OpenFoodFacts API and saves it.
     parameters:
-      - name: id
+      - name: barcode
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     responses:
       '200':
         description: OK
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ScannedItem'
+              $ref: './components/scannedItem.yml'
+      '404':
+        description: Not Found - Item not found in external database
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Item not found in external database"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to fetch scanned item"
   put:
-    summary: Update scanned item
+    summary: Update scanned item by barcode
     parameters:
-      - name: id
+      - name: barcode
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ScannedItem'
+            $ref: './components/scannedItem.yml'
     responses:
       '200':
         description: Updated scanned item
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ScannedItem'
+              $ref: './components/scannedItem.yml'
+      '400':
+        description: Bad Request - Invalid scanned item data
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid scanned item data"
+                details:
+                  type: object
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Item not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to update scanned item"
   delete:
-    summary: Delete scanned item
+    summary: Delete scanned item by barcode
     parameters:
-      - name: id
+      - name: barcode
         in: path
         required: true
         schema:
-          type: integer
+          type: string
     responses:
       '204':
         description: No Content
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Item not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to delete scanned item"
+
+/scanned-items/user/{userId}:
+  get:
+    summary: Get scanned items saved by a user
+    description: Returns scanned items that the user has saved to their profile
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK - Returns empty array if user has no saved items
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: './components/scannedItem.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to fetch scanned items for user"

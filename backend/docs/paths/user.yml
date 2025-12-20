@@ -1,29 +1,80 @@
 /users:
+  get:
+    summary: Get all users
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: './components/user.yml'
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to fetch users"
   post:
     summary: Create a new user
+    description: Creates a new user and associated credentials
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/User'
+            allOf:
+              - $ref: './components/user.yml'
+              - type: object
+                properties:
+                  passwordHash:
+                    type: string
+                    description: Password hash for user credentials
     responses:
       '201':
         description: Created
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: './components/user.yml'
+      '400':
+        description: Bad Request - Invalid user data or email already exists
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid user data"
+                details:
+                  type: object
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to create user"
 
 /users/login:
   post:
     summary: Log in a user
+    description: Authenticates user and returns JWT token
     requestBody:
       required: true
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UserCredentials'
+            $ref: './components/userCredentials'
     responses:
       '200':
         description: OK
@@ -35,7 +86,51 @@
                 token:
                   type: string
                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                  format: jwt
+                  description: JWT token valid for 1 hour
+                user:
+                  $ref: './components/user.yml'
+      '400':
+        description: Bad Request - Invalid credentials format
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid user credentials"
+                details:
+                  type: object
+      '401':
+        description: Unauthorized - Invalid credentials
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid credentials"
+      '404':
+        description: Not Found - User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to log in user"
 
 /users/{id}:
   get:
@@ -52,7 +147,27 @@
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: './components/user.yml'
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to fetch user"
   put:
     summary: Update a user
     parameters:
@@ -66,14 +181,46 @@
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/User'
+            $ref: './components/user.yml'
     responses:
       '200':
         description: Updated user
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: './components/user.yml'
+      '400':
+        description: Bad Request - Invalid user data or email already exists
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Invalid user data"
+                details:
+                  type: object
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to update user"
   delete:
     summary: Delete a user
     parameters:
@@ -85,3 +232,274 @@
     responses:
       '204':
         description: No Content
+      '404':
+        description: Not Found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to delete user"
+
+/users/{id}/saved-recipes/{recipeId}:
+  post:
+    summary: Add recipe to user's saved recipes
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recipeId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: './components/user.yml'
+      '400':
+        description: Bad Request - Recipe already saved
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Recipe already saved"
+      '404':
+        description: Not Found - User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to add saved recipe"
+  delete:
+    summary: Remove recipe from user's saved recipes
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: recipeId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: './components/user.yml'
+      '404':
+        description: Not Found - User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to remove saved recipe"
+
+/users/{id}/saved-scanned-items/{itemId}:
+  post:
+    summary: Add scanned item to user's saved items
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: './components/user.yml'
+      '400':
+        description: Bad Request - Item already saved
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Item already saved"
+      '404':
+        description: Not Found - User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to add saved scanned item"
+  delete:
+    summary: Remove scanned item from user's saved items
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: itemId
+        in: path
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              $ref: './components/user.yml'
+      '404':
+        description: Not Found - User not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to remove saved scanned item"
+
+/users/{id}/password:
+  put:
+    summary: Change user password
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - currentPassword
+              - newPassword
+            properties:
+              currentPassword:
+                type: string
+                description: Current password hash
+              newPassword:
+                type: string
+                description: New password hash
+    responses:
+      '200':
+        description: OK
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Password updated successfully"
+      '401':
+        description: Unauthorized - Current password is incorrect
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Current password is incorrect"
+      '404':
+        description: Not Found - User or credentials not found
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "User not found"
+      '500':
+        description: Internal Server Error
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: "Failed to change password"

@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000/v1
+  - url: http://localhost:3000/
 
 paths:
   /users:
@@ -22,16 +22,20 @@ paths:
 components:
     schemas:
       User:
-        $ref: './components/schemas/user.yaml'
+        $ref: './components/user.yaml'
       ScannedItem:
-        $ref: './components/schemas/scannedItem.yaml'
+        $ref: './components/scannedItem.yaml'
       DailyIntake:
-        $ref: './components/schemas/dailyIntake.yaml'
+        $ref: './components/dailyIntake.yaml'
       FoodItem:
-        $ref: './components/schemas/foodItem.yaml'
+        $ref: './components/foodItem.yaml'
       Nutrient:
-        $ref: './components/schemas/nutrient.yaml'
+        $ref: './components/nutrient.yaml'
       Recipe:
-        $ref: './components/schemas/recipe.yaml'
+        $ref: './components/recipe.yaml'
       Diet:
-        $ref: './components/schemas/diet.yaml'
+        $ref: './components/diet.yaml'
+      UserCredentials:
+        $ref: './components/userCredentials.yaml'
+      RecipeRating:
+        $ref: './components/recipeRating.yaml'

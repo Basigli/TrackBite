@@ -1,0 +1,49 @@
+RecipeRating:
+  type: object
+  required:
+    - overallRating
+    - score
+    - ingredientsScore
+    - cookingMethodScore
+    - reasoning
+    - healthImpact
+    - recommendations
+  properties:
+    overallRating:
+      type: string
+      enum:
+        - A
+        - B
+        - C
+        - D
+        - E
+      example: "B"
+    score:
+      type: number
+      minimum: 0
+      maximum: 100
+      example: 78
+    ingredientsScore:
+      type: number
+      minimum: 0
+      maximum: 100
+      example: 82
+    cookingMethodScore:
+      type: number
+      minimum: 0
+      maximum: 100
+      example: 70
+    reasoning:
+      type: string
+      example: "Balanced ingredients with moderate fat content, but cooking method could be improved."
+    healthImpact:
+      type: string
+      example: "Provides good protein intake but should be consumed in moderation due to sodium levels."
+    recommendations:
+      type: array
+      items:
+        type: string
+      example:
+        - "Reduce salt usage"
+        - "Use whole-grain pasta"
+        - "Add more vegetables"

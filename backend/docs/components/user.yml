@@ -4,8 +4,10 @@ User:
       - _id
       - nickname
       - mail
-      - savedRecipes
-      - password
+      - savedRecipesIds
+      - savedScannedItemsIds
+      - activeDietId
+      - isAdmin 
     properties:
       _id:
         type: string
@@ -17,11 +19,19 @@ User:
         type: string
         format: email
         example: "fit.guru@example.com"
-      savedRecipes:
+      savedRecipesIds:
         type: array
         items:
           type: string
           example: ["recipeId1", "recipeId2", "recipeId3"]
-      password:
+      savedScannedItemsIds:
+        type: array
+        items:
+          type: string
+          example: ["scannedItemId1", "scannedItemId2"]
+      activeDietId:
         type: string
-        example: "securepassword123"
+        example: "dietId1234567890abcdef12"
+      isAdmin:  
+        type: boolean
+        example: false

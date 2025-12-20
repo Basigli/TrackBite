@@ -4,6 +4,7 @@ Diet:
       - _id
       - name
       - caloriesAmount
+      - macros
       - userId
     properties:
       _id:
@@ -16,6 +17,10 @@ Diet:
         type: number
         format: float
         example: 2200
+      macros:
+        type: array
+        items:
+          $ref: './nutrient.yml' 
       userId:
         type: string
         example: "1234567890abcdef1234"

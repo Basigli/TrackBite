@@ -1,25 +1,27 @@
 Nutrient:
-      type: object
-      required:
-        - _id
-        - name
-        - unit
-      properties:
-        _id:
-          type: string
-          example: "123456abcdef1234567890ab"
-        name:
-          type: string
-          example: "Iron"
-        unit:
-          type: string
-          example: "g"
-        totalAmount:
-          type: number
-          example: 12.5
-        amount100g: 
-          type: number
-          example: 5.0
-        isAllergene: 
-          type: boolean
-          example: false
+  type: object
+  required:
+    - name
+    - unit
+    - totalAmount
+    - amount100g
+    - amountPerServing
+  properties:
+    _id:
+      type: string
+      example: "123456abcdef1234567890ab"
+    name:
+      type: string
+      example: "Iron"
+    unit:
+      type: string
+      example: "mg"
+    totalAmount:
+      type: number
+      example: 12.5
+    amount100g:
+      type: number
+      example: 5.0
+    amountPerServing:
+      type: number
+      example: 2.3

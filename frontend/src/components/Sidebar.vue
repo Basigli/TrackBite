@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- Hamburger Button (visible on mobile) -->
-    <button @click="toggleSidebar" class="hamburger-btn fixed top-4 left-4 z-50 lg:hidden bg-gray-800 p-2 rounded-md"
-      :class="{ active: isOpen }">
+<!-- Hamburger Button (visible on mobile) -->
+    <button @click="toggleSidebar" class="hamburger-btn fixed z-50 lg:hidden bg-gray-800 p-2 rounded-md transition-all duration-300"
+      :class="{ active: isOpen, 'top-4 left-4': isOpen, 'top-13 left-0': !isOpen }">
       <div class="hamburger lg:hidden">
         <span class="line lg:hidden"></span>
         <span class="line lg:hidden"></span>

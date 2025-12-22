@@ -1,10 +1,10 @@
 <template>
   <header class="app-header flex items-center justify-between gap-1 px-1 py-2 bg-green-500 text-white shadow-md">
     <div class="flex items-center gap-1">
-      <!-- Hamburger button - only show on mobile -->
+      <!-- Hamburger button - only show on mobile (below lg breakpoint) -->
       <button 
         @click="toggleSidebar" 
-        class="hamburger-btn lg:hidden bg-white/20 hover:bg-white/30 p-1 rounded-md transition-all duration-200"
+        class="hamburger-btn block lg:!hidden bg-white/20 hover:bg-white/30 p-1 rounded-md transition-all duration-200"
         :class="{ active: sidebarOpen }"
       >
         <div class="hamburger">
@@ -14,7 +14,8 @@
         </div>
       </button>
       
-      <div class="logo text-lg font-bold gap-1 ml-4">TrackBite</div>
+      <!-- Logo - add left margin only when hamburger is hidden -->
+      <div class="logo text-lg font-bold gap-1 ml-1 lg:ml-4">TrackBite</div>
     </div>
 
     <div class="header-actions flex items-center gap-0.5">
@@ -196,6 +197,13 @@ export default {
   border: none;
   cursor: pointer;
   transition: transform 0.3s ease;
+}
+
+/* Force hide on desktop */
+@media (min-width: 1024px) {
+  .hamburger-btn {
+    display: none !important;
+  }
 }
 
 .hamburger-btn:hover {

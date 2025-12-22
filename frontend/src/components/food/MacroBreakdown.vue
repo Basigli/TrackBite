@@ -1,5 +1,5 @@
 <template>
-  <div class="macro-breakdown p-6 bg-white rounded-xl shadow-lg flex flex-col items-center max-w-sm mx-auto">
+  <div class="macro-breakdown p-6 bg-white rounded-xl shadow-lg">
     <h2 class="text-2xl font-bold mb-4">Macro Breakdown</h2>
     
     <div v-if="!dietStore.selectedDiet" class="text-gray-500">
@@ -18,7 +18,7 @@
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
             class="h-4 rounded-full transition-all duration-300"
-            :class="colorClassForPercentage(proteinPercentage)"
+            :class="MACRO_COLORS.protein.light"
             :style="{ width: proteinPercentage + '%' }"
           ></div>
         </div>
@@ -38,7 +38,7 @@
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
             class="h-4 rounded-full transition-all duration-300"
-            :class="colorClassForPercentage(carbsPercentage)"
+            :class="MACRO_COLORS.carbohydrates.light"
             :style="{ width: carbsPercentage + '%' }"
           ></div>
         </div>
@@ -58,7 +58,7 @@
         <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
           <div 
             class="h-4 rounded-full transition-all duration-300"
-            :class="colorClassForPercentage(fatPercentage)"
+            :class="MACRO_COLORS.fat.light"
             :style="{ width: fatPercentage + '%' }"
           ></div>
         </div>
@@ -74,6 +74,7 @@
 import { computed } from 'vue';
 import { useIntakeStore } from '../../store/intakeStore';
 import { useDietStore } from '../../store/dietStore';
+import { MACRO_COLORS } from '../../constants/theme';
 
 const intakeStore = useIntakeStore();
 const dietStore = useDietStore();
@@ -135,13 +136,6 @@ const fatPercentage = computed(() => {
   return Math.min((currentFat.value / targetFat.value) * 100, 100);
 });
 
-// Dynamic color based on percentage
-const colorClassForPercentage = (percentage: number): string => {
-  if (percentage < 80) return 'bg-blue-500';
-  if (percentage < 100) return 'bg-green-500';
-  if (percentage < 110) return 'bg-yellow-500';
-  return 'bg-red-500';
-};
 </script>
 
 <style scoped>

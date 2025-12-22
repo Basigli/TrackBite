@@ -68,7 +68,8 @@
               <div 
                 v-for="macro in preview.macros" 
                 :key="macro.name"
-                class="bg-green-50 rounded-lg p-3 text-center"
+                class="rounded-lg p-3 text-center"
+                :class="MACRO_COLORS[getKeyFromMacro[macro.name]].light"
               >
                 <div class="text-xs text-gray-600 mb-1">{{ macro.name }}</div>
                 <div class="font-bold text-green-700 text-sm">{{ macro.totalAmount }}{{ macro.unit }}</div>
@@ -284,6 +285,8 @@
 <script>
 import { ref, computed, watch } from 'vue'
 import { FoodItemConverter } from '../../utils/FoodItemConverter'
+import { getGradeColor, getNutrientLevelColor } from '../../constants/theme'
+import { MACRO_COLORS, getKeyFromMacro } from '../../constants/theme'
 
 export default {
   name: 'AddScannedItem',
@@ -386,26 +389,6 @@ export default {
       }
     }
 
-    const getGradeColor = (grade) => {
-      const colors = {
-        'a': 'text-green-600',
-        'b': 'text-lime-600',
-        'c': 'text-yellow-600',
-        'd': 'text-orange-600',
-        'e': 'text-red-600'
-      }
-      return colors[grade.toLowerCase()] || 'text-gray-600'
-    }
-
-    const getNutrientLevelColor = (level) => {
-      const colors = {
-        'low': 'bg-green-100 text-green-800',
-        'moderate': 'bg-yellow-100 text-yellow-800',
-        'high': 'bg-red-100 text-red-800'
-      }
-      return colors[level.toLowerCase()] || 'bg-gray-100 text-gray-800'
-    }
-
     return {
       conversionType,
       servings,
@@ -418,7 +401,9 @@ export default {
       closeModal,
       handleAdd,
       getGradeColor,
-      getNutrientLevelColor
+      getNutrientLevelColor,
+      MACRO_COLORS,
+      getKeyFromMacro
     }
   }
 }

@@ -1,8 +1,23 @@
 <template>
-  <header class="app-header flex items-center justify-between px-6 py-4 bg-green-500 text-white shadow-md">
-    <div class="logo text-xl font-bold lg:hidden">TrackBite</div>
+  <header class="app-header flex items-center justify-between gap-1 px-1 py-2 bg-green-500 text-white shadow-md">
+    <div class="flex items-center gap-1">
+      <!-- Hamburger button - only show on mobile -->
+      <button 
+        @click="toggleSidebar" 
+        class="hamburger-btn lg:hidden bg-white/20 hover:bg-white/30 p-1 rounded-md transition-all duration-200"
+        :class="{ active: sidebarOpen }"
+      >
+        <div class="hamburger">
+          <span class="line"></span>
+          <span class="line"></span>
+          <span class="line"></span>
+        </div>
+      </button>
+      
+      <div class="logo text-lg font-bold gap-1 ml-4">TrackBite</div>
+    </div>
 
-    <div class="header-actions flex items-center gap-4">
+    <div class="header-actions flex items-center gap-0.5">
       <!-- Date picker - only show when logged in -->
       <DatePicker v-if="isAuthenticated" />
 
@@ -10,12 +25,12 @@
       <div class="user-menu relative">
         <button
           @click="toggleMenu"
-          class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/30"
+          class="flex items-center gap-1 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/30"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          <span class="font-medium">{{ displayName }}</span>
+          <span class="font-medium text-sm">{{ displayName }}</span>
           <svg
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'rotate-180': menuOpen }"
@@ -80,7 +95,14 @@ export default {
   components: {
     DatePicker
   },
-  setup() {
+  props: {
+    sidebarOpen: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['toggle-sidebar'],
+  setup(props, { emit }) {
     const router = useRouter()
     const userStore = useUserStore()
     
@@ -99,6 +121,10 @@ export default {
 
     const toggleMenu = () => {
       menuOpen.value = !menuOpen.value
+    }
+
+    const toggleSidebar = () => {
+      emit('toggle-sidebar')
     }
 
     const goToSettings = () => {
@@ -127,6 +153,7 @@ export default {
       isAuthenticated,
       menuOpen,
       toggleMenu,
+      toggleSidebar,
       goToSettings,
       goToLogin,
       goToRegister,
@@ -157,5 +184,53 @@ export default {
 .slide-fade-leave-to {
   transform: translateY(-10px);
   opacity: 0;
+}
+
+/* Hamburger Menu Styles */
+.hamburger-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.hamburger-btn:hover {
+  transform: scale(1.1);
+}
+
+.hamburger {
+  width: 20px;
+  height: 14px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hamburger .line {
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Animated hamburger to X */
+.hamburger-btn.active .line:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.hamburger-btn.active .line:nth-child(2) {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+.hamburger-btn.active .line:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
 }
 </style>

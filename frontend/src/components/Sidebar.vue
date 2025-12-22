@@ -1,22 +1,13 @@
 <template>
   <div>
-<!-- Hamburger Button (visible on mobile) -->
-    <button @click="toggleSidebar" class="hamburger-btn fixed z-50 lg:hidden bg-gray-800 p-2 rounded-md transition-all duration-300"
-      :class="{ active: isOpen, 'top-4 left-4': isOpen, 'top-13 left-0': !isOpen }">
-      <div class="hamburger lg:hidden">
-        <span class="line lg:hidden"></span>
-        <span class="line lg:hidden"></span>
-        <span class="line lg:hidden"></span>
-      </div>
-    </button>
     <!-- Overlay (visible when sidebar is open on mobile) -->
-    <div v-if="isOpen" @click="toggleSidebar" class="fixed inset-0 z-30 lg:hidden" style="background-color: rgba(0, 0, 0, 0.5);"></div>
+    <div v-if="isOpen" @click="closeSidebar" class="fixed inset-0 z-30 lg:hidden" style="background-color: rgba(0, 0, 0, 0.5);"></div>
 
     <!-- Sidebar -->
     <aside
       class="app-sidebar w-64 h-screen bg-gray-800 text-white flex flex-col p-4 fixed lg:static z-40 transition-transform duration-300"
       :class="{ '-translate-x-full lg:translate-x-0': !isOpen, 'translate-x-0': isOpen }">
-      <div class="sidebar-logo text-2xl font-bold mb-8 mt-16 lg:mt-0">{{ appName }}</div>
+      <div class="sidebar-logo text-2xl font-bold mb-8 mt-4 lg:mt-0">{{ appName }}</div>
       <nav class="flex flex-col gap-2">
         <router-link 
           v-for="item in computedNavItems" 
@@ -45,13 +36,13 @@ export default {
     appName: {
       type: String,
       default: 'TrackBite'
+    },
+    isOpen: {
+      type: Boolean,
+      default: false
     }
   },
-  data() {
-    return {
-      isOpen: false,
-    }
-  },
+  emits: ['update:isOpen'],
   computed: {
     computedNavItems() {
       // If navItems prop is provided, use it
@@ -82,22 +73,22 @@ export default {
     }
   },
   methods: {
-    toggleSidebar() {
-      this.isOpen = !this.isOpen
+    closeSidebar() {
+      this.$emit('update:isOpen', false)
     },
     closeSidebarOnMobile() {
       // Close sidebar on mobile when a link is clicked
       if (window.innerWidth < 1024) {
-        this.isOpen = false
+        this.closeSidebar()
       }
-    },
+    }
   },
   mounted() {
     // Open sidebar by default on desktop
     if (window.innerWidth >= 1024) {
-      this.isOpen = true
+      this.$emit('update:isOpen', true)
     }
-  },
+  }
 }
 </script>
 
@@ -117,58 +108,5 @@ export default {
 .active-link {
   background-color: rgba(255, 255, 255, 0.2);
   font-weight: bold;
-}
-
-/* Hamburger Menu Styles */
-.hamburger-btn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.hamburger-btn:hover {
-  transform: scale(1.1);
-}
-
-.hamburger {
-  width: 24px;
-  height: 18px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.hamburger .line {
-  width: 100%;
-  height: 2px;
-  background-color: white;
-  border-radius: 2px;
-  transition: all 0.3s ease;
-  transform-origin: center;
-}
-
-/* Animated hamburger to X */
-.hamburger-btn.active .line:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-
-.hamburger-btn.active .line:nth-child(2) {
-  opacity: 0;
-  transform: translateX(-10px);
-}
-
-.hamburger-btn.active .line:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
-@media (min-width: 1024px) {
-  .hamburger-btn {
-    display: none !important;
-  }
 }
 </style>

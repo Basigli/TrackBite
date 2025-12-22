@@ -1,11 +1,18 @@
 <template>
   <div id="app" class="flex h-screen">
     <!-- Sidebar -->
-    <Sidebar :navItems="navigationItems" />
+    <Sidebar 
+      :nav-items="navigationItems"
+      :is-open="sidebarOpen" 
+      @update:is-open="sidebarOpen = $event"
+    />
 
     <!-- Main content -->
     <div class="flex-1 flex flex-col">
-      <Header />
+      <Header 
+        :sidebar-open="sidebarOpen" 
+        @toggle-sidebar="sidebarOpen = !sidebarOpen" 
+      />
       <main class="p-4 flex-1 overflow-auto">
         <router-view />
       </main>
@@ -14,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import Header from './components/Header.vue';
 import Sidebar from './components/Sidebar.vue';
 import { useUserStore } from './store/userStore';
@@ -22,6 +29,9 @@ import { useSocket } from './useSocket';
 
 const userStore = useUserStore();
 const { connect, disconnect } = useSocket();
+
+// Sidebar state
+const sidebarOpen = ref(false);
 
 const navigationItems = computed(() => {
   const baseItems = [
@@ -49,6 +59,11 @@ const navigationItems = computed(() => {
 
 onMounted(() => {
   connect();
+  
+  // Open sidebar by default on desktop
+  if (window.innerWidth >= 1024) {
+    sidebarOpen.value = true;
+  }
 });
 
 onUnmounted(() => {

@@ -1,6 +1,6 @@
 <template>
-  <header class="app-header flex items-center justify-between px-1 py-2 bg-green-500 text-white shadow-md">
-    <div class="flex items-center gap-2">
+  <header class="app-header flex items-center justify-start gap-1 px-1 py-2 bg-green-500 text-white shadow-md">
+    <div class="flex items-center gap-1">
       <!-- Hamburger button - only show on mobile -->
       <button 
         @click="toggleSidebar" 
@@ -14,10 +14,10 @@
         </div>
       </button>
       
-      <div class="logo text-lg font-bold">TrackBite</div>
+      <div class="logo text-lg font-bold gap-1">TrackBite</div>
     </div>
 
-    <div class="header-actions flex items-center gap-2">
+    <div class="header-actions flex items-center gap-0.5">
       <!-- Date picker - only show when logged in -->
       <DatePicker v-if="isAuthenticated" />
 
@@ -25,7 +25,7 @@
       <div class="user-menu relative">
         <button
           @click="toggleMenu"
-          class="flex items-center gap-2 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/30"
+          class="flex items-center gap-1 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg transition-all duration-200 backdrop-blur-sm border border-white/30"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

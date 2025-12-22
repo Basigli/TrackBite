@@ -27,7 +27,6 @@ export class NotificationScheduler {
     try {
       console.log('Sending meal reminders...');
       const users = await UserModel.find();
-
       for (const user of users) {
         // Only send if user is online (has active socket connection)
         if (isUserOnline(user._id.toString())) {
@@ -42,13 +41,14 @@ export class NotificationScheduler {
           if (!diet) {
             continue; // No active diet
           }
-          
           const caloriesConsumed = dailyIntake.totalCalories;
           const calorieLimit = diet.caloriesAmount;
           const remainingCalories = calorieLimit - caloriesConsumed;
 
+          if (remainingCalories <= 0) {
+            continue; // No remaining calories
+          }
           const message = `You have ${remainingCalories} calories remaining for today. Keep it up!`;
-          
           sendNotification(user._id.toString(), {
             type: 'Meal Reminder',
             message: message

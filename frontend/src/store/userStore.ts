@@ -1,16 +1,60 @@
 import { defineStore } from 'pinia';
-import { ref, type Ref, reactive, type Reactive } from 'vue';
+import { ref, type Ref, reactive, type Reactive, watch } from 'vue';
 import api from '../api';
 import { jwtDecode } from 'jwt-decode';
 import type { User } from '../models/User';
 import { notifyWarning } from '../utils/Notifications';
-import {useSocket} from '../useSocket';
-
+import { useSocket } from '../useSocket';
 
 export const useUserStore = defineStore('user', () => {
   const user: Reactive<User | null> = reactive({} as User);
   const authToken = reactive({ value: '' });
   const { emit } = useSocket();
+
+  // Initialize token from localStorage on store creation
+  const initializeAuth = () => {
+    const storedToken = localStorage.getItem('authToken');
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedToken) {
+      authToken.value = storedToken;
+    }
+    
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        Object.assign(user, parsedUser);
+      } catch (e) {
+        console.error('Error parsing stored user:', e);
+        localStorage.removeItem('user');
+      }
+    }
+  };
+
+  // Watch for token changes and persist to localStorage
+  watch(
+    () => authToken.value,
+    (newToken) => {
+      if (newToken) {
+        localStorage.setItem('authToken', newToken);
+      } else {
+        localStorage.removeItem('authToken');
+      }
+    }
+  );
+
+  // Watch for user changes and persist to localStorage
+  watch(
+    () => ({ ...user }),
+    (newUser) => {
+      if (newUser && newUser._id) {
+        localStorage.setItem('user', JSON.stringify(newUser));
+      } else {
+        localStorage.removeItem('user');
+      }
+    },
+    { deep: true }
+  );
 
   const login = async (nickname: string, password: string) => {
     try {
@@ -19,7 +63,13 @@ export const useUserStore = defineStore('user', () => {
         throw new Error('No token received');
       }
       const token = res.data.token;
-      Object.assign(authToken, { value: token }); 
+      Object.assign(authToken, { value: token });
+      
+      // Fetch and store user data
+      if (res.data.user) {
+        Object.assign(user, res.data.user);
+      }
+      
       emit('register', res.data.user._id);
       return true;
     } catch (err) {
@@ -31,14 +81,13 @@ export const useUserStore = defineStore('user', () => {
   const fetchUser = async (userId: string) => {
     try {
       const res = await api.get<User>(`/users/${userId}`);
-      
       Object.assign(user, res.data);
     } catch (err) {
       console.error('Error fetching user:', err);
     }
   };
 
-  const updateUser = async (updatedData : Partial<User>): Promise<boolean> => {
+  const updateUser = async (updatedData: Partial<User>): Promise<boolean> => {
     if (!user?._id) return false;
     try {
       const fullUserData = { ...user, ...updatedData };
@@ -66,7 +115,6 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
-
   const changePassword = async (currentPassword: string, newPassword: string): Promise<boolean> => {
     if (!user?._id) return false;
     try {
@@ -83,24 +131,41 @@ export const useUserStore = defineStore('user', () => {
     try {
       return jwtDecode(authToken.value);
     } catch (e) {
-      // console.error('Invalid token decode:', e);
       return null;
     }
   };
 
   const isTokenExpired = () => {
     const decoded = decodeToken();
-    if (!decoded || !decoded.exp) return;
+    if (!decoded || !decoded.exp) return true;
     const currentTime = Math.floor(Date.now() / 1000);
-    if (decoded.exp < currentTime)
+    if (decoded.exp < currentTime) {
       notifyWarning('Session has expired. Please log in again.');
+      return true;
+    }
+    return false;
   };
 
   const logout = () => {
     Object.assign(user, {} as User);
     Object.assign(authToken, { value: '' });
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
   };
 
+  // Initialize on store creation
+  initializeAuth();
 
-  return { user, authToken, isTokenExpired, login, fetchUser, updateUser, changePassword, decodeToken, logout, addSavedScannedItem };
+  return { 
+    user, 
+    authToken, 
+    isTokenExpired, 
+    login, 
+    fetchUser, 
+    updateUser, 
+    changePassword, 
+    decodeToken, 
+    logout, 
+    addSavedScannedItem 
+  };
 });

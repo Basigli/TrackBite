@@ -9,8 +9,6 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import { registerSW } from 'virtual:pwa-register'
 
-
-
 const app = createApp(App)
 
 app.use(createPinia())

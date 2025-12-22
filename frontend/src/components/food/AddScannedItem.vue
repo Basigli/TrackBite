@@ -62,31 +62,46 @@
           </div>
 
           <!-- Macros -->
-          <div v-if="macroPreview.length > 0" class="bg-white border border-gray-200 rounded-lg p-4">
-            <h4 class="font-semibold text-gray-700 mb-3 text-sm">Macronutrients (per 100g)</h4>
+          <div v-if="preview.macros.length > 0" class="bg-white border border-gray-200 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-700 mb-3 text-sm">Macronutrients</h4>
             <div class="grid grid-cols-3 gap-2">
               <div 
-                v-for="macro in macroPreview" 
+                v-for="macro in preview.macros" 
                 :key="macro.name"
                 class="bg-green-50 rounded-lg p-3 text-center"
               >
                 <div class="text-xs text-gray-600 mb-1">{{ macro.name }}</div>
-                <div class="font-bold text-green-700 text-sm">{{ macro.value }}</div>
+                <div class="font-bold text-green-700 text-sm">{{ macro.totalAmount }}{{ macro.unit }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Nutrients -->
+          <div v-if="preview.nutrients.length > 0" class="bg-white border border-gray-200 rounded-lg p-4">
+            <h4 class="font-semibold text-gray-700 mb-3 text-sm">Nutrients</h4>
+            <div class="grid grid-cols-3 gap-2">
+              <div 
+                v-for="nutrient in preview.nutrients" 
+                :key="nutrient.name"
+                class="bg-green-50 rounded-lg p-3 text-center"
+              >
+                <div class="text-xs text-gray-600 mb-1">{{ nutrient.name }}</div>
+                <div class="font-bold text-green-700 text-sm">{{ nutrient.totalAmount }}{{ nutrient.unit }}</div>
               </div>
             </div>
           </div>
 
           <!-- Nutrient Levels -->
-          <div v-if="nutrientLevelsArray.length > 0" class="bg-white border border-gray-200 rounded-lg p-4">
+          <div v-if="Object.keys(preview.nutrientLevels).length > 0" class="bg-white border border-gray-200 rounded-lg p-4">
             <h4 class="font-semibold text-gray-700 mb-3 text-sm">Nutrient Levels</h4>
             <div class="flex flex-wrap gap-2">
               <span 
-                v-for="level in nutrientLevelsArray" 
-                :key="level.name"
-                :class="getNutrientLevelColor(level.value)"
+                v-for="(value, name) in preview.nutrientLevels" 
+                :key="name"
+                :class="getNutrientLevelColor(value)"
                 class="px-3 py-1 rounded-full text-xs font-medium"
               >
-                {{ level.name }}: {{ level.value }}
+                {{ name }}: {{ value }}
               </span>
             </div>
           </div>
@@ -291,26 +306,6 @@ export default {
 
     const converter = new FoodItemConverter()
 
-    // Extract macro nutrients for preview
-    const macroPreview = computed(() => {
-      const macroNames = ['protein', 'carbohydrates', 'fat']
-      return props.item.nutrients
-        .filter(n => macroNames.includes(n.name.toLowerCase()))
-        .map(n => ({
-          name: n.name.charAt(0).toUpperCase() + n.name.slice(1),
-          value: `${n.amount100g.toFixed(1)}${n.unit}`
-        }))
-    })
-
-    // Convert nutrient levels Map to array
-    const nutrientLevelsArray = computed(() => {
-      const levels = props.item.nutrientLevels instanceof Map 
-        ? props.item.nutrientLevels 
-        : new Map(Object.entries(props.item.nutrientLevels || {}))
-      
-      return Array.from(levels).map(([name, value]) => ({ name, value }))
-    })
-
     const totalServings = computed(() => {
       return props.item.quantity / props.item.quantityPerServing
     })
@@ -416,8 +411,6 @@ export default {
       servings,
       grams,
       error,
-      macroPreview,
-      nutrientLevelsArray,
       totalServings,
       percentage,
       isValid,

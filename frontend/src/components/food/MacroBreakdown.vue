@@ -1,5 +1,5 @@
 <template>
-  <div class="macro-breakdown bg-white rounded-lg shadow p-6">
+  <div class="macro-breakdown p-6 bg-white rounded-xl shadow-lg flex flex-col items-center max-w-sm mx-auto">
     <h2 class="text-2xl font-bold mb-4">Macro Breakdown</h2>
     
     <div v-if="!dietStore.selectedDiet" class="text-gray-500">

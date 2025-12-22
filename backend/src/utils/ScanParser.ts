@@ -20,7 +20,7 @@ export class ScanParser {
     const grade = parsedData.product.nutriscore_grade || 'unknown';
     const nutrientLevels = new Map<string, string>(Object.entries(parsedData.product.nutrient_levels || {}));
     const ingredients = parsedData.product.ingredients_without_ecobalyse_ids?.map((ingredient: string) => ingredient.split(':')[1]) || [];
-    const allergens = ScanParser.parseAllergenNames(parsedData.product.allergens_from_ingredients || '');
+    const allergens = ScanParser.parseAllergenNames(parsedData.product.allergens || '');
     const nutrients = ScanParser.parseNutrients(parsedData.product.nutriments || {});
     return new ScannedItemImpl( barcode, name, quantity, quantityPerServing, quantityUnit, allergens, nutrients, ingredients, score, grade, nutrientLevels);
   }

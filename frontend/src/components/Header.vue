@@ -1,5 +1,5 @@
 <template>
-  <header class="app-header flex items-center justify-start gap-1 px-1 py-2 bg-green-500 text-white shadow-md">
+  <header class="app-header flex items-center justify-between gap-1 px-1 py-2 bg-green-500 text-white shadow-md">
     <div class="flex items-center gap-1">
       <!-- Hamburger button - only show on mobile -->
       <button 
@@ -14,7 +14,7 @@
         </div>
       </button>
       
-      <div class="logo text-lg font-bold gap-1">TrackBite</div>
+      <div class="logo text-lg font-bold gap-1 ml-4">TrackBite</div>
     </div>
 
     <div class="header-actions flex items-center gap-0.5">

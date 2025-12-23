@@ -4,25 +4,21 @@
 
     <!-- Barcode Scanner Toggle Button -->
     <button 
-      @click="toggleScanner" 
+      @click="showScanner = true" 
       class="mb-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center gap-2"
     >
-      <span v-if="!showScanner">Scan Barcode</span>
-      <span v-else>Close Scanner</span>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+      </svg>
+      Scan Barcode
     </button>
 
-    <!-- Barcode Scanner Component -->
-    <div v-if="showScanner" class="mb-4 border-2 border-blue-500 rounded p-4">
-      <h2 class="text-lg font-semibold mb-2">Barcode Scanner</h2>
-      <StreamBarcodeReader
-        @decode="onDecode"
-        @loaded="onLoaded"
-        class="barcode-scanner"
-      ></StreamBarcodeReader>
-      <p v-if="lastScannedCode" class="text-green-600 mt-2">
-        Last scanned: {{ lastScannedCode }}
-      </p>
-    </div>
+    <!-- Barcode Scanner Modal -->
+    <BarcodeScannerModal
+      :show="showScanner"
+      @close="showScanner = false"
+      @decode="onDecode"
+    />
 
     <!-- Search for food items -->
     <FoodSearch @select-food="addFoodToDailyIntake" />
@@ -43,7 +39,7 @@ import { useIntakeStore } from '@/store/intakeStore';
 import FoodSearch from '../components/food/FoodSearch.vue';
 import ScannedItem from '../components/food/ScannedItem.vue';
 import ScannedItemList from '../components/food/ScannedItemList.vue';
-import { StreamBarcodeReader } from 'vue-barcode-reader';
+import BarcodeScannerModal from '../components/food/BarcodeScannerModal.vue';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';
 import { notifySuccess, notifyError } from '@/utils/Notifications';
@@ -54,25 +50,16 @@ export default {
     FoodSearch, 
     ScannedItem,
     ScannedItemList,
-    StreamBarcodeReader
+    BarcodeScannerModal
   },
   setup() {
     const intakeStore = useIntakeStore();
     const userStore = useUserStore();
     const scannedItem = ref(null);
     const showScanner = ref(false);
-    const lastScannedCode = ref(null);
-
-    const toggleScanner = () => {
-      showScanner.value = !showScanner.value;
-      if (!showScanner.value) {
-        lastScannedCode.value = null;
-      }
-    };
 
     const onDecode = async (result) => {
       console.log('Barcode detected:', result);
-      lastScannedCode.value = result;
       const localScannedItem = ref(null);
       
       try {
@@ -102,10 +89,6 @@ export default {
       }
     };
 
-    const onLoaded = () => {
-      console.log('Scanner loaded successfully');
-    };
-
     const addFoodToDailyIntake = (food) => {
       // Clear scanned item after adding
       scannedItem.value = null;
@@ -121,20 +104,9 @@ export default {
     return {
       scannedItem, 
       showScanner,
-      lastScannedCode,
-      toggleScanner,
       onDecode,
-      onLoaded,
       addFoodToDailyIntake 
     };
   }
 };
 </script>
-
-<style scoped>
-.barcode-scanner {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-}
-</style>

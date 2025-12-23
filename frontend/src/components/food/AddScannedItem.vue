@@ -71,8 +71,8 @@
                 class="rounded-lg p-3 text-center"
                 :class="MACRO_COLORS[getKeyFromMacro[macro.name]].light"
               >
-                <div class="text-xs text-gray-600 mb-1">{{ macro.name }}</div>
-                <div class="font-bold text-green-700 text-sm">{{ macro.totalAmount }}{{ macro.unit }}</div>
+                <div class="text-xs text-gray-600 mb-1">{{ macro.name.charAt(0).toUpperCase() + macro.name.slice(1) }}</div>
+                <div class="font-bold text-gray-600 text-sm">{{ macro.totalAmount }}{{ macro.unit }}</div>
               </div>
             </div>
           </div>

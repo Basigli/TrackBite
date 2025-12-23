@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { useUserStore } from './store/userStore';
+const baseURL = import.meta.env.DEV 
+  ? 'https://localhost:3000'  // HTTPS in dev
+  : import.meta.env.VITE_API_URL || 'https://your-domain.com';
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000'
+    baseURL
 });
 
 api.interceptors.request.use(

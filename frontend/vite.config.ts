@@ -15,7 +15,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
-      devOptions: { enabled: true },
+      devOptions: { 
+        enabled: true,
+        type: 'module'
+      },
       manifest: {
         name: 'TrackBite',
         short_name: 'TrackBite',
@@ -44,6 +47,8 @@ export default defineConfig({
         ]
       },
       workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        navigateFallback: null,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

@@ -2,7 +2,8 @@
   <!-- Modal Overlay -->
   <div
     v-if="show"
-    class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    style="background-color: rgba(0, 0, 0, 0.8);"
     @click.self="closeModal"
   >
     <!-- Modal Content -->

@@ -38,7 +38,7 @@ export default {
   name: 'ScannedItemPreview',
   props: {
     preview: {
-      type: ScannedItem,
+      type: Object,
       default: null
     },
     percentage: {

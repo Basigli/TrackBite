@@ -342,7 +342,6 @@ export default {
 
       try {
         let foodItem
-
         if (conversionType.value === 'servings') {
           foodItem = converter.toFoodItemWithServings(props.item, servings.value)
         } else if (conversionType.value === 'grams') {

@@ -60,8 +60,11 @@ export class FoodItemBuilder {
     }
 
     private polishNutrients(nutrients: Array<Nutrient>): Array<Nutrient> {
-        const filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy'));
-        return filtered;
+        const filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy') && !nutrient.name.toLowerCase().includes('score'));
+        return filtered.map(nutrient => ({
+            ...nutrient,
+            name: nutrient.name.replace('-', ' ')
+        }));
     }
 
 
@@ -74,13 +77,13 @@ export class FoodItemBuilder {
         
         const scaledQuantity = this.scannedItem.quantity * (this.percentage / 100);
         let scaledNutrients = this.scaleNutrients(this.scannedItem.nutrients, this.percentage, scaledQuantity);
-        const calories_nutrient = scaledNutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
+        const caloriesNutrient = scaledNutrients.find(nutrient => nutrient.name.toLowerCase() === 'energy-kcal');
         scaledNutrients = this.polishNutrients(scaledNutrients);
 
         return {
             name: this.scannedItem.name,
             quantity: `${scaledQuantity.toFixed(2)} g`,
-            calories: calories_nutrient?.totalAmount ?? 0,
+            calories: caloriesNutrient?.totalAmount ?? 0,
             allergens: this.scannedItem.allergens,
             ingredients: this.scannedItem.ingredients,
             nutrients: scaledNutrients.filter(nutrient => !macroNames.includes(nutrient.name.toLowerCase())),

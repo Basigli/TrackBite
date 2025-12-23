@@ -60,8 +60,11 @@ export class FoodItemBuilder {
     }
 
     private polishNutrients(nutrients: Array<Nutrient>): Array<Nutrient> {
-        const filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy'));
-        return filtered;
+        const filtered =  nutrients.filter(nutrient => !nutrient.name.toLowerCase().includes('energy') && !nutrient.name.toLowerCase().includes('score'));
+        return filtered.map(nutrient => ({
+            ...nutrient,
+            name: nutrient.name.replace('-', ' ')
+        }));
     }
 
 

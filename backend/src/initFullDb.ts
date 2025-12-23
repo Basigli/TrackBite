@@ -10,6 +10,7 @@ import { FoodItemModel } from "./storage/FoodItemSchema";
 import { FoodItemConverter } from "./utils/FoodItemConverter";
 import { DietBuilder } from "./utils/DietBuilder";
 import { Nutrient } from "./models/Nutrient";
+const bcrypt = require("bcryptjs");
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/trackbite";
 
@@ -308,19 +309,21 @@ async function seed() {
   console.log("Inserted users:", userAlice._id, userBob._id, userCharlie._id);
 
   // ===== USER CREDENTIALS =====
+  const saltRounds = 10;
+  
   await UserCredentialsModel.create({
     nickname: userAlice.nickname,
-    passwordHash: "passwordAlice"
+    passwordHash: await bcrypt.hash("passwordAlice", saltRounds)
   });
 
   await UserCredentialsModel.create({
     nickname: userBob.nickname,
-    passwordHash: "passwordBob"
+    passwordHash: await bcrypt.hash("passwordBob", saltRounds)
   });
 
   await UserCredentialsModel.create({
     nickname: userCharlie.nickname,
-    passwordHash: "passwordCharlie"
+    passwordHash: await bcrypt.hash("passwordCharlie", saltRounds)
   });
 
   console.log("Inserted user credentials");

@@ -4,6 +4,7 @@ import { UserSchemaZ } from "../models/User";
 import UserCredentialsModel from "../storage/UserCredentialsSchema";
 import { UserCredentialsSchemaZ } from "../models/UserCredentials";
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 // GET /users - Get all users
 const getAllUsers = async (req: Request, res: Response) => {
@@ -25,9 +26,14 @@ const createUser = async (req: Request, res: Response) => {
 
     const newUser = new UserModel(parsed.data);
     const savedUser = await newUser.save();
+    
+    // Hash the password before storing
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(req.body.passwordHash, saltRounds);
+    
     const userCredentials = new UserCredentialsModel({
       nickname: savedUser.nickname,
-      passwordHash: req.body.passwordHash,
+      passwordHash: hashedPassword,
     });
     await userCredentials.save();
     res.status(201).json(savedUser);
@@ -51,8 +57,10 @@ const logInUser = async (req: Request, res: Response) => {
     const { nickname, passwordHash } = parsed.data;
     const userCredentials = await UserCredentialsModel.findOne({ nickname });
     if (!userCredentials) return res.status(404).json({ error: "User not found" });
-    // Compare passwordHash with user's stored passwordHash
-    if (userCredentials.passwordHash !== passwordHash) {
+    
+    // Compare password with stored hash using bcrypt
+    const isPasswordValid = await bcrypt.compare(passwordHash, userCredentials.passwordHash);
+    if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
     const user = await UserModel.findOne({ nickname });
@@ -191,13 +199,16 @@ const changePassword = async (req: Request, res: Response) => {
     const userCredentials = await UserCredentialsModel.findOne({ nickname: user.nickname });
     if (!userCredentials) return res.status(404).json({ error: "Credentials not found" });
     
-    // Verify current password
-    if (userCredentials.passwordHash !== currentPassword) {
+    // Verify current password using bcrypt
+    const isPasswordValid = await bcrypt.compare(currentPassword, userCredentials.passwordHash);
+    if (!isPasswordValid) {
       return res.status(401).json({ error: "Current password is incorrect" });
     }
     
-    // Update password
-    userCredentials.passwordHash = newPassword;
+    // Hash and update new password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+    userCredentials.passwordHash = hashedPassword;
     await userCredentials.save();
     
     res.status(200).json({ message: "Password updated successfully" });

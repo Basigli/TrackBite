@@ -82,7 +82,7 @@ const dietStore = useDietStore();
 // Get current macro values from daily intake
 const currentProtein = computed(() => {
   const proteinMacro = intakeStore.dailyIntake.totalMacros?.find(
-    m => m.name.toLowerCase() === 'protein'
+    m => ['protein', 'proteins'].includes(m.name.toLowerCase())
   );
   return proteinMacro?.totalAmount || 0;
 });

@@ -19,7 +19,6 @@
         @loaded="onLoaded"
         class="barcode-scanner"
       ></StreamBarcodeReader>
-      <p v-if="scannerError" class="text-red-500 mt-2">{{ scannerError }}</p>
       <p v-if="lastScannedCode" class="text-green-600 mt-2">
         Last scanned: {{ lastScannedCode }}
       </p>
@@ -47,7 +46,7 @@ import ScannedItemList from '../components/food/ScannedItemList.vue';
 import { StreamBarcodeReader } from 'vue-barcode-reader';
 import { useScannedItemStore } from '@/store/scannedItemStore';
 import { useUserStore } from '@/store/userStore';
-import { notifySuccess } from '@/utils/Notifications';
+import { notifySuccess, notifyError } from '@/utils/Notifications';
 
 export default {
   name: 'AddFood',
@@ -62,13 +61,11 @@ export default {
     const userStore = useUserStore();
     const scannedItem = ref(null);
     const showScanner = ref(false);
-    const scannerError = ref(null);
     const lastScannedCode = ref(null);
 
     const toggleScanner = () => {
       showScanner.value = !showScanner.value;
       if (!showScanner.value) {
-        scannerError.value = null;
         lastScannedCode.value = null;
       }
     };
@@ -80,29 +77,33 @@ export default {
       
       try {
         const scannedItemStore = useScannedItemStore()
-        if (!scannedItem) {
-          scannerError.value = 'Product not found in database';
-        } else {
-          scannerError.value = null;
-        }
         localScannedItem.value = await scannedItemStore.fetchScannedItem(result);
+        
+        if (!localScannedItem.value) {
+          notifyError('Product not found in database');
+          return;
+        }
+        
         scannedItem.value = localScannedItem.value;
+        notifySuccess(`Product scanned: ${localScannedItem.value.name}`);
       } catch (error) {
         console.error('Error fetching food data:', error);
-        scannerError.value = 'Error fetching product information';
+        notifyError('Error fetching product information');
+        return;
       }
+      
       try {
         const userStore = useUserStore();
         userStore.addSavedScannedItem(localScannedItem.value._id);
+        showScanner.value = false;
       } catch (error) {
         console.error('Error updating user saved items:', error);
-        scannerError.value = 'Error updating user saved items';
+        notifyError('Error updating user saved items');
       }
     };
 
     const onLoaded = () => {
       console.log('Scanner loaded successfully');
-      scannerError.value = null;
     };
 
     const addFoodToDailyIntake = (food) => {
@@ -120,7 +121,6 @@ export default {
     return {
       scannedItem, 
       showScanner,
-      scannerError,
       lastScannedCode,
       toggleScanner,
       onDecode,

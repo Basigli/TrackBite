@@ -184,18 +184,18 @@ export default {
       return reverseGrades[Math.round(avgValue)] || 'c';
     });
 
-    // Sum all macros from all ingredients
-    const recipeMacros = computed(() => {
+    // Sum all nutrients from all ingredients
+    const recipeNutrients = computed(() => {
       if (!ingredients.value.length) return [];
       
-      const macroMap = new Map();
+      const nutrientMap = new Map();
 
       ingredients.value.forEach(ingredient => {
         if (!ingredient.nutrients || !Array.isArray(ingredient.nutrients)) return;
         
         ingredient.nutrients.forEach(nutrient => {
-          if (!macroMap.has(nutrient.name)) {
-            macroMap.set(nutrient.name, {
+          if (!nutrientMap.has(nutrient.name)) {
+            nutrientMap.set(nutrient.name, {
               name: nutrient.name,
               unit: nutrient.unit,
               totalAmount: 0,
@@ -204,8 +204,36 @@ export default {
             });
           }
           
-          const macro = macroMap.get(nutrient.name);
-          macro.totalAmount += (nutrient.totalAmount || 0);
+          const nutrientData = nutrientMap.get(nutrient.name);
+          nutrientData.totalAmount += (nutrient.totalAmount || 0);
+        });
+      });
+
+      return Array.from(nutrientMap.values());
+    });
+
+    // Sum all macros from all ingredients
+    const recipeMacros = computed(() => {
+      if (!ingredients.value.length) return [];
+      
+      const macroMap = new Map();
+
+      ingredients.value.forEach(ingredient => {
+        if (!ingredient.macros || !Array.isArray(ingredient.macros)) return;
+        
+        ingredient.macros.forEach(macro => {
+          if (!macroMap.has(macro.name)) {
+            macroMap.set(macro.name, {
+              name: macro.name,
+              unit: macro.unit,
+              totalAmount: 0,
+              amount100g: 0,
+              amountPerServing: 0
+            });
+          }
+          
+          const macroData = macroMap.get(macro.name);
+          macroData.totalAmount += (macro.totalAmount || 0);
         });
       });
 
@@ -230,6 +258,7 @@ export default {
         calories: foodItem.calories || 0,
         grade: foodItem.grade || 'c',
         nutrients: foodItem.nutrients || [],
+        macros: foodItem.macros || [],
         ...foodItem // spread any additional properties
       };
       
@@ -270,6 +299,7 @@ export default {
           userName: userStore.user.nickname || 'Anonymous',
           grade: recipeGrade.value,
           macros: recipeMacros.value,
+          nutrients: recipeNutrients.value,
           createdAt: new Date(),
           totalCalories: totalCalories.value, 
         };
@@ -314,6 +344,7 @@ export default {
       totalCalories,
       recipeGrade,
       recipeMacros,
+      recipeNutrients,
       isValid,
       handleScannedItemSelected,
       handleFoodSelected,

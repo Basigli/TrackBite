@@ -19,6 +19,10 @@ const RecipeSchema = new Schema<Recipe>({
     type: [NutrientSchema],
     required: true
   },
+  nutrients: {
+    type: [NutrientSchema],
+    required: true
+  },
   totalCalories: { type: Number, required: true },
   recipeRating: { type: RecipeRatingSchema, required: false }
 });

@@ -83,33 +83,57 @@
           <p v-else class="text-gray-500 text-sm">No ingredients listed</p>
         </div>
 
-        <!-- Macros/Nutrients -->
-        <div v-if="recipe.macros && recipe.macros.length > 0">
+        <!-- Total Calories Highlight -->
+        <div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6">
+          <div class="flex justify-between items-center">
+            <span class="text-gray-700 font-semibold">Total Calories</span>
+            <span class="text-2xl font-bold text-blue-600">{{ recipe.totalCalories }} kcal</span>
+          </div>
+        </div>
+
+        <!-- Macros -->
+        <div v-if="recipe.macros && recipe.macros.length > 0" class="mb-6">
           <h3 class="font-semibold text-gray-800 text-lg mb-3 flex items-center gap-2">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            Nutrition Facts
+            Macronutrients
           </h3>
-          
-          <!-- Total Calories Highlight -->
-          <div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-4">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-700 font-semibold">Total Calories</span>
-              <span class="text-2xl font-bold text-blue-600">{{ recipe.totalCalories }} kcal</span>
-            </div>
-          </div>
 
           <!-- Macro Grid -->
           <div class="grid grid-cols-2 gap-3">
             <div
-              v-for="nutrient in recipe.macros"
-              :key="nutrient._id"
+              v-for="macro in recipe.macros"
+              :key="macro._id || macro.name"
+              class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-3 border border-green-200"
+            >
+              <div class="text-sm text-gray-600 font-medium">{{ macro.name }}</div>
+              <div class="text-lg font-semibold text-gray-800">
+                {{ macro.totalAmount.toFixed(1) }} <span class="text-sm font-normal text-gray-500">{{ macro.unit }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nutrients -->
+        <div v-if="recipe.nutrients && recipe.nutrients.length > 0" class="mb-6">
+          <h3 class="font-semibold text-gray-800 text-lg mb-3 flex items-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            </svg>
+            Microutrients
+          </h3>
+
+          <!-- Micronutrients Grid -->
+          <div class="grid grid-cols-2 gap-3">
+            <div
+              v-for="nutrient in recipe.nutrients.filter(n => n.name !== 'energy-kcal')"
+              :key="nutrient._id || nutrient.name"
               class="bg-gray-50 rounded-lg p-3 border border-gray-200"
             >
               <div class="text-sm text-gray-600">{{ nutrient.name }}</div>
               <div class="text-lg font-semibold text-gray-800">
-                {{ nutrient.totalAmount }} <span class="text-sm font-normal text-gray-500">{{ nutrient.unit }}</span>
+                {{ nutrient.totalAmount.toFixed(1) }} <span class="text-sm font-normal text-gray-500">{{ nutrient.unit }}</span>
               </div>
             </div>
           </div>

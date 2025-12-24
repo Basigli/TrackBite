@@ -72,7 +72,7 @@ export class FoodItemBuilder {
      * Build the FoodItem with calculated values
      */
     build(): FoodItem {
-        const macroNames = ['proteins', 'carbohydrates', 'fat', 'Protein', 'Proteins', 'Carbohydrates', 'Fat', 'Fats', 'Carbs', 'carb'];
+        const macroNames = ['proteins', 'protein', 'carbohydrates', 'fat', 'Protein', 'Proteins', 'Carbohydrates', 'Fat', 'Fats', 'Carbs', 'carb'];
         this.percentage = this.calculatePercentage();
         
         const scaledQuantity = this.scannedItem.quantity * (this.percentage / 100);

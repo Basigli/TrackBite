@@ -115,12 +115,6 @@
               {{ recipeGrade.toUpperCase() }}
             </div>
           </div>
-          <div class="bg-white rounded-lg p-3 text-center">
-            <div class="text-xs text-gray-600 mb-1">Protein</div>
-            <div class="font-bold text-purple-600 text-lg">
-              {{ getMainMacro('protein')?.totalAmount.toFixed(1) || '0' }}g
-            </div>
-          </div>
         </div>
       </div>
 
@@ -175,7 +169,6 @@ export default {
     const showAddIngredient = ref(false);
     const error = ref('');
 
-    // Simply sum all calories from ingredients
     const totalCalories = computed(() => {
       return ingredients.value.reduce((sum, ing) => sum + (ing.calories || 0), 0);
     });
@@ -290,10 +283,6 @@ export default {
       }
     };
 
-    const getMainMacro = (macroName) => {
-      return recipeMacros.value.find(m => m.name.toLowerCase() === macroName.toLowerCase());
-    };
-
     const getGradeColor = (grade) => {
       const colors = {
         a: 'bg-green-100 text-green-800',
@@ -331,7 +320,6 @@ export default {
       removeIngredient,
       resetForm,
       submitRecipe,
-      getMainMacro,
       getGradeColor,
       getGradeColorText
     };

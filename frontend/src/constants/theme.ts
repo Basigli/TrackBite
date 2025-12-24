@@ -98,6 +98,14 @@ export const NUTRIENT_LEVEL_COLORS = {
   high: 'bg-red-100 text-red-800'
 } as const
 
+export const GRADE_TEXT_COLORS = {
+  a: 'text-green-600',
+  b: 'text-lime-600',
+  c: 'text-yellow-600',
+  d: 'text-orange-600',
+  e: 'text-red-600'
+} as const
+
 /**
  * Get macro color by name
  */
@@ -123,6 +131,11 @@ export const getGradeColor = (grade: string | undefined): string => {
   if (!grade) return 'text-gray-600'
   return GRADE_COLORS[grade.toLowerCase() as keyof typeof GRADE_COLORS] || 'text-gray-600'
 }
+
+export const getGradeColorText = (grade: string | undefined): string => {
+  if (!grade) return 'text-gray-600'
+  return GRADE_TEXT_COLORS[grade.toLowerCase() as keyof typeof GRADE_TEXT_COLORS] || 'text-gray-600'
+    };
 
 /**
  * Get nutrient level color

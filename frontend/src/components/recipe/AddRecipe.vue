@@ -154,6 +154,7 @@ import { useRecipeStore } from '../../store/recipeStore';
 import { useUserStore } from '../../store/userStore';
 import ScannedItemList from '../food/ScannedItemList.vue';
 import FoodSearch from '../food/FoodSearch.vue';
+import {getGradeColor, getGradeColorText} from '../../constants/theme';
 
 export default {
   name: 'AddRecipe',
@@ -311,28 +312,6 @@ export default {
         console.error('Error creating recipe:', err);
         error.value = 'Failed to create recipe. Please try again.';
       }
-    };
-
-    const getGradeColor = (grade) => {
-      const colors = {
-        a: 'bg-green-100 text-green-800',
-        b: 'bg-lime-100 text-lime-800',
-        c: 'bg-yellow-100 text-yellow-800',
-        d: 'bg-orange-100 text-orange-800',
-        e: 'bg-red-100 text-red-800'
-      };
-      return colors[grade?.toLowerCase()] || 'bg-gray-100 text-gray-800';
-    };
-
-    const getGradeColorText = (grade) => {
-      const colors = {
-        a: 'text-green-600',
-        b: 'text-lime-600',
-        c: 'text-yellow-600',
-        d: 'text-orange-600',
-        e: 'text-red-600'
-      };
-      return colors[grade?.toLowerCase()] || 'text-gray-600';
     };
 
     return {

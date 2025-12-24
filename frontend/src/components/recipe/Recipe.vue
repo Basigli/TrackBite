@@ -55,31 +55,19 @@
   </div>
 </template>
 
-<script>
-import { ref } from 'vue';
-import RecipeDetail from './RecipeDetail.vue';
-import { getGradeClass } from '@/utils/gradeUtils';
+<script setup>
+import { ref } from 'vue'
+import RecipeDetail from './RecipeDetail.vue'
+import { getGradeClass } from '@/utils/gradeUtils'
 
-export default {
-  name: "Recipe",
-  components: {
-    RecipeDetail,
-  },
-  props: {
-    recipe: {
-      type: Object,
-      required: true,
-    },
-  },
-  setup() {
-    const showDetails = ref(false);
-    
-    return {
-      showDetails,
-      getGradeClass,
-    };
-  },
-};
+defineProps({
+  recipe: {
+    type: Object,
+    required: true
+  }
+})
+
+const showDetails = ref(false)
 </script>
 
 <style scoped>

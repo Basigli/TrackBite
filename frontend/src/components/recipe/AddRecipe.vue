@@ -148,191 +148,166 @@
   </div>
 </template>
 
-<script>
-import { ref, computed } from 'vue';
-import { useRecipeStore } from '../../store/recipeStore';
-import { useUserStore } from '../../store/userStore';
-import ScannedItemList from '../food/ScannedItemList.vue';
-import FoodSearch from '../food/FoodSearch.vue';
-import {getGradeColor, getGradeColorText} from '../../constants/theme';
+<script setup>
+import { ref, computed } from 'vue'
+import { useRecipeStore } from '../../store/recipeStore'
+import { useUserStore } from '../../store/userStore'
+import ScannedItemList from '../food/ScannedItemList.vue'
+import FoodSearch from '../food/FoodSearch.vue'
+import { getGradeColor, getGradeColorText } from '../../constants/theme'
 
-export default {
-  name: 'AddRecipe',
-  components: { ScannedItemList, FoodSearch },
-  emits: ['recipe-added'],
-  setup(_, { emit }) {
-    const store = useRecipeStore();
-    const userStore = useUserStore();
+const emit = defineEmits(['recipe-added'])
 
-    const name = ref('');
-    const description = ref('');
-    const ingredients = ref([]);
-    const showAddIngredient = ref(false);
-    const error = ref('');
+const store = useRecipeStore()
+const userStore = useUserStore()
 
-    const totalCalories = computed(() => {
-      return ingredients.value.reduce((sum, ing) => sum + (ing.calories || 0), 0);
-    });
+const name = ref('')
+const description = ref('')
+const ingredients = ref([])
+const showAddIngredient = ref(false)
+const error = ref('')
 
-    // Calculate average grade
-    const recipeGrade = computed(() => {
-      if (!ingredients.value.length) return 'c';
-      const gradeValues = { a: 5, b: 4, c: 3, d: 2, e: 1 };
-      const reverseGrades = { 5: 'a', 4: 'b', 3: 'c', 2: 'd', 1: 'e' };
-      const avgValue = ingredients.value.reduce((sum, ing) => {
-        return sum + (gradeValues[ing.grade?.toLowerCase()] || 3);
-      }, 0) / ingredients.value.length;
-      return reverseGrades[Math.round(avgValue)] || 'c';
-    });
+const totalCalories = computed(() => {
+  return ingredients.value.reduce((sum, ing) => sum + (ing.calories || 0), 0)
+})
 
-    // Sum all nutrients from all ingredients
-    const recipeNutrients = computed(() => {
-      if (!ingredients.value.length) return [];
-      
-      const nutrientMap = new Map();
+// Calculate average grade
+const recipeGrade = computed(() => {
+  if (!ingredients.value.length) return 'c'
+  const gradeValues = { a: 5, b: 4, c: 3, d: 2, e: 1 }
+  const reverseGrades = { 5: 'a', 4: 'b', 3: 'c', 2: 'd', 1: 'e' }
+  const avgValue = ingredients.value.reduce((sum, ing) => {
+    return sum + (gradeValues[ing.grade?.toLowerCase()] || 3)
+  }, 0) / ingredients.value.length
+  return reverseGrades[Math.round(avgValue)] || 'c'
+})
 
-      ingredients.value.forEach(ingredient => {
-        if (!ingredient.nutrients || !Array.isArray(ingredient.nutrients)) return;
-        
-        ingredient.nutrients.forEach(nutrient => {
-          if (!nutrientMap.has(nutrient.name)) {
-            nutrientMap.set(nutrient.name, {
-              name: nutrient.name,
-              unit: nutrient.unit,
-              totalAmount: 0,
-              amount100g: 0,
-              amountPerServing: 0
-            });
-          }
-          
-          const nutrientData = nutrientMap.get(nutrient.name);
-          nutrientData.totalAmount += (nutrient.totalAmount || 0);
-        });
-      });
+// Sum all nutrients from all ingredients
+const recipeNutrients = computed(() => {
+  if (!ingredients.value.length) return []
+  
+  const nutrientMap = new Map()
 
-      return Array.from(nutrientMap.values());
-    });
-
-    // Sum all macros from all ingredients
-    const recipeMacros = computed(() => {
-      if (!ingredients.value.length) return [];
-      
-      const macroMap = new Map();
-
-      ingredients.value.forEach(ingredient => {
-        if (!ingredient.macros || !Array.isArray(ingredient.macros)) return;
-        
-        ingredient.macros.forEach(macro => {
-          if (!macroMap.has(macro.name)) {
-            macroMap.set(macro.name, {
-              name: macro.name,
-              unit: macro.unit,
-              totalAmount: 0,
-              amount100g: 0,
-              amountPerServing: 0
-            });
-          }
-          
-          const macroData = macroMap.get(macro.name);
-          macroData.totalAmount += (macro.totalAmount || 0);
-        });
-      });
-
-      return Array.from(macroMap.values());
-    });
-
-    const isValid = computed(() => {
-      return name.value.trim() && ingredients.value.length > 0;
-    });
-
-    const handleScannedItemSelected = (foodItem) => {
-      ingredients.value.push(foodItem);
-      error.value = '';
-      showAddIngredient.value = false;
-    };
-
-    const handleFoodSelected = (foodItem) => {
-      // Ensure the food item has the required structure
-      const ingredient = {
-        name: foodItem.name,
-        quantity: foodItem.quantity || 100,
-        calories: foodItem.calories || 0,
-        grade: foodItem.grade || 'c',
-        nutrients: foodItem.nutrients || [],
-        macros: foodItem.macros || [],
-        ...foodItem // spread any additional properties
-      };
-      
-      ingredients.value.push(ingredient);
-      error.value = '';
-      showAddIngredient.value = false;
-    };
-
-    const removeIngredient = (index) => {
-      ingredients.value.splice(index, 1);
-    };
-
-    const resetForm = () => {
-      name.value = '';
-      description.value = '';
-      ingredients.value = [];
-      showAddIngredient.value = false;
-      error.value = '';
-    };
-
-    const submitRecipe = async () => {
-      if (!isValid.value) {
-        error.value = 'Please fill in all required fields and add at least one ingredient';
-        return;
+  ingredients.value.forEach(ingredient => {
+    if (!ingredient.nutrients || !Array.isArray(ingredient.nutrients)) return
+    
+    ingredient.nutrients.forEach(nutrient => {
+      if (!nutrientMap.has(nutrient.name)) {
+        nutrientMap.set(nutrient.name, {
+          name: nutrient.name,
+          unit: nutrient.unit,
+          totalAmount: 0,
+          amount100g: 0,
+          amountPerServing: 0
+        })
       }
+      
+      const nutrientData = nutrientMap.get(nutrient.name)
+      nutrientData.totalAmount += (nutrient.totalAmount || 0)
+    })
+  })
 
-      if (!userStore.user || !userStore.user._id) {
-        error.value = 'User not logged in. Please log in to create a recipe.';
-        return;
+  return Array.from(nutrientMap.values())
+})
+
+// Sum all macros from all ingredients
+const recipeMacros = computed(() => {
+  if (!ingredients.value.length) return []
+  
+  const macroMap = new Map()
+
+  ingredients.value.forEach(ingredient => {
+    if (!ingredient.macros || !Array.isArray(ingredient.macros)) return
+    
+    ingredient.macros.forEach(macro => {
+      if (!macroMap.has(macro.name)) {
+        macroMap.set(macro.name, {
+          name: macro.name,
+          unit: macro.unit,
+          totalAmount: 0,
+          amount100g: 0,
+          amountPerServing: 0
+        })
       }
+      
+      const macroData = macroMap.get(macro.name)
+      macroData.totalAmount += (macro.totalAmount || 0)
+    })
+  })
 
-      try {
-        const recipe = {
-          name: name.value.trim(),
-          description: description.value.trim(),
-          ingredients: ingredients.value,
-          userId: userStore.user._id,
-          userName: userStore.user.nickname || 'Anonymous',
-          grade: recipeGrade.value,
-          macros: recipeMacros.value,
-          nutrients: recipeNutrients.value,
-          createdAt: new Date(),
-          totalCalories: totalCalories.value, 
-        };
+  return Array.from(macroMap.values())
+})
 
-        await store.addRecipe(recipe);
-        emit('recipe-added', recipe);
-        resetForm();
-      } catch (err) {
-        console.error('Error creating recipe:', err);
-        error.value = 'Failed to create recipe. Please try again.';
-      }
-    };
+const isValid = computed(() => {
+  return name.value.trim() && ingredients.value.length > 0
+})
 
-    return {
-      name,
-      description,
-      ingredients,
-      showAddIngredient,
-      error,
-      totalCalories,
-      recipeGrade,
-      recipeMacros,
-      recipeNutrients,
-      isValid,
-      handleScannedItemSelected,
-      handleFoodSelected,
-      removeIngredient,
-      resetForm,
-      submitRecipe,
-      getGradeColor,
-      getGradeColorText
-    };
+const handleScannedItemSelected = (foodItem) => {
+  ingredients.value.push(foodItem)
+  error.value = ''
+  showAddIngredient.value = false
+}
+
+const handleFoodSelected = (foodItem) => {
+  // Ensure the food item has the required structure
+  const ingredient = {
+    name: foodItem.name,
+    quantity: foodItem.quantity || 100,
+    calories: foodItem.calories || 0,
+    grade: foodItem.grade || 'c',
+    nutrients: foodItem.nutrients || [],
+    macros: foodItem.macros || [],
+    ...foodItem
   }
-};
+  
+  ingredients.value.push(ingredient)
+  error.value = ''
+  showAddIngredient.value = false
+}
+
+const removeIngredient = (index) => {
+  ingredients.value.splice(index, 1)
+}
+
+const resetForm = () => {
+  name.value = ''
+  description.value = ''
+  ingredients.value = []
+  showAddIngredient.value = false
+  error.value = ''
+}
+
+const submitRecipe = async () => {
+  if (!isValid.value) {
+    error.value = 'Please fill in all required fields and add at least one ingredient'
+    return
+  }
+
+  if (!userStore.user || !userStore.user._id) {
+    error.value = 'User not logged in. Please log in to create a recipe.'
+    return
+  }
+
+  try {
+    const recipe = {
+      name: name.value.trim(),
+      description: description.value.trim(),
+      ingredients: ingredients.value,
+      userId: userStore.user._id,
+      userName: userStore.user.nickname || 'Anonymous',
+      grade: recipeGrade.value,
+      macros: recipeMacros.value,
+      nutrients: recipeNutrients.value,
+      createdAt: new Date(),
+      totalCalories: totalCalories.value
+    }
+
+    await store.addRecipe(recipe)
+    emit('recipe-added', recipe)
+    resetForm()
+  } catch (err) {
+    console.error('Error creating recipe:', err)
+    error.value = 'Failed to create recipe. Please try again.'
+  }
+}
 </script>

@@ -85,82 +85,64 @@
   </header>
 </template>
 
-<script>
+<script setup>
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/userStore'
 import DatePicker from './DatePicker.vue'
 
-export default {
-  name: 'Header',
-  components: {
-    DatePicker
-  },
-  props: {
-    sidebarOpen: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['toggle-sidebar'],
-  setup(props, { emit }) {
-    const router = useRouter()
-    const userStore = useUserStore()
-    
-    const menuOpen = ref(false)
-
-    const isAuthenticated = computed(() => {
-      return !!userStore.authToken.value && !userStore.isTokenExpired()
-    })
-
-    const displayName = computed(() => {
-      if (!isAuthenticated.value || !userStore.user || !userStore.user._id) {
-        return 'Guest'
-      }
-      return userStore.user.nickname || userStore.user.name || 'Guest'
-    })
-
-    const toggleMenu = () => {
-      menuOpen.value = !menuOpen.value
-    }
-
-    const toggleSidebar = () => {
-      emit('toggle-sidebar')
-    }
-
-    const goToSettings = () => {
-      router.push('/settings')
-      menuOpen.value = false
-    }
-
-    const goToLogin = () => {
-      router.push('/login')
-      menuOpen.value = false
-    }
-
-    const goToRegister = () => {
-      router.push('/register')
-      menuOpen.value = false
-    }
-
-    const handleLogout = () => {
-      userStore.logout()
-      router.push('/login')
-      menuOpen.value = false
-    }
-
-    return { 
-      displayName,
-      isAuthenticated,
-      menuOpen,
-      toggleMenu,
-      toggleSidebar,
-      goToSettings,
-      goToLogin,
-      goToRegister,
-      handleLogout
-    }
+defineProps({
+  sidebarOpen: {
+    type: Boolean,
+    default: false
   }
+})
+
+const emit = defineEmits(['toggle-sidebar'])
+
+const router = useRouter()
+const userStore = useUserStore()
+
+const menuOpen = ref(false)
+
+const isAuthenticated = computed(() => {
+  return !!userStore.authToken.value && !userStore.isTokenExpired()
+})
+
+const displayName = computed(() => {
+  if (!isAuthenticated.value || !userStore.user || !userStore.user._id) {
+    return 'Guest'
+  }
+  return userStore.user.nickname || userStore.user.name || 'Guest'
+})
+
+const toggleMenu = () => {
+  menuOpen.value = !menuOpen.value
+}
+
+const toggleSidebar = () => {
+  emit('toggle-sidebar')
+}
+
+const goToSettings = () => {
+  router.push('/settings')
+  menuOpen.value = false
+}
+
+const goToLogin = () => {
+  router.push('/login')
+  menuOpen.value = false
+}
+
+const goToRegister = () => {
+  router.push('/register')
+  menuOpen.value = false
+}
+
+const handleLogout = () => {
+  userStore.logout()
+  router.push('/login')
+  menuOpen.value = false
 }
 </script>
 

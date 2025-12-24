@@ -56,19 +56,13 @@
   </div>
 </template>
 
-<script>
-import { getGradeClass } from '@/utils/gradeUtils';
+<script setup>
+import { getGradeClass } from '@/utils/gradeUtils'
 
-export default {
-  name: 'FoodItem',
-  props: { 
-    food: {
-      type: Object,
-      required: true
-    }
-  },
-  setup() {
-    return { getGradeClass };
+defineProps({ 
+  food: {
+    type: Object,
+    required: true
   }
-};
+})
 </script>

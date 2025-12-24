@@ -9,31 +9,23 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useDietStore } from '../../store/dietStore'
 import CircularProgress from './CircularProgress.vue'
 
-export default {
-  name: 'CaloriesSummary',
-  components: { CircularProgress },
-  props: { 
-    totalCalories: {
-      type: Number,
-      default: 0
-    }
-  },
-
-  setup() {
-    const dietStore = useDietStore()
-    const { selectedDiet } = storeToRefs(dietStore)
-
-    const dailyGoal = computed(() => {
-      return selectedDiet.value?.caloriesAmount ?? 2000
-    })
-
-    return { dailyGoal }
+defineProps({ 
+  totalCalories: {
+    type: Number,
+    default: 0
   }
-}
+})
+
+const dietStore = useDietStore()
+const { selectedDiet } = storeToRefs(dietStore)
+
+const dailyGoal = computed(() => {
+  return selectedDiet.value?.caloriesAmount ?? 2000
+})
 </script>

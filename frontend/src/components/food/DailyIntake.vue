@@ -16,28 +16,18 @@
   </div>
 </template>
 
-<script>
-import { watch } from 'vue';
-import FoodItem from './FoodItem.vue';
+<script setup>
+import { watch } from 'vue'
+import FoodItem from './FoodItem.vue'
 
-export default {
-  name: 'DailyIntake',
-  components: {
-    FoodItem
-  },
-  props: { 
-    meals: {
-      type: Array,
-      default: () => []
-    }
-  },
-  setup(props) {
-    // Watch meals to reactively handle changes if needed
-    watch(() => props.meals, (newMeals) => {
-      console.log('Food items updated:', newMeals);
-    });
-
-    return {};
+const props = defineProps({ 
+  meals: {
+    type: Array,
+    default: () => []
   }
-};
+})
+
+watch(() => props.meals, (newMeals) => {
+  console.log('Food items updated:', newMeals)
+})
 </script>

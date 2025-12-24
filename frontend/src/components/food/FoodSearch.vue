@@ -58,112 +58,95 @@
   </div>
 </template>
 
-<script>
-import { ref, computed } from 'vue';
-import axios from 'axios';
-import { useScannedItemStore } from '@/store/scannedItemStore';
-import { useUserStore } from '@/store/userStore';
-import ScannedItem from './ScannedItem.vue';
+<script setup>
+import { ref, computed } from 'vue'
+import axios from 'axios'
+import { useScannedItemStore } from '@/store/scannedItemStore'
+import { useUserStore } from '@/store/userStore'
+import ScannedItem from './ScannedItem.vue'
 
-export default {
-  name: 'FoodSearch',
-  components: { ScannedItem },
-  emits: ['select-food'],
-  setup(_, { emit }) {
-    const query = ref('');
-    const results = ref([]);
-    const scannedItemStore = useScannedItemStore();
-    const userStore = useUserStore();
+const emit = defineEmits(['select-food'])
 
-    // Get user's scanned items from the store
-    const userScannedItems = computed(() => {
-      return Array.from(scannedItemStore.scannedItems.values());
-    });
+const query = ref('')
+const results = ref([])
+const scannedItemStore = useScannedItemStore()
+const userStore = useUserStore()
 
-    // Separate scanned items from recipe database results
-    const scannedResults = computed(() => {
-      return results.value.filter(r => r.source === 'Scanned Item');
-    });
+const userScannedItems = computed(() => {
+  return Array.from(scannedItemStore.scannedItems.values())
+})
 
-    const recipeResults = computed(() => {
-      return results.value.filter(r => r.source === 'Recipe Database');
-    });
+const scannedResults = computed(() => {
+  return results.value.filter(r => r.source === 'Scanned Item')
+})
 
-    const searchFood = async () => {
-      if (!query.value) {
-        results.value = [];
-        return;
-      }
+const recipeResults = computed(() => {
+  return results.value.filter(r => r.source === 'Recipe Database')
+})
 
-      const searchQuery = query.value.toLowerCase();
-      const combinedResults = [];
-
-      // Search in user's scanned items
-      const scannedMatches = userScannedItems.value
-        .filter(item => 
-          item.name.toLowerCase().includes(searchQuery) ||
-          (item.brand && item.brand.toLowerCase().includes(searchQuery)) ||
-          (item.barcode && item.barcode.includes(searchQuery))
-        )
-        .map(item => ({
-          id: item._id,
-          name: item.name,
-          calories: item.calories || 0,
-          source: 'Scanned Item',
-          originalItem: item
-        }));
-
-      combinedResults.push(...scannedMatches);
-
-      // Search in recipes/ingredients API
-      try {
-        const res = await axios.get(`/recipes/search/ingredient/${query.value}`);
-        const recipeMatches = res.data.map(r => ({
-          id: r.id,
-          name: r.name,
-          calories: r.totalCalories || 0,
-          source: 'Recipe Database',
-          originalItem: r
-        }));
-        combinedResults.push(...recipeMatches);
-      } catch (err) {
-        console.error('Error searching food:', err);
-      }
-
-      results.value = combinedResults;
-    };
-
-    const handleScannedItemAdd = (foodItem) => {
-      // Emit the converted food item from ScannedItem component
-      emit('select-food', foodItem);
-      query.value = '';
-      results.value = [];
-    };
-
-    const selectRecipeFood = (food) => {
-      // For recipe database items, emit the basic food data
-      emit('select-food', {
-        id: food.id,
-        name: food.name,
-        calories: food.calories,
-        quantity: 100,
-        grade: 'c',
-        nutrients: []
-      });
-      
-      query.value = '';
-      results.value = [];
-    };
-
-    return { 
-      query, 
-      results, 
-      scannedResults,
-      recipeResults,
-      searchFood, 
-      handleScannedItemAdd,
-      selectRecipeFood
-    };
+const searchFood = async () => {
+  if (!query.value) {
+    results.value = []
+    return
   }
-};
+
+  const searchQuery = query.value.toLowerCase()
+  const combinedResults = []
+
+  // Search in user's scanned items
+  const scannedMatches = userScannedItems.value
+    .filter(item => 
+      item.name.toLowerCase().includes(searchQuery) ||
+      (item.brand && item.brand.toLowerCase().includes(searchQuery)) ||
+      (item.barcode && item.barcode.includes(searchQuery))
+    )
+    .map(item => ({
+      id: item._id,
+      name: item.name,
+      calories: item.calories || 0,
+      source: 'Scanned Item',
+      originalItem: item
+    }))
+
+  combinedResults.push(...scannedMatches)
+
+  // Search in recipes/ingredients API
+  try {
+    const res = await axios.get(`/recipes/search/ingredient/${query.value}`)
+    const recipeMatches = res.data.map(r => ({
+      id: r.id,
+      name: r.name,
+      calories: r.totalCalories || 0,
+      source: 'Recipe Database',
+      originalItem: r
+    }))
+    combinedResults.push(...recipeMatches)
+  } catch (err) {
+    console.error('Error searching food:', err)
+  }
+
+  results.value = combinedResults
+}
+
+const handleScannedItemAdd = (foodItem) => {
+  // Emit the converted food item from ScannedItem component
+  emit('select-food', foodItem)
+  query.value = ''
+  results.value = []
+}
+
+const selectRecipeFood = (food) => {
+  // For recipe database items, emit the basic food data
+  emit('select-food', {
+    id: food.id,
+    name: food.name,
+    calories: food.calories,
+    quantity: 100,
+    grade: 'c',
+    nutrients: []
+  })
+  
+  query.value = ''
+  results.value = []
+}
 </script>

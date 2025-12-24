@@ -183,113 +183,99 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, watch } from 'vue'
 
-export default {
-  name: 'CreateDietModal',
-  props: {
-    show: {
-      type: Boolean,
-      required: true
-    }
-  },
-  emits: ['close', 'create'],
-  setup(props, { emit }) {
-    const error = ref('')
+const props = defineProps({
+  show: {
+    type: Boolean,
+    required: true
+  }
+})
 
-    const newDiet = ref({
-      name: '',
-      calories: 2000,
-      macros: {
-        protein: 30,
-        carbohydrates: 40,
-        fat: 30
-      }
-    })
+const emit = defineEmits(['close', 'create'])
 
-    const totalPercentage = computed(() => {
-      return newDiet.value.macros.protein + 
-             newDiet.value.macros.carbohydrates + 
-             newDiet.value.macros.fat
-    })
+const error = ref('')
 
-    const isValid = computed(() => {
-      return newDiet.value.name.trim() !== '' &&
-             newDiet.value.calories > 0 &&
-             totalPercentage.value === 100
-    })
+const newDiet = ref({
+  name: '',
+  calories: 2000,
+  macros: {
+    protein: 30,
+    carbohydrates: 40,
+    fat: 30
+  }
+})
 
-    const calculateMacroGrams = (macroName) => {
-      const percentage = newDiet.value.macros[macroName]
-      const calories = newDiet.value.calories * (percentage / 100)
-      const caloriesPerGram = macroName === 'fat' ? 9 : 4
-      return (calories / caloriesPerGram).toFixed(1)
-    }
+const totalPercentage = computed(() => {
+  return newDiet.value.macros.protein + 
+         newDiet.value.macros.carbohydrates + 
+         newDiet.value.macros.fat
+})
 
-    const calculateMacroCalories = (macroName) => {
-      const percentage = newDiet.value.macros[macroName]
-      return Math.round(newDiet.value.calories * (percentage / 100))
-    }
+const isValid = computed(() => {
+  return newDiet.value.name.trim() !== '' &&
+         newDiet.value.calories > 0 &&
+         totalPercentage.value === 100
+})
 
-    const resetForm = () => {
-      newDiet.value = {
-        name: '',
-        calories: 2000,
-        macros: {
-          protein: 30,
-          carbohydrates: 40,
-          fat: 30
-        }
-      }
-      error.value = ''
-    }
+const calculateMacroGrams = (macroName) => {
+  const percentage = newDiet.value.macros[macroName]
+  const calories = newDiet.value.calories * (percentage / 100)
+  const caloriesPerGram = macroName === 'fat' ? 9 : 4
+  return (calories / caloriesPerGram).toFixed(1)
+}
 
-    const closeModal = () => {
-      resetForm()
-      emit('close')
-    }
+const calculateMacroCalories = (macroName) => {
+  const percentage = newDiet.value.macros[macroName]
+  return Math.round(newDiet.value.calories * (percentage / 100))
+}
 
-    const handleCreate = () => {
-      if (!isValid.value) {
-        error.value = 'Please fill all fields correctly and ensure macros total 100%'
-        return
-      }
-
-      const macrosPercentage = new Map([
-        ['protein', newDiet.value.macros.protein],
-        ['carbohydrates', newDiet.value.macros.carbohydrates],
-        ['fat', newDiet.value.macros.fat]
-      ])
-
-      emit('create', {
-        name: newDiet.value.name,
-        calories: newDiet.value.calories,
-        macrosPercentage
-      })
-
-      resetForm()
-    }
-
-    // Reset form when modal is closed
-    watch(() => props.show, (newVal) => {
-      if (!newVal) {
-        resetForm()
-      }
-    })
-
-    return {
-      newDiet,
-      error,
-      totalPercentage,
-      isValid,
-      calculateMacroGrams,
-      calculateMacroCalories,
-      closeModal,
-      handleCreate
+const resetForm = () => {
+  newDiet.value = {
+    name: '',
+    calories: 2000,
+    macros: {
+      protein: 30,
+      carbohydrates: 40,
+      fat: 30
     }
   }
+  error.value = ''
 }
+
+const closeModal = () => {
+  resetForm()
+  emit('close')
+}
+
+const handleCreate = () => {
+  if (!isValid.value) {
+    error.value = 'Please fill all fields correctly and ensure macros total 100%'
+    return
+  }
+
+  const macrosPercentage = new Map([
+    ['protein', newDiet.value.macros.protein],
+    ['carbohydrates', newDiet.value.macros.carbohydrates],
+    ['fat', newDiet.value.macros.fat]
+  ])
+
+  emit('create', {
+    name: newDiet.value.name,
+    calories: newDiet.value.calories,
+    macrosPercentage
+  })
+
+  resetForm()
+}
+
+// Reset form when modal is closed
+watch(() => props.show, (newVal) => {
+  if (!newVal) {
+    resetForm()
+  }
+})
 </script>
 
 <style scoped>

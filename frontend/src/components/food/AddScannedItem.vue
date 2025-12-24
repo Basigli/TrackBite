@@ -252,19 +252,13 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, computed, watch } from 'vue'
 import { FoodItemConverter } from '../../utils/FoodItemConverter'
-import { getGradeColor, getNutrientLevelColor } from '../../constants/theme'
-import { MACRO_COLORS, getKeyFromMacro } from '../../constants/theme'
+import { getGradeColor, getNutrientLevelColor, MACRO_COLORS, getKeyFromMacro } from '../../constants/theme'
 import ScannedItemPreview from './ScannedItemPreview.vue'
 
-export default {
-  name: 'AddScannedItem',
-  components: {
-    ScannedItemPreview
-  },
-  props: {
+  const props = defineProps({
     item: {
       type: Object,
       required: true
@@ -273,111 +267,93 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  emits: ['close', 'add'],
-  setup(props, { emit }) {
-    const conversionType = ref('default')
-    const servings = ref(1)
-    const grams = ref(100)
-    const error = ref('')
+  })
 
-    const converter = new FoodItemConverter()
+  const emit = defineEmits(['close', 'add'])
 
-    const totalServings = computed(() => {
-      return props.item.quantity / props.item.quantityPerServing
-    })
+  const conversionType = ref('default')
+  const servings = ref(1)
+  const grams = ref(100)
+  const error = ref('')
 
-    const percentage = computed(() => {
+  const converter = new FoodItemConverter()
+
+  const totalServings = computed(() => {
+    return props.item.quantity / props.item.quantityPerServing
+  })
+
+  const percentage = computed(() => {
+    if (conversionType.value === 'servings') {
+      return (servings.value / totalServings.value) * 100
+    } else if (conversionType.value === 'grams') {
+      return (grams.value / props.item.quantity) * 100
+    }
+    return 100
+  })
+
+  const isValid = computed(() => {
+    if (conversionType.value === 'servings') {
+      return servings.value > 0 && servings.value <= totalServings.value
+    } else if (conversionType.value === 'grams') {
+      return grams.value > 0 && grams.value <= props.item.quantity
+    }
+    return true
+  })
+
+  const preview = computed(() => {
+    if (!isValid.value) return null
+    try {
+      let foodItem
       if (conversionType.value === 'servings') {
-        return (servings.value / totalServings.value) * 100
+        foodItem = converter.toFoodItemWithServings(props.item, servings.value)
       } else if (conversionType.value === 'grams') {
-        return (grams.value / props.item.quantity) * 100
+        foodItem = converter.toFoodItemWithGrams(props.item, grams.value)
+      } else {
+        foodItem = converter.toFoodItemDefault(props.item)
       }
-      return 100
-    })
+      return foodItem
+    } catch (err) {
+      console.error('Preview error:', err)
+      return null
+    }
+  })
 
-    const isValid = computed(() => {
-      if (conversionType.value === 'servings') {
-        return servings.value > 0 && servings.value <= totalServings.value
-      } else if (conversionType.value === 'grams') {
-        return grams.value > 0 && grams.value <= props.item.quantity
-      }
-      return true
-    })
+  watch([conversionType, servings, grams], () => {
+    error.value = ''
+  })
 
-    const preview = computed(() => {
-      if (!isValid.value) return null
-      try {
-        let foodItem
-        if (conversionType.value === 'servings') {
-          foodItem = converter.toFoodItemWithServings(props.item, servings.value)
-        } else if (conversionType.value === 'grams') {
-          foodItem = converter.toFoodItemWithGrams(props.item, grams.value)
-        } else {
-          foodItem = converter.toFoodItemDefault(props.item)
-        }
-        return foodItem
-      } catch (err) {
-        console.error('Preview error:', err)
-        return null
-      }
-    })
+  const closeModal = () => {
+    error.value = ''
+    conversionType.value = 'default'
+    servings.value = 1
+    grams.value = 100
+    emit('close')
+  }
 
-    watch([conversionType, servings, grams], () => {
-      error.value = ''
-    })
-
-    const closeModal = () => {
-      error.value = ''
-      conversionType.value = 'default'
-      servings.value = 1
-      grams.value = 100
-      emit('close')
+  const handleAdd = () => {
+    if (!isValid.value) {
+      error.value = 'Please enter valid values'
+      return
     }
 
-    const handleAdd = () => {
-      if (!isValid.value) {
-        error.value = 'Please enter valid values'
-        return
+    try {
+      let foodItem
+      if (conversionType.value === 'servings') {
+        foodItem = converter.toFoodItemWithServings(props.item, servings.value)
+      } else if (conversionType.value === 'grams') {
+        foodItem = converter.toFoodItemWithGrams(props.item, grams.value)
+      } else {
+        foodItem = converter.toFoodItemDefault(props.item)
       }
 
-      try {
-        let foodItem
-        if (conversionType.value === 'servings') {
-          foodItem = converter.toFoodItemWithServings(props.item, servings.value)
-        } else if (conversionType.value === 'grams') {
-          foodItem = converter.toFoodItemWithGrams(props.item, grams.value)
-        } else {
-          foodItem = converter.toFoodItemDefault(props.item)
-        }
+      console.log(props.item)
+      console.log('Adding food item:', foodItem)
 
-        console.log(props.item)
-        console.log('Adding food item:', foodItem)
-
-        emit('add', foodItem)
-        closeModal()
-      } catch (err) {
-        console.error('Conversion error:', err)
-        error.value = 'Failed to convert item. Please try again.'
-      }
-    }
-
-    return {
-      conversionType,
-      servings,
-      grams,
-      error,
-      totalServings,
-      percentage,
-      isValid,
-      preview,
-      closeModal,
-      handleAdd,
-      getGradeColor,
-      getNutrientLevelColor,
-      MACRO_COLORS,
-      getKeyFromMacro
+      emit('add', foodItem)
+      closeModal()
+    } catch (err) {
+      console.error('Conversion error:', err)
+      error.value = 'Failed to convert item. Please try again.'
     }
   }
-}
 </script>

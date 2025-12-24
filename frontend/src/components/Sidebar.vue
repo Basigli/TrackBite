@@ -28,73 +28,64 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { computed, onMounted } from 'vue'
 import { useUserStore } from '../store/userStore'
 
-export default {
-  name: 'Sidebar',
-  props: {
-    navItems: {
-      type: Array,
-      default: null
-    },
-    appName: {
-      type: String,
-      default: 'TrackBite'
-    },
-    isOpen: {
-      type: Boolean,
-      default: false
-    }
+const props = defineProps({
+  navItems: {
+    type: Array,
+    default: null
   },
-  emits: ['update:isOpen'],
-  computed: {
-    computedNavItems() {
-      // If navItems prop is provided, use it
-      if (this.navItems) {
-        return this.navItems
-      }
-
-      // Otherwise, compute based on user role
-      const userStore = useUserStore()
-      const baseItems = [
-        { path: '/', label: 'Dashboard' },
-        { path: '/history', label: 'History' },
-        { path: '/scan-food', label: 'Scan Food' },
-        { path: '/recipes', label: 'Recipes' },
-        { path: '/diet', label: 'Diet' }
-      ]
-
-      if (userStore.user?.isAdmin) {
-        return [
-          // ...baseItems,
-          // { path: '/admin/users', label: 'Manage Users' },
-          // { path: '/admin/reports', label: 'Reports' },
-          // { path: '/settings', label: 'Settings' }
-        ]
-      }
-
-      return [...baseItems, { path: '/settings', label: 'Settings' }]
-    }
+  appName: {
+    type: String,
+    default: 'TrackBite'
   },
-  methods: {
-    closeSidebar() {
-      this.$emit('update:isOpen', false)
-    },
-    closeSidebarOnMobile() {
-      // Close sidebar on mobile when a link is clicked
-      if (window.innerWidth < 1024) {
-        this.closeSidebar()
-      }
-    }
-  },
-  mounted() {
-    // Open sidebar by default on desktop
-    if (window.innerWidth >= 1024) {
-      this.$emit('update:isOpen', true)
-    }
+  isOpen: {
+    type: Boolean,
+    default: false
+  }
+})
+
+const emit = defineEmits(['update:isOpen'])
+
+const userStore = useUserStore()
+
+const computedNavItems = computed(() => {
+  // If navItems prop is provided, use it
+  if (props.navItems) {
+    return props.navItems
+  }
+
+  // Otherwise, compute based on user role
+  const baseItems = [
+    { path: '/', label: 'Dashboard' },
+    { path: '/history', label: 'History' },
+    { path: '/scan-food', label: 'Scan Food' },
+    { path: '/recipes', label: 'Recipes' },
+    { path: '/diet', label: 'Diet' }
+  ]
+
+  return [...baseItems, { path: '/settings', label: 'Settings' }]
+})
+
+const closeSidebar = () => {
+  emit('update:isOpen', false)
+}
+
+const closeSidebarOnMobile = () => {
+  // Close sidebar on mobile when a link is clicked
+  if (window.innerWidth < 1024) {
+    closeSidebar()
   }
 }
+
+onMounted(() => {
+  // Open sidebar by default on desktop
+  if (window.innerWidth >= 1024) {
+    emit('update:isOpen', true)
+  }
+})
 </script>
 
 <style scoped>

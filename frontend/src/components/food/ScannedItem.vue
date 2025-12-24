@@ -22,33 +22,22 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import AddScannedItem from './AddScannedItem.vue'
 
-export default {
-  name: 'ScannedItem',
-  components: {
-    AddScannedItem
-  },
-  props: {
-    item: {
-      type: Object,
-      required: true
-    }
-  },
-  emits: ['add'],
-  setup(props, { emit }) {
-    const showAddModal = ref(false)
-
-    const handleAdd = (foodItem) => {
-      emit('add', foodItem)
-    }
-
-    return {
-      showAddModal,
-      handleAdd
-    }
+defineProps({
+  item: {
+    type: Object,
+    required: true
   }
+})
+
+const emit = defineEmits(['add'])
+
+const showAddModal = ref(false)
+
+const handleAdd = (foodItem) => {
+  emit('add', foodItem)
 }
 </script>

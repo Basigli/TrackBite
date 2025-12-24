@@ -54,41 +54,35 @@
   </div>
 </template>
 
-<script>
-import { ref, watch } from 'vue';
+<script setup>
+import { ref, watch } from 'vue'
 
-export default {
-  name: 'DietPlan',
-  props: {
-    diet: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: ['update-diet', 'delete-diet'],
-  setup(props, { emit }) {
-    const editMode = ref(false);
-    const dietName = ref(props.diet.name);
-    const dietCalories = ref(props.diet.caloriesAmount);
+const props = defineProps({
+  diet: {
+    type: Object,
+    required: true
+  }
+})
 
-    // sync props when updated from parent
-    watch(
-      () => props.diet,
-      (newDiet) => {
-        dietName.value = newDiet.name;
-        dietCalories.value = newDiet.caloriesAmount;
-      }
-    );
+const emit = defineEmits(['update-diet', 'delete-diet'])
 
-    const saveDiet = () => {
-      emit('update-diet', props.diet._id, {
-        name: dietName.value,
-        caloriesAmount: dietCalories.value,
-      });
-      editMode.value = false;
-    };
+const editMode = ref(false)
+const dietName = ref(props.diet.name)
+const dietCalories = ref(props.diet.caloriesAmount)
 
-    return { editMode, dietName, dietCalories, saveDiet };
-  },
-};
+watch(
+  () => props.diet,
+  (newDiet) => {
+    dietName.value = newDiet.name
+    dietCalories.value = newDiet.caloriesAmount
+  }
+)
+
+const saveDiet = () => {
+  emit('update-diet', props.diet._id, {
+    name: dietName.value,
+    caloriesAmount: dietCalories.value
+  })
+  editMode.value = false
+}
 </script>

@@ -143,37 +143,30 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { getGradeClass } from '@/utils/gradeUtils';
 import RecipeRating from './RecipeRating.vue';
 
-export default {
-  name: 'RecipeDetail',
-  components: {
-    RecipeRating,
+defineProps({
+  recipe: {
+    type: Object,
+    required: true,
   },
-  props: {
-    recipe: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: ['close'],
-  setup() {
-    return { getGradeClass };
-  },
-  methods: {
-    formatDate(date) {
-      if (!date) return '-';
-      const d = new Date(date);
-      return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
-    },
-    handleRatingLoaded(rating) {
-      console.log('Rating loaded:', rating);
-    },
-    handleRatingError(error) {
-      console.error('Rating error:', error);
-    },
-  },
+});
+
+const emit = defineEmits(['close']);
+
+const formatDate = (date) => {
+  if (!date) return '-';
+  const d = new Date(date);
+  return d.toLocaleDateString() + ' ' + d.toLocaleTimeString();
+};
+
+const handleRatingLoaded = (rating) => {
+  console.log('Rating loaded:', rating);
+};
+
+const handleRatingError = (error) => {
+  console.error('Rating error:', error);
 };
 </script>

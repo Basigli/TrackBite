@@ -14,8 +14,8 @@
         </div>
       </button>
       
-      <!-- Logo - add left margin only when hamburger is hidden -->
-      <div class="logo text-lg font-bold gap-1 ml-1 lg:ml-4">TrackBite</div>
+      <!-- Logo - show on mobile, hide on desktop -->
+      <div class="logo text-lg font-bold gap-1 ml-1 lg:hidden">TrackBite</div>
     </div>
 
     <div class="header-actions flex items-center gap-0.5">

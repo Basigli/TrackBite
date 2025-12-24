@@ -8,17 +8,9 @@
       class="app-sidebar w-64 h-screen bg-gray-800 text-white flex flex-col p-4 fixed lg:static z-40 transition-transform duration-300"
       :class="{ '-translate-x-full lg:translate-x-0': !isOpen, 'translate-x-0': isOpen }">
       
-      <!-- Header with logo and close button -->
-      <div class="flex items-center justify-between mb-8 mt-4 lg:mt-0">
+      <!-- Header with logo -->
+      <div class="flex items-center mb-8 mt-4 lg:mt-0">
         <div class="sidebar-logo text-2xl font-bold">{{ appName }}</div>
-        <button 
-          @click="closeSidebar" 
-          class="lg:hidden text-white hover:bg-gray-700 rounded p-1 transition-colors"
-          aria-label="Close sidebar">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
 
       <nav class="flex flex-col gap-2">

@@ -49,11 +49,12 @@ const center = 80;
 const circumference = 2 * Math.PI * radius;
 
 const percentage = computed(() =>
-  Math.min(100, Math.round((props.current / props.goal) * 100))
+  Math.round((props.current / props.goal) * 100)
 );
 
 const dashOffset = computed(() => {
-  return circumference - (props.current / props.goal) * circumference;
+  const progress = Math.min(1, props.current / props.goal);
+  return circumference - progress * circumference;
 });
 
 const gradientColor = computed(() => {

@@ -19,8 +19,13 @@ const getAllUsers = async (req: Request, res: Response) => {
 // POST /users - Create a new user
 const createUser = async (req: Request, res: Response) => {
   try {
-    const parsed = UserSchemaZ.safeParse(req.body);
+    // extract password hash from req.body
+    const { passwordHash, ...userData } = req.body;
+    const parsed = UserSchemaZ.safeParse(userData);
+    console.log('User data:', userData);
+
     if (!parsed.success) {
+      console.log('Validation errors:', parsed.error);
       return res.status(400).json({ error: "Invalid user data", details: parsed.error });
     }
 
@@ -29,7 +34,7 @@ const createUser = async (req: Request, res: Response) => {
     
     // Hash the password before storing
     const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(req.body.passwordHash, saltRounds);
+    const hashedPassword = await bcrypt.hash(passwordHash, saltRounds);
     
     const userCredentials = new UserCredentialsModel({
       nickname: savedUser.nickname,
@@ -40,6 +45,7 @@ const createUser = async (req: Request, res: Response) => {
   } catch (err: any) {
     if (err.code === 11000) {
       // Duplicate key error (unique constraint)
+      console.log('Duplicate key error:', err);
       return res.status(400).json({ error: "Email already exists" });
     }
     res.status(500).json({ error: "Failed to create user" });

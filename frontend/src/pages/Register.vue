@@ -142,6 +142,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../api';
+import { is } from 'zod/locales';
 
 export default {
   name: 'RegisterPage',
@@ -228,10 +229,12 @@ export default {
         return;
       }
 
+      console.log('Form Data:', formData);
+
       loading.value = true;
 
       try {
-        const res = await api.post('/users', { nickname: formData.name, mail: formData.email, savedRecipesIds: [], passwordHash: formData.password, activeDietId: "" });
+        const res = await api.post('/users', { nickname: formData.name, mail: formData.email, savedRecipesIds: [], savedScannedItemsIds: [], passwordHash: formData.password, activeDietId: "", isAdmin: false });
 
         if (res.status !== 201) {
           throw new Error('Registration failed. Please try again.');

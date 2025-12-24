@@ -196,11 +196,37 @@ export default {
 
       try {
         const userStore = useUserStore();
-        const dietStore = useDietStore();
-        await userStore.login(formData.username, formData.password);
+        const loginSuccess = await userStore.login(formData.username, formData.password);
+        
+        // Check if login was successful
+        if (!loginSuccess) {
+          generalError.value = 'User not found or invalid credentials';
+          loading.value = false;
+          return;
+        }
+
         const decoded = userStore.decodeToken();
+        
+        // Check if token was decoded successfully
+        if (!decoded || !decoded.id) {
+          generalError.value = 'User not found';
+          loading.value = false;
+          return;
+        }
+
         console.log('Decoded token:', decoded);
+        
+        // Fetch user data
         await userStore.fetchUser(decoded.id);
+        
+        // Check if user exists
+        if (!userStore.user || !userStore.user._id) {
+          generalError.value = 'User not found';
+          loading.value = false;
+          return;
+        }
+
+        const dietStore = useDietStore();
         await dietStore.fetchDiets(decoded.id);
         dietStore.selectDiet(dietStore.diets.find(diet => diet._id === userStore.user.activeDietId) || null);
         
@@ -224,8 +250,8 @@ export default {
           const status = error.response.status;
           const data = error.response.data;
           
-          if (status === 401) {
-            generalError.value = 'Invalid username or password';
+          if (status === 401 || status === 404) {
+            generalError.value = 'User not found or invalid credentials';
           } else if (status === 400) {
             generalError.value = data.message || 'Invalid request. Please check your input.';
           } else if (status === 500) {
@@ -236,6 +262,9 @@ export default {
         } else if (error.request) {
           // Request was made but no response received
           generalError.value = 'Cannot connect to server. Please check your internet connection.';
+        } else if (error.message && error.message.includes('id')) {
+          // Handle "cannot read property of id" error specifically
+          generalError.value = 'User not found';
         } else {
           // Something else happened
           generalError.value = error.message || 'An unexpected error occurred.';

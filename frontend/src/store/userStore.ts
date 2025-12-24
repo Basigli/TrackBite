@@ -126,6 +126,18 @@ export const useUserStore = defineStore('user', () => {
     }
   };
 
+  const deleteAccount = async (): Promise<boolean> => {
+    if (!user?._id) return false;
+    try {
+      await api.delete(`/users/${user._id}`);
+      logout();
+      return true;
+    } catch (err) {
+      console.error('Error deleting account:', err);
+      return false;
+    }
+  };
+
   const decodeToken = () => {
     if (!authToken.value) return null;
     try {
@@ -164,6 +176,7 @@ export const useUserStore = defineStore('user', () => {
     fetchUser, 
     updateUser, 
     changePassword, 
+    deleteAccount,
     decodeToken, 
     logout, 
     addSavedScannedItem 

@@ -52,6 +52,7 @@ const createUser = async (req: Request, res: Response) => {
   }
 };
 
+// POST /users/login - Log in a user
 const logInUser = async (req: Request, res: Response) => {
   console.log('Request body:', req.body); // Debug log
   console.log('Content-Type:', req.headers['content-type']); // Debug log

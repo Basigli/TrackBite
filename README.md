@@ -9,7 +9,6 @@ It lets you **scan barcodes** of food products to automatically log their nutrit
 ## Tech Stack
 
 Built with the **MEVN stack**:
-
 - **MongoDB** – NoSQL database for users, food items, and daily logs  
 - **Express.js** – Backend API framework for building RESTful endpoints  
 - **Vue.js 3** – Reactive and lightweight frontend framework (Composition API)  
@@ -18,10 +17,27 @@ Built with the **MEVN stack**:
 ---
 
 ## Installation
-
 ### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Basigli/trackbite.git
 cd trackbite
 ```
+
+### 2. Build the images
+
+```bash
+docker-compose build
+```
+
+### 3. Start the containers
+
+```bash
+docker-compose up
+```
+
+The app is available at `http://localhost:5173/`
+
+Login as user `bob` with password `passwordBob` to explore the features.
+
+Login as admin `alice` with password `passwordAlice` to access admin features.

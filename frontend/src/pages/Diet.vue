@@ -16,6 +16,7 @@
     <!-- Create Diet Modal -->
     <CreateDietModal
       :show="showCreateForm"
+      :userId="userStore.user._id"
       @close="showCreateForm = false"
       @create="handleCreateDiet"
     />
@@ -97,7 +98,6 @@
 <script>
 import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { DietBuilder } from '../utils/DietBuilder'
 import DietSelector from '../components/diet/DietSelector.vue'
 import DietPlan from '../components/diet/DietPlan.vue'
 import CreateDietModal from '../components/diet/CreateDietModal.vue'
@@ -115,7 +115,6 @@ export default {
     const dietStore = useDietStore()
     const userStore = useUserStore()
     
-    // Use storeToRefs to maintain reactivity with the store
     const { selectedDiet } = storeToRefs(dietStore)
     
     const showCreateForm = ref(false)
@@ -133,16 +132,10 @@ export default {
 
     const handleCreateDiet = async (dietData) => {
       try {
-        const dietBuilder = new DietBuilder(
-          dietData.name,
-          dietData.calories,
-          dietData.macrosPercentage,
-          userStore.user._id
-        )
-       
-        const diet = dietBuilder.build()
-        console.log("Built diet:", diet)
-        await dietStore.createDiet(diet)
+        // dietData ora arriva già formattato dal modale
+        // con la struttura corretta (name, caloriesAmount, macros array, userId)
+        console.log("Creating diet with data:", dietData)
+        await dietStore.createDiet(dietData)
         
         showCreateForm.value = false
       } catch (err) {
@@ -176,13 +169,13 @@ export default {
 
     onMounted(async () => {
       await dietStore.fetchDiets(userStore.user._id)
-      // Remove the manual selection - let DietSelector handle it
     })
 
     return {
       showCreateForm,
       selectedDiet,
       diets,
+      userStore,
       calculateMacroPercentage,
       capitalizeFirst,
       handleCreateDiet,

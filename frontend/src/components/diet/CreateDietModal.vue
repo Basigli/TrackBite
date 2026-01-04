@@ -190,6 +190,10 @@ const props = defineProps({
   show: {
     type: Boolean,
     required: true
+  },
+  userId: {
+    type: String,
+    required: true
   }
 })
 
@@ -255,16 +259,37 @@ const handleCreate = () => {
     return
   }
 
-  const macrosPercentage = new Map([
-    ['protein', newDiet.value.macros.protein],
-    ['carbohydrates', newDiet.value.macros.carbohydrates],
-    ['fat', newDiet.value.macros.fat]
-  ])
+  // Crea l'array di Nutrient secondo l'interfaccia
+  const macros = [
+    {
+      name: 'protein',
+      unit: 'g',
+      totalAmount: parseFloat(calculateMacroGrams('protein')),
+      amount100g: 0, // Questi valori dipendono dalla logica della tua app
+      amountPerServing: 0
+    },
+    {
+      name: 'carbohydrates',
+      unit: 'g',
+      totalAmount: parseFloat(calculateMacroGrams('carbohydrates')),
+      amount100g: 0,
+      amountPerServing: 0
+    },
+    {
+      name: 'fat',
+      unit: 'g',
+      totalAmount: parseFloat(calculateMacroGrams('fat')),
+      amount100g: 0,
+      amountPerServing: 0
+    }
+  ]
 
+  // Emetti i dati conformi all'interfaccia Diet
   emit('create', {
     name: newDiet.value.name,
-    calories: newDiet.value.calories,
-    macrosPercentage
+    caloriesAmount: newDiet.value.calories,
+    macros: macros,
+    userId: props.userId
   })
 
   resetForm()

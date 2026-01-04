@@ -52,16 +52,21 @@ export const useDietStore = defineStore('diet', () => {
 
   const updateDiet = async (dietId: string, userId: string, data: Partial<Diet>) => {
     try {
-      console.log('Updating diet:', dietId, 'for user:', userId, 'with data:', data)
+      console.log('Store - Updating diet:', dietId, 'for user:', userId, 'with data:', data)
       const res = await api.put<Diet>(`/diets/${dietId}/user/${userId}`, data)
+      console.log('Store - Update response:', res.data)
+      
       const index = diets.value.findIndex((d) => d._id === dietId)
       
       if (index !== -1) {
-        diets.value[index] = res.data
+        // Aggiorna la dieta nell'array con l'intero oggetto restituito dal backend
+        diets.value[index] = { ...res.data }
+        console.log('Store - Updated diet in array at index:', index, diets.value[index])
 
-        console.log(selectedDiet.value, dietId)
+        // Aggiorna la dieta selezionata se è quella modificata
         if (selectedDiet.value?._id === dietId) {
-          selectedDiet.value = res.data
+          selectedDiet.value = { ...res.data }
+          console.log('Store - Updated selectedDiet:', selectedDiet.value)
         }
       }
     } catch (err) {

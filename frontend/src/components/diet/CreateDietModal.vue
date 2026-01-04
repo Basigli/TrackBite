@@ -10,7 +10,9 @@
     <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
       <div class="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-xl">
         <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-bold text-gray-800">Create New Diet</h2>
+          <h2 class="text-2xl font-bold text-gray-800">
+            {{ isEditMode ? 'Edit Diet' : 'Create New Diet' }}
+          </h2>
           <button
             @click="closeModal"
             class="text-gray-400 hover:text-gray-600 transition-colors"
@@ -29,7 +31,7 @@
             Diet Name
           </label>
           <input
-            v-model="newDiet.name"
+            v-model="dietData.name"
             type="text"
             class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
             placeholder="e.g., Weight Loss Plan"
@@ -42,7 +44,7 @@
             Total Daily Calories
           </label>
           <input
-            v-model.number="newDiet.calories"
+            v-model.number="dietData.calories"
             type="number"
             min="0"
             step="100"
@@ -62,10 +64,10 @@
             <div>
               <div class="flex justify-between mb-2">
                 <label class="text-sm text-gray-600">Protein</label>
-                <span class="text-sm font-semibold text-gray-800">{{ newDiet.macros.protein }}%</span>
+                <span class="text-sm font-semibold text-gray-800">{{ dietData.macros.protein }}%</span>
               </div>
               <input
-                v-model.number="newDiet.macros.protein"
+                v-model.number="dietData.macros.protein"
                 type="range"
                 min="0"
                 max="100"
@@ -80,10 +82,10 @@
             <div>
               <div class="flex justify-between mb-2">
                 <label class="text-sm text-gray-600">Carbohydrates</label>
-                <span class="text-sm font-semibold text-gray-800">{{ newDiet.macros.carbohydrates }}%</span>
+                <span class="text-sm font-semibold text-gray-800">{{ dietData.macros.carbohydrates }}%</span>
               </div>
               <input
-                v-model.number="newDiet.macros.carbohydrates"
+                v-model.number="dietData.macros.carbohydrates"
                 type="range"
                 min="0"
                 max="100"
@@ -98,10 +100,10 @@
             <div>
               <div class="flex justify-between mb-2">
                 <label class="text-sm text-gray-600">Fat</label>
-                <span class="text-sm font-semibold text-gray-800">{{ newDiet.macros.fat }}%</span>
+                <span class="text-sm font-semibold text-gray-800">{{ dietData.macros.fat }}%</span>
               </div>
               <input
-                v-model.number="newDiet.macros.fat"
+                v-model.number="dietData.macros.fat"
                 type="range"
                 min="0"
                 max="100"
@@ -136,7 +138,7 @@
         </div>
 
         <!-- Preview -->
-        <div v-if="newDiet.calories > 0" class="bg-gray-50 rounded-lg p-4">
+        <div v-if="dietData.calories > 0" class="bg-gray-50 rounded-lg p-4">
           <h3 class="font-semibold text-gray-700 mb-3">Preview</h3>
           <div class="grid grid-cols-3 gap-3 text-center">
             <div class="bg-white rounded-lg p-3 shadow-sm">
@@ -171,11 +173,11 @@
             Cancel
           </button>
           <button
-            @click="handleCreate"
+            @click="handleSubmit"
             :disabled="!isValid"
             class="flex-1 bg-green-500 text-white py-3 px-4 rounded-md hover:bg-green-600 transition-colors font-semibold disabled:bg-gray-300 disabled:cursor-not-allowed shadow-md"
           >
-            Create Diet
+            {{ isEditMode ? 'Update Diet' : 'Create Diet' }}
           </button>
         </div>
       </div>
@@ -194,57 +196,86 @@ const props = defineProps({
   userId: {
     type: String,
     required: true
+  },
+  diet: {
+    type: Object,
+    default: null
   }
 })
 
-const emit = defineEmits(['close', 'create'])
+const emit = defineEmits(['close', 'create', 'update'])
 
 const error = ref('')
 
-const newDiet = ref({
-  name: '',
-  calories: 2000,
-  macros: {
-    protein: 30,
-    carbohydrates: 40,
-    fat: 30
+// Determina se siamo in modalità edit
+const isEditMode = computed(() => props.diet !== null)
+
+// Funzione helper per calcolare percentuali dai grammi
+const calculatePercentageFromGrams = (grams, totalCalories, macroName) => {
+  const caloriesPerGram = macroName === 'fat' ? 9 : 4
+  const macroCalories = grams * caloriesPerGram
+  return Math.round((macroCalories / totalCalories) * 100)
+}
+
+// Inizializza i dati del form
+const initializeDietData = () => {
+  if (props.diet) {
+    // Modalità edit: carica i dati esistenti
+    const proteinMacro = props.diet.macros.find(m => m.name === 'protein')
+    const carbsMacro = props.diet.macros.find(m => m.name === 'carbohydrates')
+    const fatMacro = props.diet.macros.find(m => m.name === 'fat')
+
+    return {
+      name: props.diet.name,
+      calories: props.diet.caloriesAmount,
+      macros: {
+        protein: proteinMacro ? calculatePercentageFromGrams(proteinMacro.totalAmount, props.diet.caloriesAmount, 'protein') : 30,
+        carbohydrates: carbsMacro ? calculatePercentageFromGrams(carbsMacro.totalAmount, props.diet.caloriesAmount, 'carbohydrates') : 40,
+        fat: fatMacro ? calculatePercentageFromGrams(fatMacro.totalAmount, props.diet.caloriesAmount, 'fat') : 30
+      }
+    }
+  } else {
+    // Modalità create: valori di default
+    return {
+      name: '',
+      calories: 2000,
+      macros: {
+        protein: 30,
+        carbohydrates: 40,
+        fat: 30
+      }
+    }
   }
-})
+}
+
+const dietData = ref(initializeDietData())
 
 const totalPercentage = computed(() => {
-  return newDiet.value.macros.protein + 
-         newDiet.value.macros.carbohydrates + 
-         newDiet.value.macros.fat
+  return dietData.value.macros.protein + 
+         dietData.value.macros.carbohydrates + 
+         dietData.value.macros.fat
 })
 
 const isValid = computed(() => {
-  return newDiet.value.name.trim() !== '' &&
-         newDiet.value.calories > 0 &&
+  return dietData.value.name.trim() !== '' &&
+         dietData.value.calories > 0 &&
          totalPercentage.value === 100
 })
 
 const calculateMacroGrams = (macroName) => {
-  const percentage = newDiet.value.macros[macroName]
-  const calories = newDiet.value.calories * (percentage / 100)
+  const percentage = dietData.value.macros[macroName]
+  const calories = dietData.value.calories * (percentage / 100)
   const caloriesPerGram = macroName === 'fat' ? 9 : 4
   return (calories / caloriesPerGram).toFixed(1)
 }
 
 const calculateMacroCalories = (macroName) => {
-  const percentage = newDiet.value.macros[macroName]
-  return Math.round(newDiet.value.calories * (percentage / 100))
+  const percentage = dietData.value.macros[macroName]
+  return Math.round(dietData.value.calories * (percentage / 100))
 }
 
 const resetForm = () => {
-  newDiet.value = {
-    name: '',
-    calories: 2000,
-    macros: {
-      protein: 30,
-      carbohydrates: 40,
-      fat: 30
-    }
-  }
+  dietData.value = initializeDietData()
   error.value = ''
 }
 
@@ -253,19 +284,19 @@ const closeModal = () => {
   emit('close')
 }
 
-const handleCreate = () => {
+const handleSubmit = () => {
   if (!isValid.value) {
     error.value = 'Please fill all fields correctly and ensure macros total 100%'
     return
   }
 
-  // Crea l'array di Nutrient secondo l'interfaccia
+  // Crea l'array di Nutrient
   const macros = [
     {
       name: 'protein',
       unit: 'g',
       totalAmount: parseFloat(calculateMacroGrams('protein')),
-      amount100g: 0, // Questi valori dipendono dalla logica della tua app
+      amount100g: 0,
       amountPerServing: 0
     },
     {
@@ -284,21 +315,36 @@ const handleCreate = () => {
     }
   ]
 
-  // Emetti i dati conformi all'interfaccia Diet
-  emit('create', {
-    name: newDiet.value.name,
-    caloriesAmount: newDiet.value.calories,
+  const dietPayload = {
+    name: dietData.value.name,
+    caloriesAmount: dietData.value.calories,
     macros: macros,
     userId: props.userId
-  })
+  }
+
+  console.log(dietPayload)
+
+  if (isEditMode.value) {
+    // Modalità edit: emetti update senza userId nel payload (solo i dati da aggiornare)
+    const updatePayload = {
+      name: dietData.value.name,
+      caloriesAmount: dietData.value.calories,
+      macros: macros
+    }
+    emit('update', props.diet._id, updatePayload)
+  } else {
+    // Modalità create: emetti create con userId
+    emit('create', dietPayload)
+  }
 
   resetForm()
 }
 
-// Reset form when modal is closed
-watch(() => props.show, (newVal) => {
-  if (!newVal) {
-    resetForm()
+// Reinizializza quando cambia la prop diet o show
+watch(() => [props.show, props.diet], () => {
+  if (props.show) {
+    dietData.value = initializeDietData()
+    error.value = ''
   }
 })
 </script>

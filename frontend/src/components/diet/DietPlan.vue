@@ -5,10 +5,10 @@
 
       <div class="flex gap-3">
         <button
-          @click="editMode = !editMode"
+          @click="showEditModal = true"
           class="text-blue-500 hover:text-blue-700 font-medium transition-colors"
         >
-          {{ editMode ? 'Cancel' : 'Edit' }}
+          Edit
         </button>
 
         <button
@@ -20,69 +20,63 @@
       </div>
     </div>
 
-    <!-- EDIT MODE -->
-    <div v-if="editMode" class="flex flex-col gap-3">
-      <input
-        v-model="dietName"
-        type="text"
-        class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-        placeholder="Diet name"
-      />
-
-      <input
-        v-model.number="dietCalories"
-        type="number"
-        class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300"
-        placeholder="Calories amount"
-      />
-
-      <button
-        @click="saveDiet"
-        class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors font-medium"
-      >
-        Save
-      </button>
-    </div>
-
     <!-- VIEW MODE -->
-    <div v-else>
+    <div>
       <p class="text-gray-700">
         <span class="font-semibold">Calories:</span>
         {{ diet.caloriesAmount }} kcal
       </p>
+      
+      <!-- Macros Display -->
+      <div v-if="diet.macros && diet.macros.length > 0" class="mt-3 grid grid-cols-3 gap-2">
+        <div 
+          v-for="macro in diet.macros" 
+          :key="`${diet._id}-${macro.name}`"
+          class="bg-gray-50 rounded p-2 text-center"
+        >
+          <div class="text-xs text-gray-500">{{ capitalizeFirst(macro.name) }}</div>
+          <div class="font-semibold text-gray-800">{{ macro.totalAmount.toFixed(1) }}g</div>
+        </div>
+      </div>
     </div>
+
+    <!-- Edit Diet Modal (stesso modale usato per create) -->
+    <CreateDietModal
+      :show="showEditModal"
+      :userId="userId"
+      :diet="diet"
+      @close="showEditModal = false"
+      @update="handleUpdateDiet"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
+import CreateDietModal from './CreateDietModal.vue'
 
 const props = defineProps({
   diet: {
     type: Object,
+    required: true
+  },
+  userId: {
+    type: String,
     required: true
   }
 })
 
 const emit = defineEmits(['update-diet', 'delete-diet'])
 
-const editMode = ref(false)
-const dietName = ref(props.diet.name)
-const dietCalories = ref(props.diet.caloriesAmount)
+const showEditModal = ref(false)
 
-watch(
-  () => props.diet,
-  (newDiet) => {
-    dietName.value = newDiet.name
-    dietCalories.value = newDiet.caloriesAmount
-  }
-)
+const capitalizeFirst = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
 
-const saveDiet = () => {
-  emit('update-diet', props.diet._id, {
-    name: dietName.value,
-    caloriesAmount: dietCalories.value
-  })
-  editMode.value = false
+const handleUpdateDiet = (dietId, updatedDietData) => {
+  console.log('DietPlan - handleUpdateDiet:', dietId, updatedDietData)
+  emit('update-diet', dietId, updatedDietData)
+  showEditModal.value = false
 }
 </script>

@@ -63,10 +63,10 @@ import { Diet, DietSchemaZ } from "../models/Diet";
         .json({ message: "Forbidden: you do not own this diet" });
     }
 
-    const { name, caloriesAmount } = parsed.data;
+    const { name, caloriesAmount, macros } = parsed.data;
     const updatedDiet = await DietModel.findByIdAndUpdate(
       id,
-      { name, caloriesAmount },
+      { name, caloriesAmount, macros },
       { new: true }
     );
     if (!updatedDiet) return res.status(404).json({ message: "Diet not found" });

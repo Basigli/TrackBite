@@ -59,11 +59,11 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div 
           v-for="macro in selectedDiet.macros" 
-          :key="macro.name"
+          :key="`selected-${selectedDiet._id}-${macro.name}`"
           class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4 border border-green-200"
         >
           <div class="text-sm text-gray-600 mb-2">{{ capitalizeFirst(macro.name) }}</div>
-          <div class="text-3xl font-bold text-gray-800 mb-1">{{ macro.totalAmount }}g</div>
+          <div class="text-3xl font-bold text-gray-800 mb-1">{{ macro.totalAmount.toFixed(1) }}g</div>
           <div class="text-xs text-gray-500">
             {{ calculateMacroPercentage(macro, selectedDiet.caloriesAmount) }}%
           </div>
@@ -79,6 +79,7 @@
         v-for="diet in diets"
         :key="diet._id"
         :diet="diet"
+        :userId="userStore.user._id"
         @update-diet="updateDiet"
         @delete-diet="deleteDiet"
       />
@@ -155,6 +156,7 @@ export default {
     }
 
     const updateDiet = async (dietId, updates) => {
+      console.log('Diet.vue - updateDiet called:', dietId, updates)
       await dietStore.updateDiet(dietId, userStore.user._id, updates)
     }
 

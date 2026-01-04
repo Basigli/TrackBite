@@ -30,46 +30,12 @@
       class="mb-6"
     />
 
-    <!-- Selected Diet Details -->
-    <div v-if="selectedDiet" class="bg-white rounded-xl shadow-lg p-6 mb-6">
-      <div class="flex justify-between items-start mb-4">
-        <div>
-          <h2 class="text-2xl font-bold text-gray-800">{{ selectedDiet.name }}</h2>
-          <p class="text-gray-600 mt-1">
-            <span class="font-semibold">{{ selectedDiet.caloriesAmount }}</span> kcal/day
-          </p>
-        </div>
-        <div class="flex gap-3">
-          <button
-            @click="editDiet(selectedDiet)"
-            class="text-blue-500 hover:text-blue-700 font-medium transition-colors"
-          >
-            Edit
-          </button>
-          <button
-            @click="deleteDiet(selectedDiet._id)"
-            class="text-red-500 hover:text-red-700 font-medium transition-colors"
-          >
-            Delete
-          </button>
-        </div>
-      </div>
-
-      <!-- Macros Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div 
-          v-for="macro in selectedDiet.macros" 
-          :key="`selected-${selectedDiet._id}-${macro.name}`"
-          class="bg-gradient-to-br from-green-50 to-blue-50 rounded-lg p-4 border border-green-200"
-        >
-          <div class="text-sm text-gray-600 mb-2">{{ capitalizeFirst(macro.name) }}</div>
-          <div class="text-3xl font-bold text-gray-800 mb-1">{{ macro.totalAmount.toFixed(1) }}g</div>
-          <div class="text-xs text-gray-500">
-            {{ calculateMacroPercentage(macro, selectedDiet.caloriesAmount) }}%
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Current Selected Diet -->
+    <CurrentDiet
+      :selectedDiet="selectedDiet"
+      @delete-diet="deleteDiet"
+      class="mb-6"
+    />
 
     <!-- All Diets List -->
     <div v-if="diets.length > 0" class="space-y-4">
@@ -102,6 +68,7 @@ import { storeToRefs } from 'pinia'
 import DietSelector from '../components/diet/DietSelector.vue'
 import DietPlan from '../components/diet/DietPlan.vue'
 import CreateDietModal from '../components/diet/CreateDietModal.vue'
+import CurrentDiet from '../components/diet/CurrentDiet.vue'
 import { useDietStore } from '../store/dietStore'
 import { useUserStore } from '../store/userStore'
 
@@ -110,7 +77,8 @@ export default {
   components: {
     DietSelector,
     DietPlan,
-    CreateDietModal
+    CreateDietModal,
+    CurrentDiet
   },
   setup() {
     const dietStore = useDietStore()
@@ -121,20 +89,8 @@ export default {
     const showCreateForm = ref(false)
     const diets = computed(() => dietStore.diets)
 
-    const calculateMacroPercentage = (macro, totalCalories) => {
-      const caloriesPerGram = macro.name === 'fat' ? 9 : 4
-      const macroCalories = macro.totalAmount * caloriesPerGram
-      return ((macroCalories / totalCalories) * 100).toFixed(1)
-    }
-
-    const capitalizeFirst = (str) => {
-      return str.charAt(0).toUpperCase() + str.slice(1)
-    }
-
     const handleCreateDiet = async (dietData) => {
       try {
-        // dietData ora arriva già formattato dal modale
-        // con la struttura corretta (name, caloriesAmount, macros array, userId)
         console.log("Creating diet with data:", dietData)
         await dietStore.createDiet(dietData)
         
@@ -148,11 +104,6 @@ export default {
       console.log('Parent - selectDiet called with:', diet)
       dietStore.selectDiet(diet)
       userStore.updateUser({ activeDietId: diet._id })
-    }
-
-    const editDiet = (diet) => {
-      // TODO: Implement edit functionality
-      console.log('Edit diet:', diet)
     }
 
     const updateDiet = async (dietId, updates) => {
@@ -178,11 +129,8 @@ export default {
       selectedDiet,
       diets,
       userStore,
-      calculateMacroPercentage,
-      capitalizeFirst,
       handleCreateDiet,
       selectDiet,
-      editDiet,
       updateDiet,
       deleteDiet
     }

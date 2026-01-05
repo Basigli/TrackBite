@@ -63,10 +63,11 @@ const computedNavItems = computed(() => {
     { path: '/history', label: 'History' },
     { path: '/scan-food', label: 'Scan Food' },
     { path: '/recipes', label: 'Recipes' },
-    { path: '/diet', label: 'Diet' }
+    { path: '/diet', label: 'Diet' },
+    { path: '/settings', label: 'Settings' }
   ]
 
-  return [...baseItems, { path: '/settings', label: 'Settings' }]
+  return [...baseItems]
 })
 
 const closeSidebar = () => {

@@ -35,12 +35,13 @@ const sidebarOpen = ref(false);
 
 const navigationItems = computed(() => {
   const baseItems = [
-    { path: '/', label: 'Dashboard' },
-    { path: '/history', label: 'History' },
-    { path: '/scan-food', label: 'Scan Food' },
-    { path: '/my-recipes', label: 'My Recipes' },
-    { path: '/find-recipe', label: 'Find Recipe' },
-    { path: '/diet', label: 'Diet' }
+    { path: '/', label: '📊 Dashboard' },
+    { path: '/history', label: '🕘  History' },
+    { path: '/scan-food', label: '📷  Scan Food' },
+    { path: '/my-recipes', label: '🍽  My Recipes' },
+    { path: '/find-recipe', label: '🔍  Find Recipe' },
+    { path: '/diet', label: '⚖️  Diet' },
+    { path: '/settings', label: '⚙️  Settings' }
   ];
 
   // Admin-specific items if user is admin
@@ -54,7 +55,7 @@ const navigationItems = computed(() => {
   }
 
   // Regular user items
-  return [...baseItems, { path: '/settings', label: 'Settings' }];
+  return [...baseItems];
 });
 
 onMounted(() => {

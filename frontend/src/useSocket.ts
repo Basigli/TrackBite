@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { useRecipeStore } from './store/recipeStore';
 import { useUserStore } from './store/userStore';
 import { notifyInfo } from './utils/Notifications';
+import { no } from 'zod/locales';
 
 let socket: Socket | null = null;
 const isConnected = ref(false);
@@ -58,6 +59,7 @@ export function useSocket() {
       
       if (updatedRecipe.authorId === userStore.user?._id) {
         recipeStore.updateOwnRecipe(updatedRecipe);
+        notifyInfo(`Your recipe "${updatedRecipe.name}" has received a review, go check it out.`);
       } else {
         recipeStore.updateCommunityRecipe(updatedRecipe);
       }

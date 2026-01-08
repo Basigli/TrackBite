@@ -958,6 +958,7 @@ async function seed() {
     balancedMacros,
     userBob._id.toString()
   ).build();
+ 
   const dietVegan = new DietBuilder(
     "Plant-Based Vegan",
     1800,
@@ -973,8 +974,12 @@ async function seed() {
 
   await DietModel.create(dietLowCarb);
   await DietModel.create(dietHighProtein);
-  await DietModel.create(dietBalanced);
-  await DietModel.create(dietVegan);
+  let dietBalancedCreated = await DietModel.create(dietBalanced);
+  userBob.activeDietId = dietBalancedCreated._id.toString();
+  await userBob.save();
+  let dietVeganCreated = await DietModel.create(dietVegan);
+  userCharlie.activeDietId = dietVeganCreated._id.toString();
+  await userCharlie.save();
   await DietModel.create(dietKeto);
 
   console.log("Inserted diets");

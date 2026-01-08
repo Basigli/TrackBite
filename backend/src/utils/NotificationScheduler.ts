@@ -8,9 +8,7 @@ export class NotificationScheduler {
   private tasks: ScheduledTask[] = [];
 
   start() {
-    // Meal reminder - 3 times a day (8 AM, 1 PM, 7 PM)
     this.tasks.push(
-      // cron.schedule('0 8,13,19 * * *', () => {
       cron.schedule('* * * * *', () => {
         this.sendCaloeriesReminders();
       })

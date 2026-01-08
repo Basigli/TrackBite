@@ -48,7 +48,7 @@ export class NotificationScheduler {
           if (remainingCalories <= 0) {
             continue; // No remaining calories
           }
-          const message = `You have ${remainingCalories} calories remaining for today. Keep it up!`;
+          const message = `You have ${remainingCalories.toFixed(0)} calories remaining for today. Keep it up!`;
           sendNotification(user._id.toString(), {
             type: 'Meal Reminder',
             message: message

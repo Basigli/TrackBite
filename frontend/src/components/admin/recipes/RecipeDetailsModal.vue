@@ -76,7 +76,7 @@
           </div>
           <div class="bg-gray-50 rounded-2xl p-4">
             <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {{ recipe.instructions || 'No instructions provided' }}
+              {{ recipe.description || 'No instructions provided' }}
             </p>
           </div>
         </div>

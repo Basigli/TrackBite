@@ -974,10 +974,10 @@ async function seed() {
 
   await DietModel.create(dietLowCarb);
   await DietModel.create(dietHighProtein);
-  let dietBalancedCreated = await DietModel.create(dietBalanced);
+  const dietBalancedCreated = await DietModel.create(dietBalanced);
   userBob.activeDietId = dietBalancedCreated._id.toString();
   await userBob.save();
-  let dietVeganCreated = await DietModel.create(dietVegan);
+  const dietVeganCreated = await DietModel.create(dietVegan);
   userCharlie.activeDietId = dietVeganCreated._id.toString();
   await userCharlie.save();
   await DietModel.create(dietKeto);

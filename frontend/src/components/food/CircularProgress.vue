@@ -30,7 +30,7 @@
     <!-- Text inside the circle -->
     <div class="absolute text-center">
       <p class="text-2xl font-bold text-gray-800">{{ percentage }}%</p>
-      <p class="text-sm text-gray-500 mt-1">{{ current }} / {{ goal }} kcal</p>
+      <p class="text-sm text-gray-500 mt-1">{{ current.toFixed(0) }} / {{ goal }} kcal</p>
     </div>
   </div>
 </template>

@@ -87,7 +87,7 @@
         <div class="bg-blue-50 border-2 border-blue-400 rounded-lg p-4 mb-6">
           <div class="flex justify-between items-center">
             <span class="text-gray-700 font-semibold">Total Calories</span>
-            <span class="text-2xl font-bold text-blue-600">{{ recipe.totalCalories }} kcal</span>
+            <span class="text-2xl font-bold text-blue-600">{{ recipe.totalCalories.toFixed(0) }} kcal</span>
           </div>
         </div>
 

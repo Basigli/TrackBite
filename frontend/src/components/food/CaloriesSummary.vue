@@ -4,7 +4,7 @@
 
     <CircularProgress :current="totalCalories" :goal="dailyGoal" :size="160" />
 
-    <p class="text-3xl font-bold text-gray-800 mt-4">{{ totalCalories }} kcal</p>
+    <p class="text-3xl font-bold text-gray-800 mt-4">{{ totalCalories.toFixed(0) }} kcal</p>
     <p class="text-sm text-gray-500 mt-1">Daily goal: {{ dailyGoal }} kcal</p>
   </div>
 </template>

@@ -15,7 +15,7 @@
       >
         <div class="flex justify-between items-center">
           <span class="font-semibold text-gray-800">{{ formatDate(day.date) }}</span>
-          <span class="text-green-600 font-bold">{{ day.totalCalories || 0 }} kcal</span>
+          <span class="text-green-600 font-bold">{{ day.totalCalories.toFixed(0) || 0 }} kcal</span>
         </div>
         <div class="text-sm text-gray-600 mt-1">
           {{ summarizeFoodItems(day.foodItems) }}

@@ -27,13 +27,13 @@ cd trackbite
 ### 2. Build the images
 
 ```bash
-docker-compose build
+docker compose build
 ```
 
 ### 3. Start the containers
 
 ```bash
-docker-compose up
+docker compose up
 ```
 
 The app is available at `http://localhost:5173/`

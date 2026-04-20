@@ -1,9 +1,8 @@
-import { ref, onUnmounted } from 'vue';
+import { ref } from 'vue';
 import { io, Socket } from 'socket.io-client';
 import { useRecipeStore } from './store/recipeStore';
 import { useUserStore } from './store/userStore';
 import { notifyInfo } from './utils/Notifications';
-import { no } from 'zod/locales';
 
 let socket: Socket | null = null;
 const isConnected = ref(false);
@@ -20,7 +19,7 @@ export function useSocket() {
       return socket;
     }
 
-    socket = io('http://localhost:3001', {
+    socket = io(import.meta.env.VITE_WS_URL || 'http://localhost:3001', {
       transports: ['websocket'],
       reconnection: true,
       reconnectionDelay: 1000,

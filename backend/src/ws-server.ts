@@ -14,6 +14,8 @@ const io = new Server(server, {
   },
 });
 
+const WS_PORT = Number(process.env.WS_PORT || 3001);
+
 if (process.env.NODE_ENV !== "test") {
     
   io.on("connection", (socket) => {
@@ -33,7 +35,7 @@ if (process.env.NODE_ENV !== "test") {
     });
   });
 
-  server.listen(3001, () => console.log("Server running on port 3001"));
+  server.listen(WS_PORT, () => console.log(`Server running on port ${WS_PORT}`));
 }
 
 export function sendNotification(userId: string, notification: any) {
